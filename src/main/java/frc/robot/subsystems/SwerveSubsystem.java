@@ -4,7 +4,10 @@
 
 package frc.robot.subsystems;
 import java.io.File;
+import java.util.Optional;
 import java.util.function.Supplier;
+
+import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 
 import edu.wpi.first.wpilibj.Filesystem;
 import swervelib.parser.SwerveParser;
@@ -70,6 +73,34 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
     swerveDrive.driveFieldOriented(velocity.get());
   });
 }
+  /**
+   * Gets the current pose (position and rotation) of the robot, as reported by odometry.
+   *
+   * @return The robot's pose
+   */
+  public Pose2d getPose()
+  {
+    return swerveDrive.getPose();
+  }
+
+    /**
+   * Gets the current yaw angle of the robot, as reported by the swerve pose estimator in the underlying drivebase.
+   * Note, this is not the raw gyro reading, this may be corrected from calls to resetOdometry().
+   *
+   * @return The yaw angle
+   */
+  public Rotation2d getHeading()
+  {
+    return getPose().getRotation();
+  }
+
+    public Optional<SwerveDriveSimulation>getMapleSimDrive(){
+    return swerveDrive.getMapleSimDrive();
+  }
+
+  public Pose2d getMapleSimPose(){
+    return getMapleSimDrive().get().getSimulatedDriveTrainPose();
+  }
  
   /**
    * Resets the gyro angle to zero and resets odometry to the same position, but facing toward 0.

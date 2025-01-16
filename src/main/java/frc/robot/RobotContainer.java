@@ -9,6 +9,7 @@ import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import swervelib.SwerveDrive;
 import swervelib.SwerveInputStream;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -28,6 +29,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final SwerveSubsystem driveBase = new SwerveSubsystem();
+  private SwerveDrive drive;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -35,7 +37,9 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+
     // Configure the trigger bindings
+    
     configureBindings();
 
   }
@@ -55,9 +59,9 @@ public class RobotContainer {
   Command driveFieldOrientedAngularVelocity = driveBase.driveFieldOriented(driveAngularVelocity);
 
   SwerveInputStream driveAngularVelocitySim = SwerveInputStream.of(driveBase.getSwerveDrive(),
-                                                                   () -> -m_driverController.getLeftY(),
-                                                                   () -> -m_driverController.getLeftX())
-                                                               .withControllerRotationAxis(() -> m_driverController.getRawAxis(2))
+                                                                   () -> -m_driverController.getLeftY() * -1,
+                                                                   () -> -m_driverController.getLeftX() * -1)
+                                                               .withControllerRotationAxis(m_driverController::getRightX)
                                                                .deadband(OperatorConstants.DEADBAND)
                                                                .scaleTranslation(0.8)
                                                                .allianceRelativeControl(true);
@@ -65,10 +69,10 @@ public class RobotContainer {
   SwerveInputStream driveDirectAngleSim     = driveAngularVelocitySim.copy()
                                                                      .withControllerHeadingAxis(() -> Math.sin(
                                                                                                     m_driverController.getRawAxis(
-                                                                                                        2) * Math.PI) * (Math.PI * 2),
+                                                                                                        4) * Math.PI) * (Math.PI * 2),
                                                                                                 () -> Math.cos(
                                                                                                     m_driverController.getRawAxis(
-                                                                                                        2) * Math.PI) *
+                                                                                                        4) * Math.PI) *
                                                                                                       (Math.PI * 2))
                                                                      .headingWhile(true);
 
