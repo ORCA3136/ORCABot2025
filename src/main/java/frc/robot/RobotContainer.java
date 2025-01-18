@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.io.File;
+
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
@@ -14,6 +16,7 @@ import swervelib.SwerveInputStream;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -29,7 +32,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-  private final SwerveSubsystem driveBase = new SwerveSubsystem();
+  private final SwerveSubsystem driveBase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "ORCA2024")); // where to configure the robot or "choose" it
   private SwerveDrive drive;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -40,7 +43,7 @@ public class RobotContainer {
   public RobotContainer() {
 
     // Create Subsystems
-    
+
 
     // Configure the trigger bindings
     configureBindings();

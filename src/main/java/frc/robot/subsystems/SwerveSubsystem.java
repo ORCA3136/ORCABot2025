@@ -31,11 +31,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class SwerveSubsystem extends SubsystemBase {
 
-  File directory = new File(Filesystem.getDeployDirectory(),"swerve");
+  
   SwerveDrive  swerveDrive;
 
 
-  public SwerveSubsystem() {
+  public SwerveSubsystem(File directory) {
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
 
     try
