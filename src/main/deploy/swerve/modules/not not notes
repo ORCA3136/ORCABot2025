@@ -5,3 +5,6 @@ zero the wheels with rev client and calibate with the calibration short square p
 rotate all bevelgears to face left
 
 plug in the values from shuffleboard (raw absolute encoder values)
+
+to update encoders to 25.0.1: power the robot down, then plug in to the encoder
+then update individually :sad:
