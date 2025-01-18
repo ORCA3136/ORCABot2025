@@ -19,6 +19,37 @@ public final class Constants {
     public static final int kDriverControllerPort = 0;
     public static final double DEADBAND = 0.05;
   }
+
+  public static final class SparkConstants {
+    // SPARK MAX CAN IDs
+
+    // Drive Neos
+    public static final int kFrontLeftDrivingCanId = 2;
+    public static final int kFrontRightDrivingCanId = 4;
+    public static final int kRearLeftDrivingCanId = 6;
+    public static final int kRearRightDrivingCanId = 8;
+
+    // Drive 550s
+    public static final int kFrontLeftTurningCanId = 1;
+    public static final int kFrontRightTurningCanId = 3;
+    public static final int kRearLeftTurningCanId = 5;
+    public static final int kRearRightTurningCanId = 7;
+
+    // Elevator 
+    public static final int kLeftElevatorCanId = 10;
+    public static final int kRightElevatorCanId = 11;
+
+    // Wrist
+    public static final int kWristCanId = 12;
+    // Maybe 13
+
+    // Intake
+    public static final int kIntakeCanId = 14;
+
+    public static final boolean kGyroReversed = false;
+
+  }
+
   public static final double MAX_SPEED = Units.feetToMeters(4.5);
 
 }
