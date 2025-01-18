@@ -11,6 +11,7 @@ import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import swervelib.SwerveDrive;
 import swervelib.SwerveInputStream;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -45,16 +46,17 @@ public class RobotContainer {
   }
 
   SwerveInputStream driveAngularVelocity= SwerveInputStream.of(driveBase.getSwerveDrive(),
-                                          ()-> m_driverController.getLeftY() * -1, 
+                                          () -> m_driverController.getLeftY() * -1, 
                                           () -> m_driverController.getLeftX() * -1)
                                           .withControllerRotationAxis(m_driverController::getRightX)
                                           .deadband(OperatorConstants.DEADBAND)
                                           .scaleTranslation(0.8)
                                           .allianceRelativeControl(true);
 
+  
   SwerveInputStream driveDirectAngle = driveAngularVelocity.copy()
-                                                          .withControllerHeadingAxis(m_driverController::getRightX, m_driverController::getRightY).headingWhile(true);
-
+                                                          .withControllerHeadingAxis(m_driverController::getRightX, m_driverController::getRightY).headingWhile(false);
+                                                         //withControllerHeadingAxis(m_driverController::getRightX, m_driverController::getRightX  <- change this to Y for special mode
   Command driveFieldOrientedDirectAngle = driveBase.driveFieldOriented(driveDirectAngle);
   Command driveFieldOrientedAngularVelocity = driveBase.driveFieldOriented(driveAngularVelocity);
 
