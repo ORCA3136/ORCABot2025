@@ -95,6 +95,11 @@ public class RobotContainer {
                                 driveFieldOrientedDirectAngle :
                                 driveFieldOrientedDirectAngleSim);
 
+    if (RobotBase.isSimulation())
+    {
+      driveBase.setDefaultCommand(RobotBase.isSimulation() ? driveFieldOrientedDirectAngle :
+                                driveFieldOrientedDirectAngleSim);
+    }
     if (Robot.isSimulation())
     {
       m_driverController.start().onTrue(Commands.runOnce(() -> driveBase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
