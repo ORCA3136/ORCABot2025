@@ -40,7 +40,6 @@ public class RunElevatorCommand extends Command {
   @Override
   public void end(boolean interrupted) {
     elevatorSubsystem.setElevatorPower(0);
-    elevatorSubsystem.setManuallyMoving(false);
     // isFinished();
   }
 

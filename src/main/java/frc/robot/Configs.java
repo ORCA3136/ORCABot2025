@@ -31,21 +31,19 @@ public final class Configs {
 
       leftElevatorConfig
         .closedLoop
-        .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         // Set PID values for position control
         .p(0.1)
         .outputRange(-1, 1)
         .maxMotion
         // Set MAXMotion parameters for position control
-        .maxVelocity(420)
-        .maxAcceleration(600)
+        .maxVelocity(1500)  // 4200
+        .maxAcceleration(2000) // 6000
         .allowedClosedLoopError(0.5);
 
 
       rightElevatorConfig
-        .inverted(false)
-        .idleMode(IdleMode.kBrake)
-        .follow(Constants.SparkConstants.kLeftElevatorCanId);
+        .idleMode(IdleMode.kCoast);
 
     }
   }

@@ -119,10 +119,10 @@ public class RobotContainer {
       m_driverController.leftBumper().whileTrue(new RunElevatorCommand(elevator, Constants.ElevatorConstants.ElevatorPowerLevels.kUp));
       m_driverController.rightBumper().whileTrue(new RunElevatorCommand(elevator, Constants.ElevatorConstants.ElevatorPowerLevels.kDown));
       
-      // m_driverController.a()
-      // m_driverController.b()
-      // m_driverController.x()
-      // m_driverController.y()
+      m_driverController.a().onTrue(elevator.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel1));
+      m_driverController.b().onTrue(elevator.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel2));
+      m_driverController.x().onTrue(elevator.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel3));
+      m_driverController.y().onTrue(elevator.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel4));
 
     }
   }

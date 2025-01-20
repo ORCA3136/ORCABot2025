@@ -6,7 +6,7 @@ package frc.robot.subsystems;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants.ElevatorSetpoints;
 import frc.robot.Configs;
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -50,7 +50,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   private boolean wasResetByButton = false;
   private double elevatorCurrentTarget = Constants.ElevatorConstants.ElevatorSetpoints.kFeederStation;
 
-  private boolean manuallyMoving = false;
+  private boolean manuallyMoving = true;
 
   /** Creates a new ExampleSubsystem. */
   public ElevatorSubsystem() {
@@ -59,8 +59,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     // rightElevatorEncoder.setPosition(0);
     // <l/r>ElevatorEncoder.setPosition(0);
     
-    Configs.ElevatorConfigs.rightElevatorConfig
-            .follow(leftElevator, true);
+    // Configs.ElevatorConfigs.rightElevatorConfig
+    //       .follow(leftElevator, true);
     
     leftElevator.configure(Configs.ElevatorConfigs.leftElevatorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     rightElevator.configure(Configs.ElevatorConfigs.rightElevatorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -83,6 +83,7 @@ public class ElevatorSubsystem extends SubsystemBase {
    * positions for the given setpoint.
    */
   public Command setSetpointCommand(Setpoint setpoint) {
+    System.out.println("setpoint command");
     return this.runOnce(
         () -> {
           setManuallyMoving(false);
@@ -123,6 +124,10 @@ public class ElevatorSubsystem extends SubsystemBase {
     if (!manuallyMoving) {
       moveToSetpoint();
     }
+
+    SmartDashboard.putNumber("Elevator current target", elevatorCurrentTarget);
+    SmartDashboard.putNumber("Elevator current position", getPos());
+    SmartDashboard.putBoolean("Elevator manually moving", manuallyMoving);
     
     // This method will be called once per scheduler run
   }
