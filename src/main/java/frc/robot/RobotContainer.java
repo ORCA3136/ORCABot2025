@@ -9,8 +9,11 @@ import java.io.File;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.WristSubsystem;
 import swervelib.SwerveDrive;
 import swervelib.SwerveInputStream;
 import edu.wpi.first.math.MathUtil;
@@ -31,9 +34,11 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final SwerveSubsystem driveBase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/ORCA2025")); // where to configure the robot or "choose" it
-  private SwerveDrive drive;
+  // private SwerveDrive drive;
+  // private IntakeSubsystem intake = new IntakeSubsystem();
+  // private WristSubsystem wrist = new WristSubsystem();
+  // private ElevatorSubsystem elevator = new ElevatorSubsystem();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -42,21 +47,18 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
-    // Create Subsystems
-
-
     // Configure the trigger bindings
     configureBindings();
 
   }
 
-  SwerveInputStream driveAngularVelocity= SwerveInputStream.of(driveBase.getSwerveDrive(),
-                                          () -> m_driverController.getLeftY() * -1, 
-                                          () -> m_driverController.getLeftX() * -1)
-                                          .withControllerRotationAxis(m_driverController::getRightX)
-                                          .deadband(OperatorConstants.DEADBAND)
-                                          .scaleTranslation(0.8)
-                                          .allianceRelativeControl(true);
+  SwerveInputStream driveAngularVelocity  = SwerveInputStream.of(driveBase.getSwerveDrive(),
+                                            () -> -m_driverController.getLeftY(), 
+                                            () -> -m_driverController.getLeftX())
+                                            .withControllerRotationAxis(m_driverController::getRightX)
+                                            .deadband(OperatorConstants.DEADBAND)
+                                            .scaleTranslation(0.8)
+                                            .allianceRelativeControl(true);
 
   
   SwerveInputStream driveDirectAngle = driveAngularVelocity.copy()
@@ -66,12 +68,12 @@ public class RobotContainer {
   Command driveFieldOrientedAngularVelocity = driveBase.driveFieldOriented(driveAngularVelocity);
 
   SwerveInputStream driveAngularVelocitySim = SwerveInputStream.of(driveBase.getSwerveDrive(),
-                                                                   () -> -m_driverController.getLeftY() * -1,
-                                                                   () -> -m_driverController.getLeftX() * -1)
-                                                               .withControllerRotationAxis(m_driverController::getRightX)
-                                                               .deadband(OperatorConstants.DEADBAND)
-                                                               .scaleTranslation(0.8)
-                                                               .allianceRelativeControl(true);
+                                              () -> m_driverController.getLeftY(),
+                                              () -> m_driverController.getLeftX())
+                                              .withControllerRotationAxis(m_driverController::getRightX)
+                                              .deadband(OperatorConstants.DEADBAND)
+                                              .scaleTranslation(0.8)
+                                              .allianceRelativeControl(true);
   // Derive the heading axis with math!
   SwerveInputStream driveDirectAngleSim     = driveAngularVelocitySim.copy()
                                                                      .withControllerHeadingAxis(() -> Math.sin(
@@ -96,23 +98,27 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    driveBase.setDefaultCommand(!RobotBase.isSimulation() ?
-                                driveFieldOrientedDirectAngle :
-                                driveFieldOrientedDirectAngleSim);
+    driveBase.setDefaultCommand(driveFieldOrientedDirectAngle);
 
-    if (RobotBase.isSimulation())
-    {
-      driveBase.setDefaultCommand(RobotBase.isSimulation() ? driveFieldOrientedDirectAngle :
-                                driveFieldOrientedDirectAngleSim);
-    }
+    // if (RobotBase.isSimulation())
+    // {
+    //   driveBase.setDefaultCommand(RobotBase.isSimulation() ? 
+    //                             driveFieldOrientedDirectAngle :
+    //                             driveFieldOrientedDirectAngleSim);
+    // }
     if (Robot.isSimulation())
     {
       m_driverController.start().onTrue(Commands.runOnce(() -> driveBase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
     }
     else
     {
-      m_driverController.a().onTrue((Commands.runOnce(driveBase::zeroGyro)));
-
+      m_driverController.start().onTrue(Commands.runOnce(driveBase::zeroGyro));
+      // m_driverController.a().whileTrue(intake.intakeOutCommand());
+      // m_driverController.rightBumper().whileTrue(intake.intakeInCommand());
+      // m_driverController.x().whileTrue(elevator.ElevatorUpCommand());
+      // m_driverController.y().whileTrue(wrist.WristBackCommand());
+      // m_driverController.b().whileTrue(wrist.WristForwardCommand());
+      // m_driverController.leftBumper().whileTrue(elevator.ElevatorDownCommand());
     }
 
   }
@@ -124,6 +130,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return Autos.exampleAuto(m_exampleSubsystem);
+    return null; //Autos.exampleAuto(m_exampleSubsystem);
   }
 }

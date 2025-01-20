@@ -11,6 +11,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 /**
@@ -28,9 +29,24 @@ public final class Configs {
         .inverted(true)
         .idleMode(IdleMode.kBrake);
 
+      leftElevatorConfig
+        .closedLoop
+        .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+        // Set PID values for position control
+        .p(0.1)
+        .outputRange(-1, 1)
+        .maxMotion
+        // Set MAXMotion parameters for position control
+        .maxVelocity(4200)
+        .maxAcceleration(6000)
+        .allowedClosedLoopError(0.5);
+
+
       rightElevatorConfig
         .inverted(false)
-        .idleMode(IdleMode.kBrake);
+        .idleMode(IdleMode.kBrake)
+        .follow(Constants.SparkConstants.kLeftElevatorCanId);
+
     }
   }
 
@@ -39,12 +55,38 @@ public final class Configs {
     public static final SparkMaxConfig wristMotorConfig = new SparkMaxConfig();
 
     static {
-      wristMotorConfig.idleMode(IdleMode.kBrake); // IDK about this; verify
+      wristMotorConfig
+        .inverted(false)
+        .idleMode(IdleMode.kBrake); // IDK about this; verify
+
+      wristMotorConfig
+        .closedLoop
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        // Set PID values for position control
+        .p(0.1)
+        .outputRange(-1, 1)
+        .maxMotion
+        // Set MAXMotion parameters for position control
+        .maxVelocity(4200)
+        .maxAcceleration(6000)
+        .allowedClosedLoopError(0.5);
     }
   }
 
   public static final class SwerveDriveConfigs {
+    
+  }
 
+  
+
+  public static final class IntakeConfigs {
+    public static final SparkMaxConfig intakeMotorConfig = new SparkMaxConfig();
+
+    static {
+    intakeMotorConfig
+      .inverted(false)
+      .idleMode(IdleMode.kBrake);
+    }
   }
 
 }

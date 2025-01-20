@@ -42,11 +42,10 @@ public final class Constants {
     public static final int kRightElevatorCanId = 11;
 
     // Wrist
-    public static final int kWristCanId = 12;
-    // Maybe 13
+    public static final int kWristCanId = 20;
 
     // Intake
-    public static final int kIntakeCanId = 14;
+    public static final int kIntakeCanId = 21;
 
     public static final boolean kGyroReversed = false;
 
@@ -91,8 +90,16 @@ public final class Constants {
       public static final int ks3 = 0;
     }
     public static final class WristPowerLevels {
-      public static final double kUp = 0.5;
+      public static final double kUp = 0.2;
       public static final double kDown = -0.2;
+    }
+  }
+
+  public static final class IntakeConstants {
+    
+    public static final class IntakePowerLevels {
+      public static final double kIn = -0.2;
+      public static final double kOut = 0.2;
     }
   }
 
