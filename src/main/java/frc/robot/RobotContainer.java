@@ -9,6 +9,9 @@ import java.io.File;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.RunElevatorCommand;
+import frc.robot.commands.RunIntakeCommand;
+import frc.robot.commands.RunWristCommand;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -34,11 +37,11 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final SwerveSubsystem driveBase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/ORCA2025")); // where to configure the robot or "choose" it
+  private final SwerveSubsystem driveBase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/ORCA2024")); // where to configure the robot or "choose" it
   // private SwerveDrive drive;
-  // private IntakeSubsystem intake = new IntakeSubsystem();
-  // private WristSubsystem wrist = new WristSubsystem();
-  // private ElevatorSubsystem elevator = new ElevatorSubsystem();
+  private IntakeSubsystem intake = new IntakeSubsystem();
+  private WristSubsystem wrist = new WristSubsystem();
+  private ElevatorSubsystem elevator = new ElevatorSubsystem();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -113,14 +116,15 @@ public class RobotContainer {
     else
     {
       m_driverController.start().onTrue(Commands.runOnce(driveBase::zeroGyro));
-      // m_driverController.a().whileTrue(intake.intakeOutCommand());
-      // m_driverController.rightBumper().whileTrue(intake.intakeInCommand());
-      // m_driverController.x().whileTrue(elevator.ElevatorUpCommand());
-      // m_driverController.y().whileTrue(wrist.WristBackCommand());
-      // m_driverController.b().whileTrue(wrist.WristForwardCommand());
-      // m_driverController.leftBumper().whileTrue(elevator.ElevatorDownCommand());
-    }
+      m_driverController.leftBumper().whileTrue(new RunElevatorCommand(elevator, Constants.ElevatorConstants.ElevatorPowerLevels.kUp));
+      m_driverController.rightBumper().whileTrue(new RunElevatorCommand(elevator, Constants.ElevatorConstants.ElevatorPowerLevels.kDown));
+      
+      // m_driverController.a()
+      // m_driverController.b()
+      // m_driverController.x()
+      // m_driverController.y()
 
+    }
   }
 
   /**

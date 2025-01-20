@@ -38,14 +38,26 @@ public final class Constants {
     public static final int kRearRightTurningCanId = 7;
 
     // Elevator 
-    public static final int kLeftElevatorCanId = 10;
-    public static final int kRightElevatorCanId = 11;
+    // public static final int kLeftElevatorCanId = 10;
+    // public static final int kRightElevatorCanId = 11;
+
+    // // Wrist
+    // public static final int kWristCanId = 20;
+
+    // // Intake
+    // public static final int kIntakeCanId = 21;
+
+
+    // Elevator 
+    public static final int kLeftElevatorCanId = 12;
+    public static final int kRightElevatorCanId = 13;
 
     // Wrist
-    public static final int kWristCanId = 20;
+    public static final int kWristCanId = 14;
 
     // Intake
-    public static final int kIntakeCanId = 21;
+    public static final int kIntakeCanId = 15;
+
 
     public static final boolean kGyroReversed = false;
 
@@ -77,8 +89,8 @@ public final class Constants {
       public static final int kLevel4 = 150;
     }
     public static final class ElevatorPowerLevels {
-      public static final double kUp = 0.5;
-      public static final double kDown = -0.2;
+      public static final double kUp = 0.2;
+      public static final double kDown = -0.1;
     }
 
   }
@@ -90,8 +102,8 @@ public final class Constants {
       public static final int ks3 = 0;
     }
     public static final class WristPowerLevels {
-      public static final double kUp = 0.2;
-      public static final double kDown = -0.2;
+      public static final double kUp = 0.1;
+      public static final double kDown = -0.1;
     }
   }
 

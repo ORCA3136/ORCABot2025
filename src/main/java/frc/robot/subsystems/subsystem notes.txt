@@ -5,6 +5,7 @@ Swerve Notes
 
 Elevator Notes
 
+20:1 gear ratio 
 2 motors
 1 encoder (2 in code)
 logic for soft stops:

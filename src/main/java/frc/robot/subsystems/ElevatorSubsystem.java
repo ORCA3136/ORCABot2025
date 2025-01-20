@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -39,17 +40,17 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   // Initialize elevator SPARK. We will use MAXMotion position control for the elevator, so we also
   // need to initialize the closed loop controller and encoder.
-  private SparkClosedLoopController leftElevatorClosedLoopController =
+  private SparkClosedLoopController elevatorClosedLoopController =
       leftElevator.getClosedLoopController();
-  private SparkClosedLoopController rightElevatorClosedLoopController =
-      rightElevator.getClosedLoopController();
-      
-  private RelativeEncoder leftElevatorEncoder = leftElevator.getEncoder();  // only one encoder????????
-  private RelativeEncoder rightElevatorEncoder = rightElevator.getEncoder();
+
+  // private AbsoluteEncoder elevatorEncoder = leftElevator.getAbsoluteEncoder(); //Whichever motor has the encoder
+  private RelativeEncoder elevatorEncoder = leftElevator.getEncoder();
 
   // Member variables for subsystem state management
   private boolean wasResetByButton = false;
   private double elevatorCurrentTarget = Constants.ElevatorConstants.ElevatorSetpoints.kFeederStation;
+
+  private boolean manuallyMoving = false;
 
   /** Creates a new ExampleSubsystem. */
   public ElevatorSubsystem() {
@@ -57,23 +58,24 @@ public class ElevatorSubsystem extends SubsystemBase {
     // leftElevatorEncoder.setPosition(0);
     // rightElevatorEncoder.setPosition(0);
     // <l/r>ElevatorEncoder.setPosition(0);
-
+    
+    Configs.ElevatorConfigs.rightElevatorConfig
+            .follow(leftElevator, true);
+    
     leftElevator.configure(Configs.ElevatorConfigs.leftElevatorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     rightElevator.configure(Configs.ElevatorConfigs.rightElevatorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     
   }
 
   private void moveToSetpoint() {
-    leftElevatorClosedLoopController.setReference(
-        elevatorCurrentTarget, ControlType.kMAXMotionPositionControl);
-    rightElevatorClosedLoopController.setReference(
+    elevatorClosedLoopController.setReference(
         elevatorCurrentTarget, ControlType.kMAXMotionPositionControl);
   }
 
   /** Set the elevator motor power in the range of [-1, 1]. */
-  private void setElevatorPower(double power) {
+  public void setElevatorPower(double power) {
     leftElevator.set(power);
-    rightElevator.set(power);
+    manuallyMoving = true;
   }
 
   /**
@@ -83,6 +85,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   public Command setSetpointCommand(Setpoint setpoint) {
     return this.runOnce(
         () -> {
+          setManuallyMoving(false);
           switch (setpoint) {
             case kFeederStation:
               elevatorCurrentTarget = ElevatorSetpoints.kFeederStation;
@@ -103,27 +106,13 @@ public class ElevatorSubsystem extends SubsystemBase {
         });
   }
 
-
-  /**
-   * Command to run the elevator motor. When the command is interrupted, e.g. the button is released,
-   * the motor will stop.
-   */
-  public Command ElevatorUpCommand() {
-    return this.startEnd(
-        () -> this.setElevatorPower(Constants.ElevatorConstants.ElevatorPowerLevels.kUp), () -> this.setElevatorPower(0.0));
+  public void setManuallyMoving(boolean bool) {
+    manuallyMoving = bool;
   }
-
-  /**
-   * Command to reverses the elevator motor. When the command is interrupted, e.g. the button is
-   * released, the motor will stop.
-   */
-  public Command ElevatorDownCommand() {
-    return this.startEnd(
-        () -> this.setElevatorPower(Constants.ElevatorConstants.ElevatorPowerLevels.kDown), () -> this.setElevatorPower(0.0));
-  }
+  
 
   public double getPos() {
-    return rightElevatorEncoder.getPosition();
+    return elevatorEncoder.getPosition();
   }
 
   
@@ -131,7 +120,10 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    moveToSetpoint();
+    if (!manuallyMoving) {
+      moveToSetpoint();
+    }
+    
     // This method will be called once per scheduler run
   }
 

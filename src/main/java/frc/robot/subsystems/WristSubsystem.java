@@ -33,9 +33,12 @@ public class WristSubsystem extends SubsystemBase {
   // need to initialize the closed loop controller and encoder.
   private SparkClosedLoopController wristClosedLoopController =
       wristMotor.getClosedLoopController();
+
+  // private AbsoluteEncoder wristEncoder = wristMotor.getAbsoluteEncoder();
   private RelativeEncoder wristEncoder = wristMotor.getEncoder();
 
   private double wristCurrentTarget = Constants.WristConstants.WristSetpoints.ks1; // ksI - into the thick of it?
+  private boolean manuallyMoving = false;
 
   /** Creates a new WristSubsystem. */
   public WristSubsystem() {
@@ -49,8 +52,9 @@ public class WristSubsystem extends SubsystemBase {
         wristCurrentTarget, ControlType.kMAXMotionPositionControl);
   }
 
-  private void setWristPower(double power) {
+  public void setWristPower(double power) {
     wristMotor.set(power);
+    setManuallyMoving(true);
   }
 
   /**
@@ -60,6 +64,7 @@ public class WristSubsystem extends SubsystemBase {
   public Command setSetpointCommand(Setpoint setpoint) {
     return this.runOnce(
         () -> {
+          setManuallyMoving(false);
           switch (setpoint) {
             case ks1:
               wristCurrentTarget = Constants.WristConstants.WristSetpoints.ks1;
@@ -78,7 +83,7 @@ public class WristSubsystem extends SubsystemBase {
    * Command to run the wrist motor. When the command is interrupted, e.g. the button is released,
    * the motor will stop.
    */
-  public Command WristUpCommand() {
+  public Command WristForwardCommand() {
     return this.startEnd(
         () -> this.setWristPower(Constants.WristConstants.WristPowerLevels.kUp), () -> this.setWristPower(0.0));
   }
@@ -87,7 +92,7 @@ public class WristSubsystem extends SubsystemBase {
    * Command to reverses the elevator motor. When the command is interrupted, e.g. the button is
    * released, the motor will stop.
    */
-  public Command WristDownCommand() {
+  public Command WristBackCommand() {
     return this.startEnd(
         () -> this.setWristPower(Constants.WristConstants.WristPowerLevels.kDown), () -> this.setWristPower(0.0));
   }
@@ -96,16 +101,21 @@ public class WristSubsystem extends SubsystemBase {
     return wristEncoder.getPosition();
   }
 
-  //
+  public void setManuallyMoving(boolean b) {
+    manuallyMoving = b;
+  }
+
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    moveToSetpoint();
+    if (!manuallyMoving)
+      moveToSetpoint();
   }
 
   @Override
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
   }
+
 }
