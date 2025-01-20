@@ -20,17 +20,26 @@ public final class Configs {
 
   public static final class ElevatorConfigs {
 
-    public static final SparkMaxConfig leftLifterConfig = new SparkMaxConfig();
-    public static final SparkMaxConfig rightLifterConfig = new SparkMaxConfig();
+    public static final SparkMaxConfig leftElevatorConfig = new SparkMaxConfig();
+    public static final SparkMaxConfig rightElevatorConfig = new SparkMaxConfig();
 
     static {
-      leftLifterConfig
+      leftElevatorConfig
         .inverted(true)
         .idleMode(IdleMode.kBrake);
 
-      rightLifterConfig
+      rightElevatorConfig
         .inverted(false)
         .idleMode(IdleMode.kBrake);
+    }
+  }
+
+  public static final class WristConfigs {
+
+    public static final SparkMaxConfig wristMotorConfig = new SparkMaxConfig();
+
+    static {
+      wristMotorConfig.idleMode(IdleMode.kBrake); // IDK about this; verify
     }
   }
 

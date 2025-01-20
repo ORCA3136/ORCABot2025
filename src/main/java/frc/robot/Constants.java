@@ -52,7 +52,7 @@ public final class Constants {
 
   }
 
-  public static final class DriveConstants{
+  public static final class DriveConstants {
 
 
     // Chassis configuration
@@ -67,6 +67,33 @@ public final class Constants {
         new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
         new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
 
+  }
+
+  public static final class ElevatorConstants {
+    public static final class ElevatorSetpoints {
+      public static final int kFeederStation = 0;
+      public static final int kLevel1 = 0;
+      public static final int kLevel2 = 0;
+      public static final int kLevel3 = 100;
+      public static final int kLevel4 = 150;
+    }
+    public static final class ElevatorPowerLevels {
+      public static final double kUp = 0.5;
+      public static final double kDown = -0.2;
+    }
+
+  }
+
+  public static final class WristConstants {
+    public static final class WristSetpoints {
+      public static final int ks1 = 0;
+      public static final int ks2 = 0; // temp names and values; change when identified
+      public static final int ks3 = 0;
+    }
+    public static final class WristPowerLevels {
+      public static final double kUp = 0.5;
+      public static final double kDown = -0.2;
+    }
   }
 
   public static final double MAX_SPEED = Units.feetToMeters(4.5);

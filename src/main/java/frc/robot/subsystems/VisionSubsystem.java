@@ -10,6 +10,7 @@ import frc.robot.LimelightHelpers;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.RobotContainer;
@@ -17,32 +18,23 @@ import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 
 public class VisionSubsystem extends SubsystemBase {
-  /** Creates a new ExampleSubsystem. */
-  public VisionSubsystem() {}
 
-  /**
-   * Example command factory method.
-   *
-   * @return a command
-   */
-  public Command exampleMethodCommand() {
-    // Inline construction of command goes here.
-    // Subsystem::RunOnce implicitly requires `this` subsystem.
-    return runOnce(
-        () -> {
-          /* one-time action goes here */
-        });
+   private static DigitalInput DIO_1;
+   private boolean output1;
+   private boolean[] sensorValues = new boolean[2];
+
+  /** Creates a new VisionSubsystem. */
+  public VisionSubsystem() {
+
+    DIO_1 = new DigitalInput(1);
+
   }
 
-  /**
-   * An example method querying a boolean state of the subsystem (for example, a digital sensor).
-   *
-   * @return value of some boolean subsystem state, such as a digital sensor.
-   */
-  public boolean exampleCondition() {
-    // Query some boolean state, such as a digital sensor.
-    return false;
-  }
+
+
+  
+
+  
 
   /*SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(
             DriveConstants.kDriveKinematics,
@@ -62,6 +54,9 @@ public class VisionSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
 
+    output1 = DIO_1.get();
+    sensorValues[1] = output1;
+
     /*if (LimelightHelpers.getTV("limelight-april")) {
       if (DriverStation.isAutonomous())
         if (LimelightHelpers.getTA("limelight-april") > 0.25)
@@ -77,4 +72,13 @@ public class VisionSubsystem extends SubsystemBase {
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
   }
+
+  public boolean getIntakeSensor(int sensorNum) {
+
+    if (sensorNum > 0 && sensorNum < sensorValues.length) 
+      return sensorValues[sensorNum];
+
+    return false;
+  }
+
 }

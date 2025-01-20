@@ -4,40 +4,104 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Configs;
+import frc.robot.Constants;
+import frc.robot.Constants.ElevatorConstants.ElevatorSetpoints;
+
+import com.revrobotics.spark.SparkBase.ControlType;
 
 public class WristSubsystem extends SubsystemBase {
-  /** Creates a new ExampleSubsystem. */
-  public WristSubsystem() {}
+  
+  SparkMax wristMotor = new SparkMax(Constants.SparkConstants.kWristCanId, MotorType.kBrushless);
+
+  public enum Setpoint {
+    ks1, // KSI??!!?!
+    ks2, // see note in constants file
+    ks3,
+  }
+
+  // Initialize wrist SPARK. We will use MAXMotion position control for the wrist, so we also
+  // need to initialize the closed loop controller and encoder.
+  private SparkClosedLoopController wristClosedLoopController =
+      wristMotor.getClosedLoopController();
+  private RelativeEncoder wristEncoder = wristMotor.getEncoder();
+
+  private double wristCurrentTarget = Constants.WristConstants.WristSetpoints.ks1; // ksI - into the thick of it?
+
+  /** Creates a new WristSubsystem. */
+  public WristSubsystem() {
+    
+    wristMotor.configure(Configs.WristConfigs.wristMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+  }
+
+  private void moveToSetpoint() {
+    wristClosedLoopController.setReference(
+        wristCurrentTarget, ControlType.kMAXMotionPositionControl);
+  }
+
+  private void setWristPower(double power) {
+    wristMotor.set(power);
+  }
 
   /**
-   * Example command factory method.
-   *
-   * @return a command
+   * Command to set the subsystem setpoint. This will set the arm and elevator to their predefined
+   * positions for the given setpoint.
    */
-  public Command exampleMethodCommand() {
-    // Inline construction of command goes here.
-    // Subsystem::RunOnce implicitly requires `this` subsystem.
-    return runOnce(
+  public Command setSetpointCommand(Setpoint setpoint) {
+    return this.runOnce(
         () -> {
-          /* one-time action goes here */
+          switch (setpoint) {
+            case ks1:
+              wristCurrentTarget = Constants.WristConstants.WristSetpoints.ks1;
+              break;
+            case ks2:
+            wristCurrentTarget = Constants.WristConstants.WristSetpoints.ks2;
+              break;
+            case ks3:
+            wristCurrentTarget = Constants.WristConstants.WristSetpoints.ks3;
+              break;
+          }
         });
   }
 
   /**
-   * An example method querying a boolean state of the subsystem (for example, a digital sensor).
-   *
-   * @return value of some boolean subsystem state, such as a digital sensor.
+   * Command to run the wrist motor. When the command is interrupted, e.g. the button is released,
+   * the motor will stop.
    */
-  public boolean exampleCondition() {
-    // Query some boolean state, such as a digital sensor.
-    return false;
+  public Command WristUpCommand() {
+    return this.startEnd(
+        () -> this.setWristPower(Constants.WristConstants.WristPowerLevels.kUp), () -> this.setWristPower(0.0));
   }
+
+  /**
+   * Command to reverses the elevator motor. When the command is interrupted, e.g. the button is
+   * released, the motor will stop.
+   */
+  public Command WristDownCommand() {
+    return this.startEnd(
+        () -> this.setWristPower(Constants.WristConstants.WristPowerLevels.kDown), () -> this.setWristPower(0.0));
+  }
+
+  public double getPos() {
+    return wristEncoder.getPosition();
+  }
+
+  //
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    moveToSetpoint();
   }
 
   @Override
