@@ -116,8 +116,8 @@ public class RobotContainer {
     else
     {
       m_driverController.start().onTrue(Commands.runOnce(driveBase::zeroGyro));
-      m_driverController.leftBumper().whileTrue(new RunElevatorCommand(elevator, Constants.ElevatorConstants.ElevatorPowerLevels.kUp));
-      m_driverController.rightBumper().whileTrue(new RunElevatorCommand(elevator, Constants.ElevatorConstants.ElevatorPowerLevels.kDown));
+      m_driverController.leftBumper().whileTrue(new RunElevatorCommand(elevator, wrist, Constants.ElevatorConstants.ElevatorPowerLevels.kUp));
+      m_driverController.rightBumper().whileTrue(new RunElevatorCommand(elevator, wrist, Constants.ElevatorConstants.ElevatorPowerLevels.kDown));
       
       m_driverController.a().onTrue(elevator.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel1));
       m_driverController.b().onTrue(elevator.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel2));

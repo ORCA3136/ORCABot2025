@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.fasterxml.jackson.databind.node.DoubleNode;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
@@ -96,11 +98,16 @@ public final class Constants {
   }
 
   public static final class WristConstants {
+
+    public static final double kSafetyThreshold = 0.35;
+
     public static final class WristSetpoints {
-      public static final int ks1 = 0;
-      public static final int ks2 = 0; // temp names and values; change when identified
-      public static final int ks3 = 0;
+      public static final double unblock = 120;
+      public static final double ks1 = 0;
+      public static final double ks2 = 0; // temp names and values; change when identified
+      public static final double ks3 = 0;
     }
+
     public static final class WristPowerLevels {
       public static final double kUp = 0.1;
       public static final double kDown = -0.1;

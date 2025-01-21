@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
 import frc.robot.Constants;
-import frc.robot.Constants.ElevatorConstants.ElevatorSetpoints;
+import frc.robot.Constants.WristConstants.WristSetpoints;
 
 import com.revrobotics.spark.SparkBase.ControlType;
 
@@ -24,6 +24,7 @@ public class WristSubsystem extends SubsystemBase {
   SparkMax wristMotor = new SparkMax(Constants.SparkConstants.kWristCanId, MotorType.kBrushless);
 
   public enum Setpoint {
+    unblock,
     ks1, // KSI??!!?!
     ks2, // see note in constants file
     ks3,
@@ -39,6 +40,7 @@ public class WristSubsystem extends SubsystemBase {
 
   private double wristCurrentTarget = Constants.WristConstants.WristSetpoints.ks1; // ksI - into the thick of it?
   private boolean manuallyMoving = false;
+  private boolean blocking = true;
 
   /** Creates a new WristSubsystem. */
   public WristSubsystem() {
@@ -57,6 +59,10 @@ public class WristSubsystem extends SubsystemBase {
     setManuallyMoving(true);
   }
 
+  public double getCurrentTarget() {
+    return wristCurrentTarget;
+  }
+
   /**
    * Command to set the subsystem setpoint. This will set the arm and elevator to their predefined
    * positions for the given setpoint.
@@ -66,6 +72,8 @@ public class WristSubsystem extends SubsystemBase {
         () -> {
           setManuallyMoving(false);
           switch (setpoint) {
+            case unblock:
+              wristCurrentTarget = Constants.WristConstants.WristSetpoints.unblock;
             case ks1:
               wristCurrentTarget = Constants.WristConstants.WristSetpoints.ks1;
               break;
@@ -98,19 +106,36 @@ public class WristSubsystem extends SubsystemBase {
   }
 
   public double getPos() {
-    return wristEncoder.getPosition();
+    return wristEncoder.getPosition(); // might need to be scaled by the gear ratio
   }
 
   public void setManuallyMoving(boolean b) {
     manuallyMoving = b;
   }
 
+  public boolean isManuallyMoving() {
+    return manuallyMoving;
+  }
+
+  public boolean isWristInTheWay() {
+    return blocking;
+  }
+  
+  public void setBlocking(boolean b) {
+    blocking = b;
+  }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    if (!manuallyMoving)
+    if (!manuallyMoving) {
       moveToSetpoint();
+    }
+    if (getPos() < Constants.WristConstants.kSafetyThreshold) {
+      setBlocking(true);
+    } else {
+      setBlocking(false);
+    }
   }
 
   @Override
