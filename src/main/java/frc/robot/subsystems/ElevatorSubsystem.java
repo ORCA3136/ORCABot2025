@@ -116,11 +116,25 @@ public class ElevatorSubsystem extends SubsystemBase {
     return elevatorEncoder.getPosition();
   }
 
-  
+  /*public boolean elevatorCanMove() {
+    if (wrist.isWristInTheWay()) {
+      return false;
+    }
+    return true;
+  }
+
+  public void makeElevatorMovable() {
+    if (!elevatorCanMove()) {
+      wrist.setSetpointCommand(WristSubsystem.Setpoint.unblock);
+    }
+  }  */
 
 
   @Override
   public void periodic() {
+    //if () {
+
+    //}
     if (!manuallyMoving) {
       moveToSetpoint();
     }
