@@ -123,6 +123,8 @@ public class RobotContainer {
       m_driverController.b().onTrue(elevator.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel2));
       m_driverController.x().onTrue(elevator.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel3));
       m_driverController.y().onTrue(elevator.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel4));
+      m_driverController.axisGreaterThan(3, 0.5).whileTrue(new RunWristCommand(wrist, Constants.WristConstants.WristPowerLevels.kDown));
+      m_driverController.axisGreaterThan(2, 0.5).whileTrue(new RunWristCommand(wrist, Constants.WristConstants.WristPowerLevels.kUp));
 
     }
   }

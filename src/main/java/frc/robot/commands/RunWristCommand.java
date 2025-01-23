@@ -40,7 +40,6 @@ public class RunWristCommand extends Command {
   @Override
   public void end(boolean interrupted) {
     wristSubsystem.setWristPower(0);
-    wristSubsystem.setManuallyMoving(false);
     // isFinished();
   }
 

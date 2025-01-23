@@ -111,6 +111,10 @@ public class ElevatorSubsystem extends SubsystemBase {
     manuallyMoving = bool;
   }
   
+  public boolean isManuallyMoving() {
+    return manuallyMoving;
+  }
+  
 
   public double getPos() {
     return elevatorEncoder.getPosition();
@@ -136,7 +140,10 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     //}
     if (!manuallyMoving) {
-      moveToSetpoint();
+     // if () {
+        moveToSetpoint();
+      //}
+      
     }
 
     SmartDashboard.putNumber("Elevator current target", elevatorCurrentTarget);
@@ -151,3 +158,4 @@ public class ElevatorSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run during simulation
   }
 }
+  

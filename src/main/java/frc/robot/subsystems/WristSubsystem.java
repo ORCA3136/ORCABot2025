@@ -11,6 +11,7 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
@@ -136,6 +137,10 @@ public class WristSubsystem extends SubsystemBase {
     } else {
       setBlocking(false);
     }
+    SmartDashboard.putNumber("Wrist current target", wristCurrentTarget);
+    SmartDashboard.putNumber("Wrist current position", getPos());
+    SmartDashboard.putBoolean("wrist manually moving", manuallyMoving);
+    SmartDashboard.putBoolean("Wrist blocking status", isWristInTheWay());
   }
 
   @Override

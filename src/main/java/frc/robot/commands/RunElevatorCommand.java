@@ -9,6 +9,7 @@ import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.WristSubsystem;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 
 /** An example command that uses an example subsystem. */
 public class RunElevatorCommand extends Command {
@@ -36,6 +37,8 @@ public class RunElevatorCommand extends Command {
   public void initialize() {
     if (wristSubsystem.isWristInTheWay()) {
       wristSubsystem.setSetpointCommand(WristSubsystem.Setpoint.unblock);
+    } else {
+      elevatorSubsystem.setElevatorPower(powerSetPoint);
     }
   }
 
@@ -45,8 +48,10 @@ public class RunElevatorCommand extends Command {
     if (wristSubsystem.isWristInTheWay()) {
       if (wristSubsystem.getCurrentTarget() != Constants.WristConstants.WristSetpoints.unblock) {
         wristSubsystem.setSetpointCommand(WristSubsystem.Setpoint.unblock);
+      } else if (wristSubsystem.isManuallyMoving()) {
+        wristSubsystem.setManuallyMoving(false);
       }
-    } else if (!wristSubsystem.isManuallyMoving()) {
+    } else if (!elevatorSubsystem.isManuallyMoving()) {
     elevatorSubsystem.setElevatorPower(powerSetPoint);
     }
   }
