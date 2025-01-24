@@ -49,6 +49,8 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    wrist.setElevator(elevator);
+    elevator.setWrist(wrist);   // mildly jank
 
     // Configure the trigger bindings
     configureBindings();

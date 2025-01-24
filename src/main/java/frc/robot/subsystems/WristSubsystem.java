@@ -42,6 +42,7 @@ public class WristSubsystem extends SubsystemBase {
   private double wristCurrentTarget = Constants.WristConstants.WristSetpoints.ks1; // ksI - into the thick of it?
   private boolean manuallyMoving = false;
   private boolean blocking = true;
+  private ElevatorSubsystem elevator;
 
   /** Creates a new WristSubsystem. */
   public WristSubsystem() {
@@ -122,17 +123,21 @@ public class WristSubsystem extends SubsystemBase {
     return blocking;
   }
   
-  public void setBlocking(boolean b) {
+  private void setBlocking(boolean b) {
     blocking = b;
+  }
+
+  public void setElevator(ElevatorSubsystem e) {
+    elevator = e;
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    if (!manuallyMoving) {
+    if (!manuallyMoving && !elevator.elevatorInTheWay()) {
       moveToSetpoint();
     }
-    if (getPos() < Constants.WristConstants.kSafetyThreshold) {
+    if (getPos() < Constants.WristConstants.kWristSafetyThreshold) {
       setBlocking(true);
     } else {
       setBlocking(false);

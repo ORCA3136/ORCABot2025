@@ -83,6 +83,9 @@ public final class Constants {
   }
 
   public static final class ElevatorConstants {
+
+    public static final double kElevatorSafetyThreshold = 12.0;
+
     public static final class ElevatorSetpoints {
       public static final int kFeederStation = 0;
       public static final int kLevel1 = 0;
@@ -99,7 +102,7 @@ public final class Constants {
 
   public static final class WristConstants {
 
-    public static final double kSafetyThreshold = 0.35;
+    public static final double kWristSafetyThreshold = 0.35;
 
     public static final class WristSetpoints {
       public static final double unblock = 120;

@@ -38,6 +38,9 @@ public class ElevatorSubsystem extends SubsystemBase {
     kLevel4;
   }
 
+  private WristSubsystem wrist;
+  private boolean blocking;
+
   // Initialize elevator SPARK. We will use MAXMotion position control for the elevator, so we also
   // need to initialize the closed loop controller and encoder.
   private SparkClosedLoopController elevatorClosedLoopController =
@@ -120,6 +123,18 @@ public class ElevatorSubsystem extends SubsystemBase {
     return elevatorEncoder.getPosition();
   }
 
+  public void setWrist(WristSubsystem w) {
+    wrist = w;
+  }
+
+  private void setBlocking(boolean b) {
+    blocking = b;
+  }
+
+  public boolean elevatorInTheWay() {
+    return blocking;
+  }
+
   /*public boolean elevatorCanMove() {
     if (wrist.isWristInTheWay()) {
       return false;
@@ -140,15 +155,24 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     //}
     if (!manuallyMoving) {
-     // if () {
+      if (!wrist.isWristInTheWay()) {
         moveToSetpoint();
-      //}
+      } else {
+        wrist.setSetpointCommand(WristSubsystem.Setpoint.unblock);
+      }
       
+    }
+
+    if (getPos() < Constants.ElevatorConstants.kElevatorSafetyThreshold) {
+      setBlocking(true);
+    } else {
+      setBlocking(false);
     }
 
     SmartDashboard.putNumber("Elevator current target", elevatorCurrentTarget);
     SmartDashboard.putNumber("Elevator current position", getPos());
     SmartDashboard.putBoolean("Elevator manually moving", manuallyMoving);
+    SmartDashboard.putBoolean("Wrist blocking status", elevatorInTheWay());
     
     // This method will be called once per scheduler run
   }
