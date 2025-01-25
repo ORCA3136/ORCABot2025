@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants.ElevatorSetpoints;
 import frc.robot.Configs;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -86,7 +87,7 @@ public class ElevatorSubsystem extends SubsystemBase {
    * positions for the given setpoint.
    */
   public Command setSetpointCommand(Setpoint setpoint) {
-    System.out.println("setpoint command");
+    DataLogManager.log("setpoint command");
     return this.runOnce(
         () -> {
           setManuallyMoving(false);

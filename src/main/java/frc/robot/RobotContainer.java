@@ -29,6 +29,12 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
+import edu.wpi.first.util.datalog.BooleanLogEntry;
+import edu.wpi.first.util.datalog.DataLog;
+import edu.wpi.first.util.datalog.DoubleLogEntry;
+import edu.wpi.first.util.datalog.StringLogEntry;
+import edu.wpi.first.wpilibj.DataLogManager;
+
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -43,6 +49,12 @@ public class RobotContainer {
   private WristSubsystem wrist = new WristSubsystem();
   private ElevatorSubsystem elevator = new ElevatorSubsystem();
 
+  BooleanLogEntry myBooleanLog;
+  DoubleLogEntry myDoubleLog;
+  StringLogEntry myStringLog;
+  
+
+
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
@@ -55,6 +67,12 @@ public class RobotContainer {
 
     // Configure the trigger bindings
     configureBindings();
+
+    DataLogManager.start();
+    // DataLog log = DataLogManager.getLog();
+    // myBooleanLog = new BooleanLogEntry(log, "/my/boolean");
+    // myDoubleLog = new DoubleLogEntry(log, "/my/double");
+    // myStringLog = new StringLogEntry(log, "/my/string");
 
   }
 

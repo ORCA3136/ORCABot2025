@@ -11,6 +11,7 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -70,24 +71,32 @@ public class WristSubsystem extends SubsystemBase {
    * positions for the given setpoint.
    */
   public Command setSetpointCommand(Setpoint setpoint) {
-    System.out.println("before the return in setpoint command");
+    DataLogManager.log("before the return in setpoint command, value =" + setpoint);
     return this.runOnce(
         () -> {
-          setManuallyMoving(false);
-          System.out.println("(should be F) manually moving = " + manuallyMoving);
+          //setManuallyMoving(false);
+          DataLogManager.log("Switch is about to run");
           switch (setpoint) {
             case unblock:
+              DataLogManager.log("set wrist setpoint to unblock: 120");
               wristCurrentTarget = Constants.WristConstants.WristSetpoints.unblock;
+              break;
             case ks1:
+            DataLogManager.log("set wrist setpoint to ks1: -3");
               wristCurrentTarget = Constants.WristConstants.WristSetpoints.ks1;
               break;
             case ks2:
+            DataLogManager.log("set wrist setpoint to ks2: 0");
             wristCurrentTarget = Constants.WristConstants.WristSetpoints.ks2;
               break;
             case ks3:
+            DataLogManager.log("set wrist setpoint to ks3: -3");
             wristCurrentTarget = Constants.WristConstants.WristSetpoints.ks3;
               break;
+            default:
+            DataLogManager.log("Default case activated");
           }
+          DataLogManager.log("Switch ran successfully??!!?!");
         });
   }
 
@@ -114,7 +123,7 @@ public class WristSubsystem extends SubsystemBase {
   }
 
   public void setManuallyMoving(boolean b) {
-    System.out.println("Changed manually moving to " + b);
+    DataLogManager.log("Changed manually moving to " + b);
     manuallyMoving = b;
   }
 
