@@ -172,7 +172,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Elevator current target", elevatorCurrentTarget);
     SmartDashboard.putNumber("Elevator current position", getPos());
     SmartDashboard.putBoolean("Elevator manually moving", manuallyMoving);
-    SmartDashboard.putBoolean("Wrist blocking status", elevatorInTheWay());
+    SmartDashboard.putBoolean("Elevator blocking status", elevatorInTheWay());
     
     // This method will be called once per scheduler run
   }

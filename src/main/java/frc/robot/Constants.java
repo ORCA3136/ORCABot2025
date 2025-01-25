@@ -106,9 +106,9 @@ public final class Constants {
 
     public static final class WristSetpoints {
       public static final double unblock = 120;
-      public static final double ks1 = 0;
+      public static final double ks1 = -3;
       public static final double ks2 = 0; // temp names and values; change when identified
-      public static final double ks3 = 0;
+      public static final double ks3 = 3;
     }
 
     public static final class WristPowerLevels {

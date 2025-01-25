@@ -51,6 +51,7 @@ public class RobotContainer {
   public RobotContainer() {
     wrist.setElevator(elevator);
     elevator.setWrist(wrist);   // mildly jank
+    wrist.setElevator(elevator);
 
     // Configure the trigger bindings
     configureBindings();
@@ -122,9 +123,9 @@ public class RobotContainer {
       m_driverController.rightBumper().whileTrue(new RunElevatorCommand(elevator, wrist, Constants.ElevatorConstants.ElevatorPowerLevels.kDown));
       
       m_driverController.a().onTrue(elevator.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel1));
-      m_driverController.b().onTrue(elevator.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel2));
-      m_driverController.x().onTrue(elevator.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel3));
-      m_driverController.y().onTrue(elevator.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel4));
+      m_driverController.b().onTrue(elevator.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel3));
+      m_driverController.x().onTrue(wrist.setSetpointCommand(WristSubsystem.Setpoint.ks1));
+      m_driverController.y().onTrue(wrist.setSetpointCommand(WristSubsystem.Setpoint.ks2));
       m_driverController.axisGreaterThan(3, 0.5).whileTrue(new RunWristCommand(wrist, Constants.WristConstants.WristPowerLevels.kDown));
       m_driverController.axisGreaterThan(2, 0.5).whileTrue(new RunWristCommand(wrist, Constants.WristConstants.WristPowerLevels.kUp));
 

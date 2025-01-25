@@ -70,9 +70,11 @@ public class WristSubsystem extends SubsystemBase {
    * positions for the given setpoint.
    */
   public Command setSetpointCommand(Setpoint setpoint) {
+    System.out.println("before the return in setpoint command");
     return this.runOnce(
         () -> {
           setManuallyMoving(false);
+          System.out.println("(should be F) manually moving = " + manuallyMoving);
           switch (setpoint) {
             case unblock:
               wristCurrentTarget = Constants.WristConstants.WristSetpoints.unblock;
@@ -112,6 +114,7 @@ public class WristSubsystem extends SubsystemBase {
   }
 
   public void setManuallyMoving(boolean b) {
+    System.out.println("Changed manually moving to " + b);
     manuallyMoving = b;
   }
 
@@ -134,7 +137,7 @@ public class WristSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    if (!manuallyMoving && !elevator.elevatorInTheWay()) {
+    if (!isManuallyMoving() && !elevator.elevatorInTheWay()) {
       moveToSetpoint();
     }
     if (getPos() < Constants.WristConstants.kWristSafetyThreshold) {

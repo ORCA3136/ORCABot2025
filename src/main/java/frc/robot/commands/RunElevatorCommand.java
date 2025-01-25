@@ -17,7 +17,8 @@ public class RunElevatorCommand extends Command {
   private final ElevatorSubsystem elevatorSubsystem;
   private final WristSubsystem wristSubsystem;
   private final double powerSetPoint;
-  private boolean safe = true;
+  private boolean once = true;
+  //private boolean safe = true;
 
   /**
    * Creates a new ExampleCommand.
@@ -37,8 +38,10 @@ public class RunElevatorCommand extends Command {
   public void initialize() {
     if (wristSubsystem.isWristInTheWay()) {
       wristSubsystem.setSetpointCommand(WristSubsystem.Setpoint.unblock);
+      System.out.println("Elevator run init: wrist up com.");
     } else {
       elevatorSubsystem.setElevatorPower(powerSetPoint);
+      System.out.println("Elevator run init: no wrist com.");
     }
   }
 
@@ -53,6 +56,10 @@ public class RunElevatorCommand extends Command {
       }
     } else if (!elevatorSubsystem.isManuallyMoving()) {
     elevatorSubsystem.setElevatorPower(powerSetPoint);
+    if (once) {
+      System.out.println("Elevator power set");
+      once = false;
+    }
     }
   }
 
