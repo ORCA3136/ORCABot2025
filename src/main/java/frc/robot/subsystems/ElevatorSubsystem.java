@@ -86,10 +86,10 @@ public class ElevatorSubsystem extends SubsystemBase {
    * Command to set the subsystem setpoint. This will set the arm and elevator to their predefined
    * positions for the given setpoint.
    */
-  public Command setSetpointCommand(Setpoint setpoint) {
+  public void setSetpointCommand(Setpoint setpoint) {  // see wrist subsystem counterpart
     DataLogManager.log("setpoint command");
-    return this.runOnce(
-        () -> {
+    //return this.runOnce(
+        //() -> {
           setManuallyMoving(false);
           switch (setpoint) {
             case kFeederStation:
@@ -108,8 +108,8 @@ public class ElevatorSubsystem extends SubsystemBase {
               elevatorCurrentTarget = ElevatorSetpoints.kLevel4;
               break;
           }
-        });
   }
+  
 
   public void setManuallyMoving(boolean bool) {
     manuallyMoving = bool;

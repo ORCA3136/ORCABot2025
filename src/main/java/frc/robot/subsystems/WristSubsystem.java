@@ -70,10 +70,10 @@ public class WristSubsystem extends SubsystemBase {
    * Command to set the subsystem setpoint. This will set the arm and elevator to their predefined
    * positions for the given setpoint.
    */
-  public Command setSetpointCommand(Setpoint setpoint) {
+  public void setSetpointCommand(Setpoint setpoint) { // formerly returned a Command
     DataLogManager.log("before the return in setpoint command, value =" + setpoint);
-    return this.runOnce(
-        () -> {
+    //return this.runOnce(
+        //() -> {
           //setManuallyMoving(false);
           DataLogManager.log("Switch is about to run");
           switch (setpoint) {
@@ -97,8 +97,8 @@ public class WristSubsystem extends SubsystemBase {
             DataLogManager.log("Default case activated");
           }
           DataLogManager.log("Switch ran successfully??!!?!");
-        });
-  }
+        }
+  
 
   /**
    * Command to run the wrist motor. When the command is interrupted, e.g. the button is released,
@@ -146,7 +146,7 @@ public class WristSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    if (!isManuallyMoving() && !elevator.elevatorInTheWay()) {
+    if (!isManuallyMoving()       ){// && !elevator.elevatorInTheWay()) {
       moveToSetpoint();
     }
     if (getPos() < Constants.WristConstants.kWristSafetyThreshold) {
@@ -155,6 +155,7 @@ public class WristSubsystem extends SubsystemBase {
       setBlocking(false);
     }
     SmartDashboard.putNumber("Wrist current target", wristCurrentTarget);
+    SmartDashboard.putNumber("Wrist (get) current target", getCurrentTarget());
     SmartDashboard.putNumber("Wrist current position", getPos());
     SmartDashboard.putBoolean("wrist manually moving", manuallyMoving);
     SmartDashboard.putBoolean("Wrist blocking status", isWristInTheWay());

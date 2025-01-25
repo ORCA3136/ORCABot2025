@@ -140,10 +140,10 @@ public class RobotContainer {
       m_driverController.leftBumper().whileTrue(new RunElevatorCommand(elevator, wrist, Constants.ElevatorConstants.ElevatorPowerLevels.kUp));
       m_driverController.rightBumper().whileTrue(new RunElevatorCommand(elevator, wrist, Constants.ElevatorConstants.ElevatorPowerLevels.kDown));
       
-      m_driverController.a().onTrue(elevator.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel1));
-      m_driverController.b().onTrue(elevator.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel3));
-      m_driverController.x().onTrue(wrist.setSetpointCommand(WristSubsystem.Setpoint.ks1));
-      m_driverController.y().onTrue(wrist.setSetpointCommand(WristSubsystem.Setpoint.ks2));
+      m_driverController.a().onTrue(Commands.runOnce( () -> elevator.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel2)));
+      m_driverController.b().onTrue(Commands.runOnce( () -> elevator.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel3)));
+      m_driverController.x().onTrue(Commands.runOnce( () -> wrist.setSetpointCommand(WristSubsystem.Setpoint.ks1)));
+      m_driverController.y().onTrue(Commands.runOnce( () -> wrist.setSetpointCommand(WristSubsystem.Setpoint.ks2)));
       m_driverController.axisGreaterThan(3, 0.5).whileTrue(new RunWristCommand(wrist, Constants.WristConstants.WristPowerLevels.kDown));
       m_driverController.axisGreaterThan(2, 0.5).whileTrue(new RunWristCommand(wrist, Constants.WristConstants.WristPowerLevels.kUp));
 
