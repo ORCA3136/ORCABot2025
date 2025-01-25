@@ -74,7 +74,7 @@ public class WristSubsystem extends SubsystemBase {
     DataLogManager.log("before the return in setpoint command, value =" + setpoint);
     //return this.runOnce(
         //() -> {
-          //setManuallyMoving(false);
+          setManuallyMoving(false);
           DataLogManager.log("Switch is about to run");
           switch (setpoint) {
             case unblock:
@@ -150,7 +150,8 @@ public class WristSubsystem extends SubsystemBase {
       moveToSetpoint();
     }
     if (getPos() < Constants.WristConstants.kWristSafetyThreshold) {
-      setBlocking(true);
+      DataLogManager.log("Robot thinks the wrist is in the way");  // silly robot
+      setBlocking(   false);      //true);
     } else {
       setBlocking(false);
     }

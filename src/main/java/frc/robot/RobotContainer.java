@@ -137,15 +137,31 @@ public class RobotContainer {
     else
     {
       m_driverController.start().onTrue(Commands.runOnce(driveBase::zeroGyro));
-      m_driverController.leftBumper().whileTrue(new RunElevatorCommand(elevator, wrist, Constants.ElevatorConstants.ElevatorPowerLevels.kUp));
-      m_driverController.rightBumper().whileTrue(new RunElevatorCommand(elevator, wrist, Constants.ElevatorConstants.ElevatorPowerLevels.kDown));
+
+
+      // m_driverController.leftBumper().whileTrue(new RunElevatorCommand(elevator, wrist, Constants.ElevatorConstants.ElevatorPowerLevels.kUp));
+      // m_driverController.rightBumper().whileTrue(new RunElevatorCommand(elevator, wrist, Constants.ElevatorConstants.ElevatorPowerLevels.kDown));
+
+      //m_driverController.leftBumper().onTrue(Commands.runOnce(  () -> {elevator.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel4);       wrist.setSetpointCommand(WristSubsystem.Setpoint.ks3);}));
+      //m_driverController.rightBumper().onTrue(Commands.runOnce( () -> {elevator.setSetpointCommand(ElevatorSubsystem.Setpoint.kFeederStation);wrist.setSetpointCommand(WristSubsystem.Setpoint.ks1);}));
+
       
-      m_driverController.a().onTrue(Commands.runOnce( () -> elevator.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel2)));
-      m_driverController.b().onTrue(Commands.runOnce( () -> elevator.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel3)));
-      m_driverController.x().onTrue(Commands.runOnce( () -> wrist.setSetpointCommand(WristSubsystem.Setpoint.ks1)));
-      m_driverController.y().onTrue(Commands.runOnce( () -> wrist.setSetpointCommand(WristSubsystem.Setpoint.ks2)));
-      m_driverController.axisGreaterThan(3, 0.5).whileTrue(new RunWristCommand(wrist, Constants.WristConstants.WristPowerLevels.kDown));
-      m_driverController.axisGreaterThan(2, 0.5).whileTrue(new RunWristCommand(wrist, Constants.WristConstants.WristPowerLevels.kUp));
+      // m_driverController.a().onTrue(Commands.runOnce( () -> elevator.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel2)));
+      // m_driverController.b().onTrue(Commands.runOnce( () -> elevator.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel3)));
+      // m_driverController.x().onTrue(Commands.runOnce( () -> wrist.setSetpointCommand(WristSubsystem.Setpoint.ks1)));
+      // m_driverController.y().onTrue(new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kIn));
+
+      m_driverController.a().whileTrue(new RunElevatorCommand(elevator, wrist, Constants.ElevatorConstants.ElevatorPowerLevels.kDown));
+      m_driverController.y().whileTrue(new RunElevatorCommand(elevator, wrist, Constants.ElevatorConstants.ElevatorPowerLevels.kUp));
+      m_driverController.x().whileTrue(new RunWristCommand(wrist, Constants.WristConstants.WristPowerLevels.kUp));
+      m_driverController.b().whileTrue(new RunWristCommand(wrist, Constants.WristConstants.WristPowerLevels.kDown));
+
+
+      // m_driverController.axisGreaterThan(3, 0.5).whileTrue(new RunWristCommand(wrist, Constants.WristConstants.WristPowerLevels.kDown));  // was used in testing
+      // m_driverController.axisGreaterThan(2, 0.5).whileTrue(new RunWristCommand(wrist, Constants.WristConstants.WristPowerLevels.kUp));
+
+      m_driverController.axisGreaterThan(3, 0.4).whileTrue(new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kIn));
+      m_driverController.axisGreaterThan(2, 0.4).whileTrue(new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kOut));
 
     }
   }

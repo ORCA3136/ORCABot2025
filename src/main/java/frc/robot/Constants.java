@@ -58,7 +58,7 @@ public final class Constants {
     public static final int kWristCanId = 14;
 
     // Intake
-    public static final int kIntakeCanId = 15;
+    public static final int kIntakeCanId = 15; /// ============ this will be a spark flex on a vortex   (change)   ==========
 
 
     public static final boolean kGyroReversed = false;
@@ -105,7 +105,7 @@ public final class Constants {
     public static final double kWristSafetyThreshold = 0.35;
 
     public static final class WristSetpoints {
-      public static final double unblock = 120;
+      public static final double unblock = 10;
       public static final double ks1 = -3;
       public static final double ks2 = 0; // temp names and values; change when identified
       public static final double ks3 = 3;
