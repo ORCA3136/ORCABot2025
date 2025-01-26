@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.math.util.Units;
 
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -26,7 +27,7 @@ public final class Configs {
 
     static {
       leftElevatorConfig
-        .inverted(true)
+        .inverted(false)
         .idleMode(IdleMode.kBrake);
 
       leftElevatorConfig
@@ -44,6 +45,7 @@ public final class Configs {
 
       rightElevatorConfig
         .idleMode(IdleMode.kCoast);
+        
 
     }
   }
@@ -78,7 +80,7 @@ public final class Configs {
   
 
   public static final class IntakeConfigs {
-    public static final SparkMaxConfig intakeMotorConfig = new SparkMaxConfig();
+    public static final SparkFlexConfig intakeMotorConfig = new SparkFlexConfig();
 
     static {
     intakeMotorConfig

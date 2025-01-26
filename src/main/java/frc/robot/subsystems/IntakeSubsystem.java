@@ -10,6 +10,7 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkFlex;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -18,7 +19,7 @@ import frc.robot.Constants;
 
 public class IntakeSubsystem extends SubsystemBase {
 
-  SparkMax intakeMotor = new SparkMax(Constants.SparkConstants.kIntakeCanId, MotorType.kBrushless);
+  SparkFlex intakeMotor = new SparkFlex(Constants.SparkConstants.kIntakeCanId, MotorType.kBrushless);
 
   private RelativeEncoder intakeEncoder = intakeMotor.getEncoder();
 

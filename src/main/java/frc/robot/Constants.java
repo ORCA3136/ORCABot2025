@@ -22,6 +22,7 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
     public static final double DEADBAND = 0.05;
+    public static final double kTriggerDeadband = 0.05;
   }
 
   public static final class SparkConstants {
@@ -40,25 +41,25 @@ public final class Constants {
     public static final int kRearRightTurningCanId = 7;
 
     // Elevator 
-    // public static final int kLeftElevatorCanId = 10;
-    // public static final int kRightElevatorCanId = 11;
-
-    // // Wrist
-    // public static final int kWristCanId = 20;
-
-    // // Intake
-    // public static final int kIntakeCanId = 21;
-
-
-    // Elevator 
-    public static final int kLeftElevatorCanId = 12;
-    public static final int kRightElevatorCanId = 13;
+    public static final int kLeftElevatorCanId = 10;
+    public static final int kRightElevatorCanId = 11;
 
     // Wrist
-    public static final int kWristCanId = 14;
+    public static final int kWristCanId = 20;
 
     // Intake
-    public static final int kIntakeCanId = 15; /// ============ this will be a spark flex on a vortex   (change)   ==========
+    public static final int kIntakeCanId = 21;
+
+
+    // // Elevator 
+    // public static final int kLeftElevatorCanId = 12;
+    // public static final int kRightElevatorCanId = 13;
+
+    // // Wrist
+    // public static final int kWristCanId = 14;
+
+    // // Intake
+    // public static final int kIntakeCanId = 15;
 
 
     public static final boolean kGyroReversed = false;
@@ -94,8 +95,8 @@ public final class Constants {
       public static final int kLevel4 = 150;
     }
     public static final class ElevatorPowerLevels {
-      public static final double kUp = 0.2;
-      public static final double kDown = -0.1;
+      public static final double kUp = 0.201;
+      public static final double kDown = -0.101;
     }
 
   }
@@ -112,8 +113,8 @@ public final class Constants {
     }
 
     public static final class WristPowerLevels {
-      public static final double kUp = 0.1;
-      public static final double kDown = -0.1;
+      public static final double kUp = 0.101;
+      public static final double kDown = -0.101;
     }
   }
 
@@ -123,6 +124,11 @@ public final class Constants {
       public static final double kIn = -0.2;
       public static final double kOut = 0.2;
     }
+  }
+
+  public static final class Limits {
+    public static final double kElevatorMaxHeight = 50;
+    public static final double kElevatorMinHeight = 10;
   }
 
   public static final double MAX_SPEED = Units.feetToMeters(4.5);

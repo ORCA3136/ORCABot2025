@@ -64,7 +64,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     // <l/r>ElevatorEncoder.setPosition(0);
     
     Configs.ElevatorConfigs.rightElevatorConfig
-          .follow(leftElevator, true);
+          .follow(leftElevator, false);
     
     leftElevator.configure(Configs.ElevatorConfigs.leftElevatorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     rightElevator.configure(Configs.ElevatorConfigs.rightElevatorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -165,7 +165,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     if (getPos() < Constants.ElevatorConstants.kElevatorSafetyThreshold) {
-      DataLogManager.log("Robot thinks the elevator is in the way");  // silly robot
+      //DataLogManager.log("Robot thinks the elevator is in the way");  // silly robit
       setBlocking(   false);      //true);
     } else {
       setBlocking(false);

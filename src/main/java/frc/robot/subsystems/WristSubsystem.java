@@ -150,8 +150,8 @@ public class WristSubsystem extends SubsystemBase {
       moveToSetpoint();
     }
     if (getPos() < Constants.WristConstants.kWristSafetyThreshold) {
-      DataLogManager.log("Robot thinks the wrist is in the way");  // silly robot
-      setBlocking(   false);      //true);
+      //DataLogManager.log("Robot thinks the wrist is in the way");  // silly robot
+      setBlocking(true);
     } else {
       setBlocking(false);
     }
