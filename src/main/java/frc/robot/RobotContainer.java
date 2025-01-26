@@ -16,7 +16,6 @@ import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.subsystems.WristSubsystem;
 import swervelib.SwerveDrive;
 import swervelib.SwerveInputStream;
 import edu.wpi.first.math.MathUtil;
@@ -46,8 +45,7 @@ public class RobotContainer {
   private final SwerveSubsystem driveBase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/ORCA2025")); // where to configure the robot or "choose" it
   // private SwerveDrive drive;
   private IntakeSubsystem intake = new IntakeSubsystem();
-  private WristSubsystem wrist = new WristSubsystem();
-  private ElevatorSubsystem elevator = new ElevatorSubsystem();
+  private ElevatorSubsystem elevatorSystem = new ElevatorSubsystem();
 
   BooleanLogEntry myBooleanLog;
   DoubleLogEntry myDoubleLog;
@@ -61,9 +59,6 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    wrist.setElevator(elevator);
-    elevator.setWrist(wrist);   // mildly jank
-    wrist.setElevator(elevator);
 
     // Configure the trigger bindings
     configureBindings();
@@ -151,10 +146,10 @@ public class RobotContainer {
       // m_driverController.x().onTrue(Commands.runOnce( () -> wrist.setSetpointCommand(WristSubsystem.Setpoint.ks1)));
       // m_driverController.y().onTrue(new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kIn));
 
-      m_driverController.a().whileTrue(new RunElevatorCommand(elevator, wrist, Constants.ElevatorConstants.ElevatorPowerLevels.kDown));
-      m_driverController.y().whileTrue(new RunElevatorCommand(elevator, wrist, Constants.ElevatorConstants.ElevatorPowerLevels.kUp));
-      m_driverController.x().whileTrue(new RunWristCommand(wrist, Constants.WristConstants.WristPowerLevels.kUp));
-      m_driverController.b().whileTrue(new RunWristCommand(wrist, Constants.WristConstants.WristPowerLevels.kDown));
+      m_driverController.a().whileTrue(new RunElevatorCommand(elevatorSystem, Constants.ElevatorConstants.ElevatorPowerLevels.kDown));
+      m_driverController.y().whileTrue(new RunElevatorCommand(elevatorSystem, Constants.ElevatorConstants.ElevatorPowerLevels.kUp));
+      m_driverController.x().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kUp));
+      m_driverController.b().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kDown));
 
 
       // m_driverController.axisGreaterThan(3, 0.5).whileTrue(new RunWristCommand(wrist, Constants.WristConstants.WristPowerLevels.kDown));  // was used in testing

@@ -4,14 +4,17 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.WristSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem;
 
+import frc.robot.Constants;
+
+import edu.wpi.first.units.measure.Power;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /** An example command that uses an example subsystem. */
 public class RunWristCommand extends Command {
   
-  private final WristSubsystem wristSubsystem;
+  private final ElevatorSubsystem wrist;
   private final double powerSetPoint;
 
   /**
@@ -19,17 +22,17 @@ public class RunWristCommand extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public RunWristCommand(WristSubsystem wristSubsystem, double power) {
-    this.wristSubsystem = wristSubsystem;
+  public RunWristCommand(ElevatorSubsystem wristSystem, double power) {
+    wrist = wristSystem;
     powerSetPoint = power;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(wristSubsystem);
+    addRequirements(wrist);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    wristSubsystem.setWristPower(powerSetPoint);
+    wrist.setWristPower(powerSetPoint);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -39,13 +42,13 @@ public class RunWristCommand extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    wristSubsystem.setWristPower(0);
+    wrist.setWristPower(0);
     // isFinished();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return (powerSetPoint > 0 && wrist.getElevatorPos() > Constants.ElevatorConstants.kElevatorSafetyThreshold);
   }
 }

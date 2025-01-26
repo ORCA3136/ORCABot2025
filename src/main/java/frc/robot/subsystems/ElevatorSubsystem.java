@@ -39,16 +39,18 @@ public class ElevatorSubsystem extends SubsystemBase {
   SparkMax leftElevator = new SparkMax(Constants.SparkConstants.kLeftElevatorCanId, MotorType.kBrushless);
   SparkMax rightElevator = new SparkMax(Constants.SparkConstants.kRightElevatorCanId, MotorType.kBrushless);
 
+  SparkMax wristMotor = new SparkMax(Constants.SparkConstants.kWristCanId, MotorType.kBrushless);
+
 
   public enum Setpoint {
     kFeederStation,
     kLevel1,
     kLevel2,
     kLevel3,
-    kLevel4;
+    kLevel4,
+    kUnblock;
   }
 
-  private WristSubsystem wrist;
   private boolean blocking;
 
   // Initialize elevator SPARK. We will use MAXMotion position control for the elevator, so we also
@@ -56,12 +58,20 @@ public class ElevatorSubsystem extends SubsystemBase {
   private SparkClosedLoopController elevatorClosedLoopController =
       leftElevator.getClosedLoopController();
 
-  // private AbsoluteEncoder elevatorEncoder = leftElevator.getAbsoluteEncoder(); //Whichever motor has the encoder
-  private RelativeEncoder elevatorEncoder = leftElevator.getEncoder();
+  private SparkClosedLoopController wristClosedLoopController =
+      wristMotor.getClosedLoopController();
+
+  private AbsoluteEncoder elevatorEncoder = rightElevator.getAbsoluteEncoder(); //Whichever motor has the encoder
+  // private RelativeEncoder elevatorEncoder = leftElevator.getEncoder();
+
+  private AbsoluteEncoder wristEncoder = wristMotor.getAbsoluteEncoder();
+
 
   // Member variables for subsystem state management
   private boolean wasResetByButton = false;
   private double elevatorCurrentTarget = Constants.ElevatorConstants.ElevatorSetpoints.kFeederStation;
+  private double wristCurrentTarget = Constants.ElevatorConstants.ElevatorSetpoints.kFeederStation;
+  
 
   private boolean manuallyMoving = true;
 
@@ -109,6 +119,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     
     leftElevator.configure(Configs.ElevatorConfigs.leftElevatorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     rightElevator.configure(Configs.ElevatorConfigs.rightElevatorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+    wristMotor.configure(Configs.WristConfigs.wristMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     
     // Display mechanism2d
     SmartDashboard.putData("Elevator Subsystem", m_mech2d);
@@ -116,17 +128,43 @@ public class ElevatorSubsystem extends SubsystemBase {
     // Initialize simulation values
     elevatorMotorSim = new SparkMaxSim(leftElevator, elevatorMotorModel);
     //elevatorLimitSwitchSim = new SparkLimitSwitchSim(elevatorMotor, false);
+
   }
 
   private void moveToSetpoint() {
     elevatorClosedLoopController.setReference(
         elevatorCurrentTarget, ControlType.kMAXMotionPositionControl);
+    wristClosedLoopController.setReference(
+        wristCurrentTarget, ControlType.kMAXMotionPositionControl);
+  }
+
+  private void wristMoveToSetpoint() {
+    wristClosedLoopController.setReference(
+        wristCurrentTarget, ControlType.kMAXMotionPositionControl);
+  }
+
+  private void elevatorMoveToSetpoint() {
+    elevatorClosedLoopController.setReference(
+      elevatorCurrentTarget, ControlType.kMAXMotionPositionControl);
   }
 
   /** Set the elevator motor power in the range of [-1, 1]. */
   public void setElevatorPower(double power) {
     leftElevator.set(power);
-    manuallyMoving = true;
+    setManuallyMoving(true);
+  }
+  
+  public void setWristPower(double power) {
+    wristMotor.set(power);
+    setManuallyMoving(true);
+  }
+
+  public double getWristCurrentTarget() {
+    return wristCurrentTarget;
+  }
+
+  public double getElevatorCurrentTarget() {
+    return elevatorCurrentTarget;
   }
 
   /**
@@ -141,18 +179,26 @@ public class ElevatorSubsystem extends SubsystemBase {
           switch (setpoint) {
             case kFeederStation:
               elevatorCurrentTarget = ElevatorSetpoints.kFeederStation;
+              wristCurrentTarget = Constants.WristConstants.WristSetpoints.ks1;
               break;
             case kLevel1:
               elevatorCurrentTarget = ElevatorSetpoints.kLevel1;
+              wristCurrentTarget = Constants.WristConstants.WristSetpoints.ks2;
               break;
             case kLevel2:
               elevatorCurrentTarget = ElevatorSetpoints.kLevel2;
+              wristCurrentTarget = Constants.WristConstants.WristSetpoints.ks2;
               break;
             case kLevel3:
               elevatorCurrentTarget = ElevatorSetpoints.kLevel3;
+              wristCurrentTarget = Constants.WristConstants.WristSetpoints.ks2;
               break;
             case kLevel4:
               elevatorCurrentTarget = ElevatorSetpoints.kLevel4;
+              wristCurrentTarget = Constants.WristConstants.WristSetpoints.ks3;
+              break;
+            case kUnblock:
+              wristCurrentTarget = Constants.WristConstants.WristSetpoints.unblock;
               break;
           }
   }
@@ -167,20 +213,24 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
   
 
-  public double getPos() {
+  public double getElevatorPos() {
     return elevatorEncoder.getPosition();
   }
 
-  public void setWrist(WristSubsystem w) {
-    wrist = w;
+  public double getWristPos() {
+    return wristEncoder.getPosition(); // might need to be scaled by the gear ratio
   }
 
-  private void setBlocking(boolean b) {
-    blocking = b;
+  private void setBlocking(boolean bool) {
+    blocking = bool;
   }
 
-  public boolean elevatorInTheWay() {
+  public boolean elevatorInTheWay() {  // ported from separate subsystem times, need to redefine
     return blocking;
+  }
+
+  public boolean wristInTheWay() {
+    return blocking; //???????  fix???
   }
 
   /*public boolean elevatorCanMove() {
@@ -203,23 +253,24 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     //}
     if (!manuallyMoving) {
-      if (!wrist.isWristInTheWay()) {
+      // if (!wrist.isWristInTheWay()) {
+
         moveToSetpoint();
-      } else {
-        wrist.setSetpointCommand(WristSubsystem.Setpoint.unblock);
-      }
+      // } else {
+      //   wrist.setSetpointCommand(WristSubsystem.Setpoint.unblock);
+      // }
       
     }
 
-    if (getPos() < Constants.ElevatorConstants.kElevatorSafetyThreshold) {
-      //DataLogManager.log("Robot thinks the elevator is in the way");  // silly robit
-      setBlocking(   false);      //true);
-    } else {
-      setBlocking(false);
-    }
+    // if (getPos() < Constants.ElevatorConstants.kElevatorSafetyThreshold) {
+    //   //DataLogManager.log("Robot thinks the elevator is in the way");  // silly robit
+    //   setBlocking(   false);      //true);
+    // } else {
+    //   setBlocking(false);
+    // }
 
     SmartDashboard.putNumber("Elevator current target", elevatorCurrentTarget);
-    SmartDashboard.putNumber("Elevator current position", getPos());
+    SmartDashboard.putNumber("Elevator current position", getElevatorPos());
     SmartDashboard.putBoolean("Elevator manually moving", manuallyMoving);
     SmartDashboard.putBoolean("Elevator blocking status", elevatorInTheWay());
 
@@ -258,8 +309,6 @@ public class ElevatorSubsystem extends SubsystemBase {
         RobotController.getBatteryVoltage(),
         0.02);
     
-
     // SimBattery is updated in Robot.java
   }
-}
-  
+}   // yay!!! we reached 100pi   (this comment counts as 100(pi-3.14) ~ .159 lines)  important milestone
