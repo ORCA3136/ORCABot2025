@@ -85,7 +85,6 @@ public final class Constants {
 
   public static final class ElevatorConstants {
 
-    public static final double kElevatorSafetyThreshold = 12.0;
 
     public static final class ElevatorSetpoints {
       public static final int kFeederStation = 0;
@@ -103,7 +102,7 @@ public final class Constants {
 
   public static final class WristConstants {
 
-    public static final double kWristSafetyThreshold = 0.35;
+    
 
     public static final class WristSetpoints {
       public static final double unblock = 10;
@@ -127,9 +126,19 @@ public final class Constants {
   }
 
   public static final class Limits {
+
+    public static final double kElevatorSafetyThreshold = 12.0;
+
     public static final double kElevatorMaxHeight = 50;
     public static final double kElevatorMinHeight = 10;
+
+
+    public static final double kWristSafetyThreshold = 0.35;
+
+    public static final double kWristMinAngle = 0; // degrees
+    public static final double kWristMaxAngle = 180; //degrees
   }
+  
 
   public static final double MAX_SPEED = Units.feetToMeters(4.5);
 

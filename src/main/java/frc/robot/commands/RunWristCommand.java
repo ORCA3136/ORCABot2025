@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 /** An example command that uses an example subsystem. */
 public class RunWristCommand extends Command {
   
-  private final ElevatorSubsystem wrist;
+  private final ElevatorSubsystem elevatorSystem;
   private final double powerSetPoint;
 
   /**
@@ -23,16 +23,16 @@ public class RunWristCommand extends Command {
    * @param subsystem The subsystem used by this command.
    */
   public RunWristCommand(ElevatorSubsystem wristSystem, double power) {
-    wrist = wristSystem;
+    elevatorSystem = wristSystem;
     powerSetPoint = power;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(wrist);
+    addRequirements(elevatorSystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    wrist.setWristPower(powerSetPoint);
+    elevatorSystem.setWristPower(powerSetPoint);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -42,13 +42,14 @@ public class RunWristCommand extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    wrist.setWristPower(0);
+    elevatorSystem.setWristPower(0);
     // isFinished();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (powerSetPoint > 0 && wrist.getElevatorPos() > Constants.ElevatorConstants.kElevatorSafetyThreshold);
+    return (powerSetPoint > 0 && (elevatorSystem.getElevatorPos() > Constants.Limits.kElevatorSafetyThreshold || elevatorSystem.getWristPos() > Constants.Limits.kWristMaxAngle))
+        || (powerSetPoint < 0 && elevatorSystem.getWristPos() < Constants.Limits.kWristMinAngle);
   }
 }

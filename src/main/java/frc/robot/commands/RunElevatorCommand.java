@@ -78,6 +78,7 @@ public class RunElevatorCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (powerSetPoint < 0 && elevatorSubsystem.getElevatorPos() < Constants.Limits.kElevatorMinHeight) || (powerSetPoint > 0 && elevatorSubsystem.getElevatorPos() > Constants.Limits.kElevatorMaxHeight);
+    return (powerSetPoint < 0 && elevatorSubsystem.getElevatorPos() < Constants.Limits.kElevatorMinHeight)
+        || (powerSetPoint > 0 && elevatorSubsystem.getElevatorPos() > Constants.Limits.kElevatorMaxHeight);
   }
 }

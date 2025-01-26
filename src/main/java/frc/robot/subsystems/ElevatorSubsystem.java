@@ -9,9 +9,11 @@ import frc.robot.Constants.ElevatorConstants.ElevatorSetpoints;
 import frc.robot.Constants.SimulationRobotConstants;
 import frc.robot.Configs;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -23,6 +25,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.sim.SparkMaxSim;
+import com.revrobotics.sim.SparkFlexSim;
 import com.revrobotics.sim.SparkLimitSwitchSim;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -96,6 +99,23 @@ public class ElevatorSubsystem extends SubsystemBase {
           0.0,
           0.0);
 
+  
+  private DCMotor armMotorModel = DCMotor.getNEO(1);
+  private SparkMaxSim armMotorSim;
+  private final SingleJointedArmSim m_armSim =
+      new SingleJointedArmSim(
+          armMotorModel,
+          SimulationRobotConstants.kArmReduction,
+          SingleJointedArmSim.estimateMOI(
+              SimulationRobotConstants.kArmLength, SimulationRobotConstants.kArmMass),
+          SimulationRobotConstants.kArmLength,
+          SimulationRobotConstants.kMinAngleRads,
+          SimulationRobotConstants.kMaxAngleRads,
+          true,
+          SimulationRobotConstants.kMinAngleRads,
+          0.0,
+          0.0);
+
             // Mechanism2d setup for subsystem
   private final Mechanism2d m_mech2d = new Mechanism2d(50, 50);
   private final MechanismRoot2d m_mech2dRoot = m_mech2d.getRoot("ElevatorArm Root", 25, 0);
@@ -106,6 +126,12 @@ public class ElevatorSubsystem extends SubsystemBase {
               SimulationRobotConstants.kMinElevatorHeightMeters
                   * SimulationRobotConstants.kPixelsPerMeter,
               90));
+  private final MechanismLigament2d m_armMech2d =
+      m_elevatorMech2d.append(
+          new MechanismLigament2d(
+              "Arm",
+              SimulationRobotConstants.kArmLength * SimulationRobotConstants.kPixelsPerMeter,
+              180 - Units.radiansToDegrees(SimulationRobotConstants.kMinAngleRads) - 90));
 
   /** Creates a new ExampleSubsystem. */
   public ElevatorSubsystem() {
@@ -127,7 +153,8 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     // Initialize simulation values
     elevatorMotorSim = new SparkMaxSim(leftElevator, elevatorMotorModel);
-    //elevatorLimitSwitchSim = new SparkLimitSwitchSim(elevatorMotor, false);
+    elevatorLimitSwitchSim = new SparkLimitSwitchSim(leftElevator, false);
+    armMotorSim = new SparkMaxSim(wristMotor, armMotorModel);
 
   }
 
@@ -260,6 +287,7 @@ public class ElevatorSubsystem extends SubsystemBase {
       //   wrist.setSetpointCommand(WristSubsystem.Setpoint.unblock);
       // }
       
+      
     }
 
     // if (getPos() < Constants.ElevatorConstants.kElevatorSafetyThreshold) {
@@ -275,11 +303,20 @@ public class ElevatorSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("Elevator blocking status", elevatorInTheWay());
 
      // Update mechanism2d
-     m_elevatorMech2d.setLength(
+    m_elevatorMech2d.setLength(
       SimulationRobotConstants.kPixelsPerMeter * SimulationRobotConstants.kMinElevatorHeightMeters
           + SimulationRobotConstants.kPixelsPerMeter
               * (elevatorEncoder.getPosition() / SimulationRobotConstants.kElevatorGearing)
               * (SimulationRobotConstants.kElevatorDrumRadius * 2.0 * Math.PI));
+
+    m_armMech2d.setAngle(
+        180
+            - ( // mirror the angles so they display in the correct direction
+            Units.radiansToDegrees(SimulationRobotConstants.kMinAngleRads)
+                + Units.rotationsToDegrees(
+                    wristEncoder.getPosition() / SimulationRobotConstants.kArmReduction))
+            - 90 // subtract 90 degrees to account for the elevator
+        );
     
     // This method will be called once per scheduler run
   }
@@ -293,12 +330,14 @@ public class ElevatorSubsystem extends SubsystemBase {
     // In this method, we update our simulation of what our elevator is doing
     // First, we set our "inputs" (voltages)
     m_elevatorSim.setInput(leftElevator.getAppliedOutput() * RobotController.getBatteryVoltage());
+    m_armSim.setInput(wristMotor.getAppliedOutput() * RobotController.getBatteryVoltage());
 
     // Update sim limit switch
     elevatorLimitSwitchSim.setPressed(m_elevatorSim.getPositionMeters() == 0);
 
     // Next, we update it. The standard loop time is 20ms.
     m_elevatorSim.update(0.020);
+    m_armSim.update(0.020);
 
     // Iterate the elevator and arm SPARK simulations
     elevatorMotorSim.iterate(
@@ -308,7 +347,12 @@ public class ElevatorSubsystem extends SubsystemBase {
             * 60.0,
         RobotController.getBatteryVoltage(),
         0.02);
+    armMotorSim.iterate(
+        Units.radiansPerSecondToRotationsPerMinute(
+            m_armSim.getVelocityRadPerSec() * SimulationRobotConstants.kArmReduction),
+        RobotController.getBatteryVoltage(),
+        0.02);
     
     // SimBattery is updated in Robot.java
   }
-}   // yay!!! we reached 100pi   (this comment counts as 100(pi-3.14) ~ .159 lines)  important milestone
+}
