@@ -10,6 +10,7 @@ import frc.robot.Constants.SimulationRobotConstants;
 import frc.robot.Configs;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
@@ -22,6 +23,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
+
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Rotation;
+import static edu.wpi.first.units.Units.Rotations;
+
+
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.sim.SparkMaxSim;
@@ -34,7 +41,6 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-
 
 public class ElevatorSubsystem extends SubsystemBase {
 
@@ -54,7 +60,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     kUnblock;
   }
 
-  private boolean blocking;
+  private boolean wristBlocking;
+  private boolean elevatorBlocking;
 
   // Initialize elevator SPARK. We will use MAXMotion position control for the elevator, so we also
   // need to initialize the closed loop controller and encoder.
@@ -68,6 +75,8 @@ public class ElevatorSubsystem extends SubsystemBase {
   // private RelativeEncoder elevatorEncoder = leftElevator.getEncoder();
 
   private AbsoluteEncoder wristEncoder = wristMotor.getAbsoluteEncoder();
+  //wristEncoder.scaledInputs();
+
 
 
   // Member variables for subsystem state management
@@ -194,6 +203,14 @@ public class ElevatorSubsystem extends SubsystemBase {
     return elevatorCurrentTarget;
   }
 
+  // private Angle convertSensorUnitsToAngle(Angle measurement) {
+  //   return Rotations.of(measurement.in(Rotations)/268); // make a constant -> WristReduction (AKA grar ratio)
+  // }
+
+  public double getWristAngle() {
+    return 360 - getWristPosition() * 360;
+  }
+
   /**
    * Command to set the subsystem setpoint. This will set the arm and elevator to their predefined
    * positions for the given setpoint.
@@ -210,19 +227,19 @@ public class ElevatorSubsystem extends SubsystemBase {
               break;
             case kLevel1:
               elevatorCurrentTarget = ElevatorSetpoints.kLevel1;
-              wristCurrentTarget = Constants.WristConstants.WristSetpoints.ks2;
+              wristCurrentTarget = Constants.WristConstants.WristSetpoints.kLevel1;
               break;
             case kLevel2:
               elevatorCurrentTarget = ElevatorSetpoints.kLevel2;
-              wristCurrentTarget = Constants.WristConstants.WristSetpoints.ks2;
+              wristCurrentTarget = Constants.WristConstants.WristSetpoints.kLevel1;
               break;
             case kLevel3:
               elevatorCurrentTarget = ElevatorSetpoints.kLevel3;
-              wristCurrentTarget = Constants.WristConstants.WristSetpoints.ks2;
+              wristCurrentTarget = Constants.WristConstants.WristSetpoints.kLevel1;
               break;
             case kLevel4:
               elevatorCurrentTarget = ElevatorSetpoints.kLevel4;
-              wristCurrentTarget = Constants.WristConstants.WristSetpoints.ks3;
+              wristCurrentTarget = Constants.WristConstants.WristSetpoints.kLevel4;
               break;
             case kUnblock:
               wristCurrentTarget = Constants.WristConstants.WristSetpoints.unblock;
@@ -240,24 +257,28 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
   
 
-  public double getElevatorPos() {
-    return elevatorEncoder.getPosition();
+  public double getElevatorPosition() {
+    return elevatorEncoder.getPosition();// might need to be scaled by the gear ratio
   }
 
-  public double getWristPos() {
-    return wristEncoder.getPosition(); // might need to be scaled by the gear ratio
+  public double getWristPosition() {
+    return wristEncoder.getPosition(); // -1 because of the direction of rotation
   }
 
-  private void setBlocking(boolean bool) {
-    blocking = bool;
+  private void setWristBlocking(boolean bool) {
+    wristBlocking = bool;
+  }
+
+  private void setElevatorBlocking(boolean bool) {
+    elevatorBlocking = bool;
   }
 
   public boolean elevatorInTheWay() {  // ported from separate subsystem times, need to redefine
-    return blocking;
+    return elevatorBlocking;
   }
 
   public boolean wristInTheWay() {
-    return blocking; //???????  fix???
+    return wristBlocking;
   }
 
   /*public boolean elevatorCanMove() {
@@ -290,17 +311,22 @@ public class ElevatorSubsystem extends SubsystemBase {
       
     }
 
-    // if (getPos() < Constants.ElevatorConstants.kElevatorSafetyThreshold) {
-    //   //DataLogManager.log("Robot thinks the elevator is in the way");  // silly robit
-    //   setBlocking(   false);      //true);
-    // } else {
-    //   setBlocking(false);
-    // }
+    if (getWristAngle() < Constants.Limits.kWristSafetyThreshold || getWristAngle() > 350) {
+      //DataLogManager.log("Robot thinks the elevator is in the way");  // silly robit
+      setWristBlocking(true);
+    } else {
+      setWristBlocking(false);
+    }
 
     SmartDashboard.putNumber("Elevator current target", elevatorCurrentTarget);
-    SmartDashboard.putNumber("Elevator current position", getElevatorPos());
+    SmartDashboard.putNumber("Elevator current position", getElevatorPosition());
     SmartDashboard.putBoolean("Elevator manually moving", manuallyMoving);
     SmartDashboard.putBoolean("Elevator blocking status", elevatorInTheWay());
+
+    SmartDashboard.putNumber("Wrist current target", wristCurrentTarget);
+    SmartDashboard.putNumber("Wrist current position", getWristPosition());
+    SmartDashboard.putBoolean("Wrist blocking status", wristInTheWay());
+    SmartDashboard.putNumber("Wrist current 'angle'", getWristAngle());
 
      // Update mechanism2d
     m_elevatorMech2d.setLength(

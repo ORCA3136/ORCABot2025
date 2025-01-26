@@ -53,7 +53,7 @@ public class RunElevatorCommand extends Command {
     if (elevatorSubsystem.wristInTheWay()) {
 
       if (elevatorSubsystem.getWristCurrentTarget() != Constants.WristConstants.WristSetpoints.unblock) {
-        elevatorSubsystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kUnblock);
+        //elevatorSubsystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kUnblock);
       } else if (elevatorSubsystem.isManuallyMoving()) {
         elevatorSubsystem.setManuallyMoving(false);
       }
@@ -78,7 +78,7 @@ public class RunElevatorCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (powerSetPoint < 0 && elevatorSubsystem.getElevatorPos() < Constants.Limits.kElevatorMinHeight)
-        || (powerSetPoint > 0 && elevatorSubsystem.getElevatorPos() > Constants.Limits.kElevatorMaxHeight);
+    return (powerSetPoint < 0 && elevatorSubsystem.getElevatorPosition() < Constants.Limits.kElevatorMinHeight)
+        || (powerSetPoint > 0 && elevatorSubsystem.getElevatorPosition() > Constants.Limits.kElevatorMaxHeight);
   }
 }

@@ -89,9 +89,9 @@ public final class Constants {
     public static final class ElevatorSetpoints {
       public static final int kFeederStation = 0;
       public static final int kLevel1 = 0;
-      public static final int kLevel2 = 50; // 0 -> 50
-      public static final int kLevel3 = 100;
-      public static final int kLevel4 = 150;
+      public static final int kLevel2 = 14; // 0 -> 50
+      public static final int kLevel3 = 50;
+      public static final int kLevel4 = 92;
     }
     public static final class ElevatorPowerLevels {
       public static final double kUp = 0.201;
@@ -105,10 +105,10 @@ public final class Constants {
     
 
     public static final class WristSetpoints {
-      public static final double unblock = 10;
-      public static final double ks1 = -3;
-      public static final double ks2 = 0; // temp names and values; change when identified
-      public static final double ks3 = 3;
+      public static final double unblock = 42;
+      public static final double ks1 = 15;
+      public static final double kLevel1 = 2; // temp names and values; change when identified
+      public static final double kLevel4 = 35;
     }
 
     public static final class WristPowerLevels {
@@ -127,20 +127,23 @@ public final class Constants {
 
   public static final class Limits {
 
-    public static final double kElevatorSafetyThreshold = 12.0;
+    public static final double kElevatorSafetyThreshold = 5.0;
 
-    public static final double kElevatorMaxHeight = 50;
-    public static final double kElevatorMinHeight = 10;
+    public static final double kElevatorMaxHeight = 96;     //0.948;
+    public static final double kElevatorMinHeight = 0.0;
 
 
-    public static final double kWristSafetyThreshold = 0.35;
+    public static final double kWristSafetyThreshold = 80; //   -> -39
 
-    public static final double kWristMinAngle = 0; // degrees
-    public static final double kWristMaxAngle = 180; //degrees
+
+    public static final double kWristMinAngle = 0.5; // revolutions
+    public static final double kWristMaxAngle = 94; //rev
+
+    public static final double MAX_SPEED = Units.feetToMeters(4.5);  // theoretical: 14.63 Ft/s
   }
-  
 
-  public static final double MAX_SPEED = Units.feetToMeters(4.5);
+
+  
 
   //some constants used for simulation.
   public static final class SimulationRobotConstants {

@@ -32,7 +32,6 @@ public final class Configs {
 
       leftElevatorConfig
         .closedLoop
-        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         // Set PID values for position control
         .p(0.1)
         .outputRange(-1, 1)
@@ -44,7 +43,9 @@ public final class Configs {
 
 
       rightElevatorConfig
-        .idleMode(IdleMode.kCoast);
+        .closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
+      rightElevatorConfig
+        .idleMode(IdleMode.kBrake);
         
 
     }
@@ -61,7 +62,7 @@ public final class Configs {
 
       wristMotorConfig
         .closedLoop
-        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
         // Set PID values for position control
         .p(0.1)
         .outputRange(-1, 1)

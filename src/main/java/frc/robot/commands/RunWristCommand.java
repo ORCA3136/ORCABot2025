@@ -49,7 +49,7 @@ public class RunWristCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (powerSetPoint > 0 && (elevatorSystem.getElevatorPos() > Constants.Limits.kElevatorSafetyThreshold || elevatorSystem.getWristPos() > Constants.Limits.kWristMaxAngle))
-        || (powerSetPoint < 0 && elevatorSystem.getWristPos() < Constants.Limits.kWristMinAngle);
+    return false;//(powerSetPoint > 0 && (elevatorSystem.getElevatorPos() < Constants.Limits.kElevatorSafetyThreshold || elevatorSystem.getWristPos() < Constants.Limits.kWristMinAngle))
+        //|| (powerSetPoint < 0 && elevatorSystem.getWristPos() > Constants.Limits.kWristMaxAngle);
   }
 }
