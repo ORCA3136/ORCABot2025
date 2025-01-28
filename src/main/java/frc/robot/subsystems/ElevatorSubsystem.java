@@ -11,7 +11,10 @@ import frc.robot.Configs;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.util.datalog.DataLog;
+import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
@@ -71,8 +74,9 @@ public class ElevatorSubsystem extends SubsystemBase {
   private SparkClosedLoopController wristClosedLoopController =
       wristMotor.getClosedLoopController();
 
-  private AbsoluteEncoder elevatorEncoder = rightElevator.getAbsoluteEncoder(); //Whichever motor has the encoder
-  // private RelativeEncoder elevatorEncoder = leftElevator.getEncoder();
+  private RelativeEncoder elevatorEncoder = rightElevator.getEncoder(); //need a relative encoder to get number of ticks
+   //private RelativeEncoder elevatorEncoder = leftElevator.getEncoder(); we might want to get both left and right encoder and average the values
+
 
   private AbsoluteEncoder wristEncoder = wristMotor.getAbsoluteEncoder();
   //wristEncoder.scaledInputs();
@@ -86,6 +90,14 @@ public class ElevatorSubsystem extends SubsystemBase {
   
 
   private boolean manuallyMoving = true;
+
+
+  DoubleLogEntry elevatorLog;
+  DoubleLogEntry wristLog;
+
+  private boolean wasResetByLimit = false;
+
+  private final DigitalInput elevatorLimitSwitch;
 
   //some stuff for simulation
   // Simulation setup and variables
@@ -148,6 +160,14 @@ public class ElevatorSubsystem extends SubsystemBase {
     // leftElevatorEncoder.setPosition(0);
     // rightElevatorEncoder.setPosition(0);
     // <l/r>ElevatorEncoder.setPosition(0);
+
+  // Starts recording to data log
+  DataLogManager.start();
+  // Set up custom log entries
+  DataLog log = DataLogManager.getLog();
+
+  wristLog = new DoubleLogEntry(log, "/wrist/angle");
+  elevatorLog = new DoubleLogEntry(log, "/elevator/position");
     
     Configs.ElevatorConfigs.rightElevatorConfig
           .follow(leftElevator, false);
@@ -164,6 +184,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     elevatorMotorSim = new SparkMaxSim(leftElevator, elevatorMotorModel);
     elevatorLimitSwitchSim = new SparkLimitSwitchSim(leftElevator, false);
     armMotorSim = new SparkMaxSim(wristMotor, armMotorModel);
+
+    elevatorLimitSwitch = new DigitalInput(0);
 
   }
 
@@ -281,6 +303,18 @@ public class ElevatorSubsystem extends SubsystemBase {
     return wristBlocking;
   }
 
+   /** Zero the elevator encoder when the limit switch is pressed. */
+   private void zeroElevatorOnLimitSwitch() {
+    if (!wasResetByLimit && leftElevator.getReverseLimitSwitch().isPressed()) {
+      // Zero the encoder only when the limit switch is switches from "unpressed" to "pressed" to
+      // prevent constant zeroing while pressed
+      elevatorEncoder.setPosition(0);
+      wasResetByLimit = true;
+    } else if (!leftElevator.getReverseLimitSwitch().isPressed()) {
+      wasResetByLimit = false;
+    }
+  }
+
   /*public boolean elevatorCanMove() {
     if (wrist.isWristInTheWay()) {
       return false;
@@ -297,6 +331,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    zeroElevatorOnLimitSwitch();
     //if () {
 
     //}
@@ -327,6 +362,10 @@ public class ElevatorSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Wrist current position", getWristPosition());
     SmartDashboard.putBoolean("Wrist blocking status", wristInTheWay());
     SmartDashboard.putNumber("Wrist current 'angle'", getWristAngle());
+    SmartDashboard.putBoolean("limit switch", elevatorLimitSwitch.get());
+
+    elevatorLog.append(getElevatorPosition());
+    wristLog.append(getWristAngle());
 
      // Update mechanism2d
     m_elevatorMech2d.setLength(

@@ -149,14 +149,14 @@ public final class Constants {
   public static final class SimulationRobotConstants {
     public static final double kPixelsPerMeter = 20;
 
-    public static final double kElevatorGearing = 25; // 25:1
+    public static final double kElevatorGearing = 20; // 20:1
     public static final double kCarriageMass =
         4.3 + 3.15 + 0.151; // Kg, arm + elevator stage + chain
-    public static final double kElevatorDrumRadius = 0.0328 / 2.0; // m
-    public static final double kMinElevatorHeightMeters = 0.922; // m
-    public static final double kMaxElevatorHeightMeters = 1.62; // m
+    public static final double kElevatorDrumRadius = 0.04447 / 2.0; // m
+    public static final double kMinElevatorHeightMeters = 0.9652; // m
+    public static final double kMaxElevatorHeightMeters = 1.92; // m
 
-    public static final double kArmReduction = 60; // 60:1
+    public static final double kArmReduction = 268; // 268:1
     public static final double kArmLength = 0.433; // m
     public static final double kArmMass = 4.3; // Kg
     public static final double kMinAngleRads =

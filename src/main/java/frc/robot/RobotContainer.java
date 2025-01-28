@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -157,6 +158,8 @@ public class RobotContainer {
 
       m_driverController.axisGreaterThan(3, 0.4).whileTrue(new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kIn));
       m_driverController.axisGreaterThan(2, 0.4).whileTrue(new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kOut));
+      m_driverController.leftBumper().onTrue(new RunCommand( () -> DataLogManager.log("=======================Start of error zone=======================")));
+      m_driverController.rightBumper().onTrue(new RunCommand( () -> DataLogManager.log("========================end of error zone========================")));
 
     }
   }
