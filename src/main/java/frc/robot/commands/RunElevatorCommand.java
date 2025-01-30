@@ -38,7 +38,7 @@ public class RunElevatorCommand extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if (elevatorSubsystem.wristInTheWay()) {
+    if (elevatorSubsystem.isSafeToMove()) {
       /// =================================================================================================================
       /// elevatorSubsystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kUnblock); ///  EXTREMELY DANGEROUS BEFORE TUNING
       /// =================================================================================================================
@@ -50,15 +50,21 @@ public class RunElevatorCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (elevatorSubsystem.wristInTheWay()) {
+    if (elevatorSubsystem.isSafeToMove()) {
 
       if (elevatorSubsystem.getWristCurrentTarget() != Constants.WristConstants.WristSetpoints.unblock) {
+        DataLogManager.log("Unblock");
+
         //elevatorSubsystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kUnblock);
       } else if (elevatorSubsystem.isManuallyMoving()) {
-        elevatorSubsystem.setManuallyMoving(false);
+        elevatorSubsystem.disableManualControl();;
+        DataLogManager.log("disabling manual controlr");
+
       }
 
     } else if (!elevatorSubsystem.isManuallyMoving()) {
+      DataLogManager.log("not manually moving");
+
     elevatorSubsystem.setElevatorPower(powerSetPoint);
 
     if (once) {

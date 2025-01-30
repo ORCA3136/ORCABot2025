@@ -126,15 +126,26 @@ public class RobotContainer {
     //                             driveFieldOrientedDirectAngle :
     //                             driveFieldOrientedDirectAngleSim);
     // }
+
+    if (RobotBase.isSimulation()) {
+      elevatorSystem.setElevatorPower(0.0);  // Initialize the elevator with zero power in sim
+  }
     if (Robot.isSimulation())
     {
       m_driverController.start().onTrue(Commands.runOnce(() -> driveBase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
+      m_driverController.povUp().whileTrue(new RunElevatorCommand(elevatorSystem, Constants.ElevatorConstants.ElevatorPowerLevels.kUp));
+      m_driverController.povDown().whileTrue(new RunElevatorCommand(elevatorSystem, Constants.ElevatorConstants.ElevatorPowerLevels.kDown));
+
+      m_driverController.povRight().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kUp));
+      m_driverController.povLeft().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kDown));
+
+
     }
     else
     {
       m_driverController.start().onTrue(Commands.runOnce(driveBase::zeroGyro));
 
-
+    }
       // m_driverController.leftBumper().whileTrue(new RunElevatorCommand(elevator, wrist, Constants.ElevatorConstants.ElevatorPowerLevels.kUp));
       // m_driverController.rightBumper().whileTrue(new RunElevatorCommand(elevator, wrist, Constants.ElevatorConstants.ElevatorPowerLevels.kDown));
 
@@ -153,15 +164,18 @@ public class RobotContainer {
       m_driverController.b().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kDown));
 
 
+  
+
+
       // m_driverController.axisGreaterThan(3, 0.5).whileTrue(new RunWristCommand(wrist, Constants.WristConstants.WristPowerLevels.kDown));  // was used in testing
       // m_driverController.axisGreaterThan(2, 0.5).whileTrue(new RunWristCommand(wrist, Constants.WristConstants.WristPowerLevels.kUp));
 
       m_driverController.axisGreaterThan(3, 0.4).whileTrue(new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kIn));
       m_driverController.axisGreaterThan(2, 0.4).whileTrue(new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kOut));
-      m_driverController.leftBumper().onTrue(new RunCommand( () -> DataLogManager.log("=======================Start of error zone=======================")));
-      m_driverController.rightBumper().onTrue(new RunCommand( () -> DataLogManager.log("========================end of error zone========================")));
+     // m_driverController.leftBumper().onTrue(new RunCommand( () -> DataLogManager.log("=======================Start of error zone=======================")));
+     //z m_driverController.rightBumper().onTrue(new RunCommand( () -> DataLogManager.log("========================end of error zone========================")));
 
-    }
+    
   }
 
   /**

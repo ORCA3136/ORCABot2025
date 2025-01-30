@@ -150,10 +150,9 @@ public final class Constants {
     public static final double kPixelsPerMeter = 20;
 
     public static final double kElevatorGearing = 20; // 20:1
-    public static final double kCarriageMass =
-        4.3 + 3.15 + 0.151; // Kg, arm + elevator stage + chain
+    public static final double kCarriageMass = 10.4326; // Kg, arm + elevator stage + chain
     public static final double kElevatorDrumRadius = 0.04447 / 2.0; // m
-    public static final double kMinElevatorHeightMeters = 0.9652; // m
+    public static final double kMinElevatorHeightMeters = 0.9398; // m
     public static final double kMaxElevatorHeightMeters = 1.92; // m
 
     public static final double kArmReduction = 268; // 268:1
