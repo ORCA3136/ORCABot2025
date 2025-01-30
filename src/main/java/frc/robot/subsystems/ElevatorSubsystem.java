@@ -26,6 +26,8 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.sim.SparkLimitSwitchSim;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import edu.wpi.first.math.util.Units;
+
 
 public class ElevatorSubsystem extends SubsystemBase {
   private SparkMax leftElevator = new SparkMax(Constants.SparkConstants.kLeftElevatorCanId, MotorType.kBrushless);
@@ -158,27 +160,40 @@ public class ElevatorSubsystem extends SubsystemBase {
     // Update simulation models
     elevatorSim.update(0.02);
     wristSim.update(0.02);
+     // Iterate the elevator and arm SPARK simulations
+     elevatorMotorSim.iterate(
+      ((elevatorSim.getVelocityMetersPerSecond()
+                  / (SimulationRobotConstants.kElevatorDrumRadius * 2.0 * Math.PI))
+              * SimulationRobotConstants.kElevatorGearing)
+          * 60.0,
+      RobotController.getBatteryVoltage(),
+      0.02);
+    //  wristSim.iterate(
+    //   Units.radiansPerSecondToRotationsPerMinute(
+    //       wristSim.getVelocityRadPerSec() * SimulationRobotConstants.kArmReduction),
+    //   RobotController.getBatteryVoltage(),
+    //   0.02);
     
-    // Update simulated encoder values
-    double simulatedPosition = elevatorSim.getPositionMeters();
-    leftElevatorEncoder.setPosition(simulatedPosition);
-    rightElevatorEncoder.setPosition(simulatedPosition);
+    // // Update simulated encoder values
+    // double simulatedPosition = elevatorSim.getPositionMeters();
+    // leftElevatorEncoder.setPosition(simulatedPosition);
+    // rightElevatorEncoder.setPosition(simulatedPosition);
     
-    // Simulate the absolute encoder by storing an offset
-    simulatedWristOffset = wristSim.getAngleRads() / (2 * Math.PI); // Convert radians to rotations
+    // // Simulate the absolute encoder by storing an offset
+    // simulatedWristOffset = wristSim.getAngleRads() / (2 * Math.PI); // Convert radians to rotations
 
-    // Calculate stage heights
-    double totalHeight = elevatorSim.getPositionMeters();
-    double stage0Height = Math.min(totalHeight, 0.91);
-    double stage1Height = Math.min(Math.max(totalHeight - 0.91, 0), 0.94);
-    double stage2Height = Math.min(Math.max(totalHeight - 1.85, 0), 0.48);
-    double wristAngle = 180 - Math.toDegrees(wristSim.getAngleRads());
+    // // Calculate stage heights
+    // double totalHeight = elevatorSim.getPositionMeters();
+    // double stage0Height = Math.min(totalHeight, 0.91);
+    // double stage1Height = Math.min(Math.max(totalHeight - 0.91, 0), 0.94);
+    // double stage2Height = Math.min(Math.max(totalHeight - 1.85, 0), 0.48);
+    // double wristAngle = 180 - Math.toDegrees(wristSim.getAngleRads());
 
-    // Update visualization
-    stage0.setLength(stage0Height * SimulationRobotConstants.kPixelsPerMeter);
-    stage1.setLength(stage1Height * SimulationRobotConstants.kPixelsPerMeter);
-    stage2.setLength(stage2Height * SimulationRobotConstants.kPixelsPerMeter);
-    wristMech.setAngle(wristAngle);
+    // // Update visualization
+    // stage0.setLength(stage0Height * SimulationRobotConstants.kPixelsPerMeter);
+    // stage1.setLength(stage1Height * SimulationRobotConstants.kPixelsPerMeter);
+    // stage2.setLength(stage2Height * SimulationRobotConstants.kPixelsPerMeter);
+    // wristMech.setAngle(wristAngle);
     }
     
   
