@@ -12,6 +12,7 @@ import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.RunElevatorCommand;
 import frc.robot.commands.RunIntakeCommand;
 import frc.robot.commands.RunWristCommand;
+import frc.robot.commands.ZeroElevatorCommand;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -156,10 +157,13 @@ public class RobotContainer {
       // m_driverController.axisGreaterThan(3, 0.5).whileTrue(new RunWristCommand(wrist, Constants.WristConstants.WristPowerLevels.kDown));  // was used in testing
       // m_driverController.axisGreaterThan(2, 0.5).whileTrue(new RunWristCommand(wrist, Constants.WristConstants.WristPowerLevels.kUp));
 
-      m_driverController.axisGreaterThan(3, 0.4).whileTrue(new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kIn));
-      m_driverController.axisGreaterThan(2, 0.4).whileTrue(new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kOut));
-      m_driverController.leftBumper().onTrue(new RunCommand( () -> DataLogManager.log("=======================Start of error zone=======================")));
-      m_driverController.rightBumper().onTrue(new RunCommand( () -> DataLogManager.log("========================end of error zone========================")));
+      // m_driverController.axisGreaterThan(3, 0.4).whileTrue(new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kIn));
+      // m_driverController.axisGreaterThan(2, 0.4).whileTrue(new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kOut));
+      m_driverController.leftBumper().onTrue(new RunCommand( () -> DataLogManager.log("sez=======================Start of error zone=======================")));
+      m_driverController.rightBumper().onTrue(new RunCommand( () -> DataLogManager.log("eez========================end of error zone========================")));
+
+      //m_driverController.y().whileTrue(new RunElevatorCommand(elevatorSystem, m_driverController.getLeftTriggerAxis()));
+      m_driverController.back().whileTrue(new ZeroElevatorCommand(elevatorSystem));
 
     }
   }

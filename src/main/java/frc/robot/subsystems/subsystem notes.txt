@@ -40,6 +40,20 @@ don't need position/angle only velocity
 
 
 
-Other Notes
+Danger Zone Notes
 
+1:
+
+
+
+
+
+
+
+
+
+
+Other Notes
+10 in.  to bottom of wrist from pivot
+16.5 in. to top of wrist from pivot
 

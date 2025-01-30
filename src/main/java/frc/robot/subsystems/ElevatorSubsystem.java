@@ -314,6 +314,9 @@ public class ElevatorSubsystem extends SubsystemBase {
       wasResetByLimit = false;
     }
   }
+  public void zeroElevator() {
+    elevatorEncoder.setPosition(0);
+  }
 
   /*public boolean elevatorCanMove() {
     if (wrist.isWristInTheWay()) {
@@ -363,6 +366,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("Wrist blocking status", wristInTheWay());
     SmartDashboard.putNumber("Wrist current 'angle'", getWristAngle());
     SmartDashboard.putBoolean("limit switch", elevatorLimitSwitch.get());
+
+    
 
     elevatorLog.append(getElevatorPosition());
     wristLog.append(getWristAngle());
