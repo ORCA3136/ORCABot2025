@@ -1,0 +1,21 @@
+[
+  {
+    "type": "java",
+    "name": "jar (in project elevator-sim-example)",
+    "extensions": [
+      {
+        "name": "Sim GUI",
+        "libName": "/Users/macfraser/3136-2025/ORCABot2025/elevator-sim/elevator-sim-example/build/jni/release/libhalsim_gui.dylib",
+        "defaultEnabled": true
+      },
+      {
+        "name": "Use Real DriverStation",
+        "libName": "/Users/macfraser/3136-2025/ORCABot2025/elevator-sim/elevator-sim-example/build/jni/release/libhalsim_ds_socket.dylib",
+        "defaultEnabled": false
+      }
+    ],
+    "environment": {},
+    "libraryDir": "/Users/macfraser/3136-2025/ORCABot2025/elevator-sim/elevator-sim-example/build/jni/release",
+    "mainClassName": "frc.robot.Main"
+  }
+]
