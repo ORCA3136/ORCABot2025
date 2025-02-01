@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.LimelightHelpers;
 
 public class LightsTemplate extends SubsystemBase {
   /** Creates a new LightSubsystem. */
@@ -31,22 +32,22 @@ public class LightsTemplate extends SubsystemBase {
 
   }
 
-  // public void ChangeColorOffRobotState(boolean Reading) {
+  public void ChangeColorOffRobotState(boolean Reading) {
 
-  //   if (Reading == false) {
+    if (Reading == false) {
 
-  //       blinkin.set(Constants.Colors.Lime);
+        blinkin.set(Constants.Colors.Lime);
 
-  //   } else if (LimelightHelpers.getTX("limelight-ri") != 0) {
+    } else if (LimelightHelpers.getTX("limelight-ri") != 0) {
 
-  //       blinkin.set(Constants.Colors.Red);
+        blinkin.set(Constants.Colors.Red);
 
-  //   } else {
+    } else {
 
-  //       blinkin.set(Constants.Colors.Blue);
+        blinkin.set(Constants.Colors.Blue);
 
-  //   }
+    }
 
-  // }
+   }
    
 }
