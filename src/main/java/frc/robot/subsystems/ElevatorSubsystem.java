@@ -10,6 +10,7 @@ import frc.robot.Constants.SimulationRobotConstants;
 import frc.robot.Configs;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
@@ -92,7 +93,8 @@ public class ElevatorSubsystem extends SubsystemBase {
   private double wristCurrentTarget = Constants.ElevatorConstants.ElevatorSetpoints.kFeederStation;
   
 
-  private boolean manuallyMoving = true;
+  private boolean wristManuallyMoving = true;
+  private boolean elevatorManuallyMoving = true;
 
 
   DoubleLogEntry elevatorLog;
@@ -193,10 +195,82 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   private void moveToSetpoint() {
-    elevatorClosedLoopController.setReference(
-        elevatorCurrentTarget, ControlType.kMAXMotionPositionControl);
-    wristClosedLoopController.setReference(
-        wristCurrentTarget, ControlType.kMAXMotionPositionControl);
+    boolean elBool = false;
+    double elTarget = 3;
+
+    boolean wristBool = false;
+    double wristTarget = 3;
+
+    if (getWristAngle() > 70 && getWristAngle() < 350) {
+      elBool = true;
+    } else if (getWristAngle() > 25) {
+      if (getElevatorPosition() < 22) {
+        if (elevatorCurrentTarget > 22) {
+          elTarget = 22;
+        }
+      } else if (40 < getElevatorPosition() && getElevatorPosition() < 65) {
+        if (elevatorCurrentTarget < 40) {
+          elTarget = 40;
+        }
+        if (elevatorCurrentTarget > 65) {
+          elTarget = 65;
+        }
+      }
+      
+    } else if (getWristAngle() > 15 && getElevatorPosition() > 40) {
+      if (elevatorCurrentTarget < 40) {
+        elTarget = 40;
+      }
+      if (elevatorCurrentTarget > 65) {
+        elTarget = 65;
+      }
+    } else {
+      if (elevatorCurrentTarget > 5) {
+        elTarget = 5;
+      }
+    }
+
+    
+    if (getElevatorPosition() < 5) {
+      wristBool = true;
+    } else if (getElevatorPosition() < 22) {
+      if (wristCurrentTarget < 25) {
+        wristTarget = 25;
+      }
+    } else if (getElevatorPosition() < 40) {
+      if (wristCurrentTarget < 70) {
+        wristTarget = 70;
+      }
+    } else if (getElevatorPosition() < 65) {
+      if (wristCurrentTarget < 15) {
+        wristTarget = 15;
+      }
+    } else {
+      if (wristCurrentTarget < 70) {
+        wristTarget = 70;
+      }
+    }
+
+
+    if (!isElevatorManuallyMoving()) {
+      if (elBool) {
+        elevatorMoveToSetpoint();
+      } else {
+        if (elTarget != 3) {
+          elevatorMoveToSetpoint(elTarget);
+        }
+      }
+    }
+
+    if (!isWristManuallyMoving()) {
+      if (wristBool) {
+        wristMoveToSetpoint();
+      } else {
+        if (wristTarget != 3) {
+          wristMoveToSetpoint(wristTarget);
+        }
+      }
+    }
   }
 
   private void wristMoveToSetpoint() {
@@ -209,16 +283,28 @@ public class ElevatorSubsystem extends SubsystemBase {
       elevatorCurrentTarget, ControlType.kMAXMotionPositionControl);
   }
 
+  private void wristMoveToSetpoint(double pos) {
+    NetworkTableInstance.getDefault().getTable("Wrist").getEntry("wrist Temp Target").setNumber(pos);
+    wristClosedLoopController.setReference(
+        pos, ControlType.kMAXMotionPositionControl);
+  }
+
+  private void elevatorMoveToSetpoint(double pos) {
+    NetworkTableInstance.getDefault().getTable("Elevator").getEntry("Elevator Temp Target").setNumber(pos);
+    elevatorClosedLoopController.setReference(
+      pos, ControlType.kMAXMotionPositionControl);
+  }
+
   /** Set the elevator motor power in the range of [-1, 1]. */
   public void setElevatorPower(double power) {
     leftElevator.set(power);
-    setManuallyMoving(true);
+    setElevatorManuallyMoving(true);
     elevatorPowerLevel = power;
   }
   
   public void setWristPower(double power) {
     wristMotor.set(power);
-    setManuallyMoving(true);
+    setWristManuallyMoving(true);
     wristPowerLevel = power;
   }
 
@@ -246,7 +332,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     DataLogManager.log("setpoint command");
     //return this.runOnce(
         //() -> {
-          setManuallyMoving(false);
+          setWristManuallyMoving(false);
+          setElevatorManuallyMoving(false);
           switch (setpoint) {
             case kFeederStation:
               elevatorCurrentTarget = ElevatorSetpoints.kFeederStation;
@@ -275,14 +362,20 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
   
 
-  public void setManuallyMoving(boolean bool) {
-    manuallyMoving = bool;
+  public void setWristManuallyMoving(boolean bool) {
+    wristManuallyMoving = bool;
   }
   
-  public boolean isManuallyMoving() {
-    return manuallyMoving;
+  public boolean isWristManuallyMoving() {
+    return wristManuallyMoving;
   }
   
+  public void setElevatorManuallyMoving(boolean bool) {
+    elevatorManuallyMoving = bool;
+  }
+  public boolean isElevatorManuallyMoving() {
+    return elevatorManuallyMoving;
+  }
 
   public double getElevatorPosition() {
     return elevatorEncoder.getPosition();// might need to be scaled by the gear ratio
@@ -368,7 +461,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     //if () {
 
     //}
-    if (!manuallyMoving) {
+    if (!wristManuallyMoving) {
       // if (!wrist.isWristInTheWay()) {
 
         moveToSetpoint();
@@ -385,9 +478,11 @@ public class ElevatorSubsystem extends SubsystemBase {
       setWristBlocking(false);
     }
 
+    NetworkTableInstance.getDefault().getTable("Elevator").getEntry("Elevator current target").setNumber(elevatorCurrentTarget);
+
     SmartDashboard.putNumber("Elevator current target", elevatorCurrentTarget);
     SmartDashboard.putNumber("Elevator current position", getElevatorPosition());
-    SmartDashboard.putBoolean("Elevator manually moving", manuallyMoving);
+    SmartDashboard.putBoolean("Elevator manually moving", wristManuallyMoving);
     SmartDashboard.putBoolean("Elevator blocking status", elevatorInTheWay());
 
     SmartDashboard.putNumber("Wrist current target", wristCurrentTarget);

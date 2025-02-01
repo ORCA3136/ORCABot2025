@@ -38,7 +38,7 @@ public class RunElevator extends Command {
   @Override
   public void initialize() {
     elevatorSubsystem.setElevatorPower(powerSetPoint);
-    elevatorSubsystem.setManuallyMoving(true);
+    elevatorSubsystem.setWristManuallyMoving(true);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

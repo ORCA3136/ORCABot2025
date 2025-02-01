@@ -91,7 +91,7 @@ public final class Constants {
       public static final int kLevel1 = 0;
       public static final int kLevel2 = 14; // 0 -> 50
       public static final int kLevel3 = 50;
-      public static final int kLevel4 = 92;
+      public static final int kLevel4 = 85; // 92
     }
     public static final class ElevatorPowerLevels {
       public static final double kUp = 0.201;
@@ -112,16 +112,16 @@ public final class Constants {
     }
 
     public static final class WristPowerLevels {
-      public static final double kUp = 0.101;
-      public static final double kDown = -0.101;
+      public static final double kUp = 0.10;
+      public static final double kDown = -0.10;
     }
   }
 
   public static final class IntakeConstants {
     
     public static final class IntakePowerLevels {
-      public static final double kIn = -0.2;
-      public static final double kOut = 0.2;
+      public static final double kIn = -0.40;
+      public static final double kOut = 0.40;
     }
   }
 
@@ -139,7 +139,7 @@ public final class Constants {
     public static final double kWristMinAngle = 0.5; // revolutions
     public static final double kWristMaxAngle = 94; //rev
 
-    public static final double MAX_SPEED = Units.feetToMeters(4.5);  // theoretical: 14.63 Ft/s
+    public static final double MAX_SPEED = Units.feetToMeters(6);  // theoretical: 14.63 Ft/s
   }
 
 

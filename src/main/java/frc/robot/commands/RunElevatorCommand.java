@@ -53,11 +53,11 @@ public class RunElevatorCommand extends Command {
 
       if (elevatorSubsystem.getWristCurrentTarget() != Constants.WristConstants.WristSetpoints.unblock) {
         //elevatorSubsystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kUnblock);
-      } else if (elevatorSubsystem.isManuallyMoving()) {
-        elevatorSubsystem.setManuallyMoving(false);
+      } else if (elevatorSubsystem.isWristManuallyMoving()) {
+        elevatorSubsystem.setWristManuallyMoving(false);
       }
 
-    } else if (!elevatorSubsystem.isManuallyMoving()) {
+    } else if (!elevatorSubsystem.isWristManuallyMoving()) {
     elevatorSubsystem.setElevatorPower(powerSetPoint);
     }
 
