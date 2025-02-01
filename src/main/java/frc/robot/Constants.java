@@ -147,8 +147,6 @@ public final class Constants {
     public static final double elevatorSupportBar = 34;
   }
 
-  
-
   //some constants used for simulation.
   public static final class SimulationRobotConstants {
     public static final double kPixelsPerMeter = 20;
@@ -178,4 +176,12 @@ public final class Constants {
     public static final double kIntakeBarAngleRads = Units.degreesToRadians(-60);
   }
 
+  //This will hold all the LED options for the Blinkin
+  public static final class Colors{
+    public static final double Lime = 0.73;
+    public static final double Red = 0.61;
+    public static final double Blue = 0.87;
+    
+  }
+ 
 }
