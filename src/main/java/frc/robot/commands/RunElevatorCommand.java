@@ -20,7 +20,6 @@ public class RunElevatorCommand extends Command {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final ElevatorSubsystem elevatorSubsystem;
   private final double powerSetPoint;
-  private boolean once = true;
   //private boolean safe = true;
 
   /**
@@ -60,12 +59,42 @@ public class RunElevatorCommand extends Command {
 
     } else if (!elevatorSubsystem.isManuallyMoving()) {
     elevatorSubsystem.setElevatorPower(powerSetPoint);
+    }
 
-    if (once) {
-      DataLogManager.log("Elevator power set");
-      once = false;
-    }
-    }
+
+
+
+    // //clear wrist if it is in the way and not already clearing in time
+    // double eTarget;
+    // double wTarget;
+    // if (elevatorSubsystem.isManuallyMoving()) {
+    //   eTarget = 90000 * elevatorSubsystem.getElevatorPower();
+    //   wTarget = 90000 * elevatorSubsystem.getWristPower();
+    // } else {
+    //   eTarget = elevatorSubsystem.getElevatorCurrentTarget();
+    //   wTarget = elevatorSubsystem.getWristCurrentTarget();
+    // }
+
+    // if ( (elevatorSubsystem.getElevatorPosition() < 7 && 7 < eTarget) || (elevatorSubsystem.getElevatorPosition() > 7 && 7 > eTarget) ) {
+    //     if (elevatorSubsystem.getBottomWristX() > 9.75 || elevatorSubsystem.getHandX() > 9.75) {
+    //       if (wTarget > 80 ) {
+    //         // wait at the right pos
+    //         elevatorSubsystem.setElevatorPower(0);
+            
+    //       } else {
+    //       //clear wrist, go if timing is right
+    //       elevatorSubsystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kUnblock);
+    //       System.out.println("case1");
+    //       }
+    //     } else if (elevatorSubsystem.getWristPower() < 0 && wTarget < 80) {
+    //       //also clear wrist, but go
+    //       elevatorSubsystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kUnblock);
+    //       System.out.println("case2");
+    //     }
+    // } else {
+    //   //don't touch wrist (except to protect the other bar)
+    //   elevatorSubsystem.setElevatorPower(powerSetPoint);
+    //     }
   }
 
   // Called once the command ends or is interrupted.

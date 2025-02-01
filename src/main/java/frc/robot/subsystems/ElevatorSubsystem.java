@@ -53,6 +53,9 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   SparkMax wristMotor = new SparkMax(Constants.SparkConstants.kWristCanId, MotorType.kBrushless);
 
+  private double elevatorPowerLevel = 0;
+  private double wristPowerLevel = 0;
+
 
   public enum Setpoint {
     kFeederStation,
@@ -172,10 +175,10 @@ public class ElevatorSubsystem extends SubsystemBase {
     Configs.ElevatorConfigs.rightElevatorConfig
           .follow(leftElevator, false);
     
-    leftElevator.configure(Configs.ElevatorConfigs.leftElevatorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    rightElevator.configure(Configs.ElevatorConfigs.rightElevatorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    leftElevator.configure(Configs.ElevatorConfigs.leftElevatorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+    rightElevator.configure(Configs.ElevatorConfigs.rightElevatorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
 
-    wristMotor.configure(Configs.WristConfigs.wristMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    wristMotor.configure(Configs.WristConfigs.wristMotorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
     
     // Display mechanism2d
     SmartDashboard.putData("Elevator Subsystem", m_mech2d);
@@ -210,11 +213,13 @@ public class ElevatorSubsystem extends SubsystemBase {
   public void setElevatorPower(double power) {
     leftElevator.set(power);
     setManuallyMoving(true);
+    elevatorPowerLevel = power;
   }
   
   public void setWristPower(double power) {
     wristMotor.set(power);
     setManuallyMoving(true);
+    wristPowerLevel = power;
   }
 
   public double getWristCurrentTarget() {
@@ -230,7 +235,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   // }
 
   public double getWristAngle() {
-    return 360 - getWristPosition() * 360;
+    return 360 - getWristPosition();
   }
 
   /**
@@ -305,17 +310,42 @@ public class ElevatorSubsystem extends SubsystemBase {
 
    /** Zero the elevator encoder when the limit switch is pressed. */
    private void zeroElevatorOnLimitSwitch() {
-    if (!wasResetByLimit && leftElevator.getReverseLimitSwitch().isPressed()) {
+    if (!wasResetByLimit && !leftElevator.getReverseLimitSwitch().isPressed()) {
       // Zero the encoder only when the limit switch is switches from "unpressed" to "pressed" to
       // prevent constant zeroing while pressed
       elevatorEncoder.setPosition(0);
       wasResetByLimit = true;
-    } else if (!leftElevator.getReverseLimitSwitch().isPressed()) {
+    } else if (leftElevator.getReverseLimitSwitch().isPressed()) {
       wasResetByLimit = false;
     }
   }
+
   public void zeroElevator() {
     elevatorEncoder.setPosition(0);
+  }
+
+  public double getBottomWristX() {
+    return 10*Math.cos(getBottomWristAngle());
+  }
+
+  public double getBottomWristAngle() {
+    return getWristAngle() - 42;
+  }
+
+  public double getHandAngle() {
+    return getWristAngle() - 43;
+  }
+
+  public double getHandX() {
+    return 16.5 * Math.cos(getHandAngle());
+  }
+
+  public double getElevatorPower() {
+    return elevatorPowerLevel;
+  }
+
+  public double getWristPower() {
+    return wristPowerLevel;
   }
 
   /*public boolean elevatorCanMove() {
@@ -350,7 +380,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     if (getWristAngle() < Constants.Limits.kWristSafetyThreshold || getWristAngle() > 350) {
-      //DataLogManager.log("Robot thinks the elevator is in the way");  // silly robit
       setWristBlocking(true);
     } else {
       setWristBlocking(false);

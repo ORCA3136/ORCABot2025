@@ -65,6 +65,7 @@ public final class Configs {
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
         // Set PID values for position control
         .p(0.1)
+        //.i(0.02)
         .outputRange(-1, 1)
         .maxMotion
         // Set MAXMotion parameters for position control
