@@ -9,8 +9,10 @@ import java.io.File;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.RunElevator;
 import frc.robot.commands.RunElevatorCommand;
 import frc.robot.commands.RunIntakeCommand;
+import frc.robot.commands.RunWrist;
 import frc.robot.commands.RunWristCommand;
 import frc.robot.commands.ZeroElevatorCommand;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -46,7 +48,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem driveBase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/ORCA2025")); // where to configure the robot or "choose" it
   // private SwerveDrive drive;
-  private IntakeSubsystem intake = new IntakeSubsystem();
+  // private IntakeSubsystem intake = new IntakeSubsystem();
   private ElevatorSubsystem elevatorSystem = new ElevatorSubsystem();
 
   BooleanLogEntry myBooleanLog;
@@ -148,17 +150,17 @@ public class RobotContainer {
       // m_driverController.x().onTrue(Commands.runOnce( () -> wrist.setSetpointCommand(WristSubsystem.Setpoint.ks1)));
       // m_driverController.y().onTrue(new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kIn));
 
-      m_driverController.a().whileTrue(new RunElevatorCommand(elevatorSystem, Constants.ElevatorConstants.ElevatorPowerLevels.kDown));
-      m_driverController.y().whileTrue(new RunElevatorCommand(elevatorSystem, Constants.ElevatorConstants.ElevatorPowerLevels.kUp));
-      m_driverController.x().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kUp));
-      m_driverController.b().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kDown));
+      m_driverController.a().whileTrue(new RunElevator(elevatorSystem, Constants.ElevatorConstants.ElevatorPowerLevels.kDown));
+      m_driverController.b().whileTrue(new RunElevator(elevatorSystem, Constants.ElevatorConstants.ElevatorPowerLevels.kUp));
+      m_driverController.x().whileTrue(new RunWrist(elevatorSystem, Constants.WristConstants.WristPowerLevels.kUp));
+      m_driverController.y().whileTrue(new RunWrist(elevatorSystem, Constants.WristConstants.WristPowerLevels.kDown));
 
 
       // m_driverController.axisGreaterThan(3, 0.5).whileTrue(new RunWristCommand(wrist, Constants.WristConstants.WristPowerLevels.kDown));  // was used in testing
       // m_driverController.axisGreaterThan(2, 0.5).whileTrue(new RunWristCommand(wrist, Constants.WristConstants.WristPowerLevels.kUp));
 
-      m_driverController.axisGreaterThan(3, 0.4).whileTrue(new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kIn));
-      m_driverController.axisGreaterThan(2, 0.4).whileTrue(new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kOut));
+      // m_driverController.axisGreaterThan(3, 0.4).whileTrue(new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kIn));
+      // m_driverController.axisGreaterThan(2, 0.4).whileTrue(new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kOut));
       // m_driverController.leftBumper().onTrue(new RunCommand( () -> DataLogManager.log("sez=======================Start of error zone=======================")));
       // m_driverController.rightBumper().onTrue(new RunCommand( () -> DataLogManager.log("eez========================end of error zone========================")));
 
