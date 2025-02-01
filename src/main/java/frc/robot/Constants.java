@@ -105,7 +105,7 @@ public final class Constants {
     
 
     public static final class WristSetpoints {
-      public static final double unblock = 42;
+      public static final double unblock = 45;
       public static final double ks1 = 15;
       public static final double kLevel1 = 2; // temp names and values; change when identified
       public static final double kLevel4 = 35;
@@ -142,6 +142,10 @@ public final class Constants {
     public static final double MAX_SPEED = Units.feetToMeters(4.5);  // theoretical: 14.63 Ft/s
   }
 
+
+  public static final class PhysicalConstants {
+    public static final double elevatorSupportBar = 34;
+  }
 
   
 
