@@ -426,7 +426,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public double getHandAngle() {
-    return getWristAngle() - 43;
+    return getWristAngle() + 43;
   }
 
   public double getHandX() {
@@ -489,7 +489,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Wrist current position", getWristPosition());
     SmartDashboard.putBoolean("Wrist blocking status", wristInTheWay());
     SmartDashboard.putNumber("Wrist current 'angle'", getWristAngle());
-    SmartDashboard.putBoolean("limit switch", elevatorLimitSwitch.get());
+    SmartDashboard.putBoolean("limit switch", leftElevator.getReverseLimitSwitch().isPressed());
 
     
 
