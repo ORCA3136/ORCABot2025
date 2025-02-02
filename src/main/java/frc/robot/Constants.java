@@ -176,12 +176,25 @@ public final class Constants {
     public static final double kIntakeBarAngleRads = Units.degreesToRadians(-60);
   }
 
-  //This will hold all the LED options for the Blinkin
+  //This will hold all the LED options for the Blinkin, These might only work with the 5 volt strip, I'm not sure
   public static final class Colors{
-    public static final double Lime = 0.73;
-    public static final double Red = 0.61;
-    public static final double Blue = 0.87;
+
+    //Patterns 
+    public static final double Rainbow = -0.99;
     
+
+    //Basic colors
+    public static final double Red = 0.61;
+    public static final double Orange = 0.65;
+    public static final double Yellow = 0.69;
+    public static final double Lime = 0.73;
+    public static final double Green = 0.77;
+    public static final double Aqua = 0.81;
+    public static final double Blue = 0.87;
+    public static final double Violet = 0.91;
+    public static final double White = 0.93;
+    public static final double Gray = 0.95;
+    public static final double Black - 0.99;
   }
  
 }
