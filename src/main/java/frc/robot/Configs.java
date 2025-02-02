@@ -33,13 +33,12 @@ public final class Configs {
       leftElevatorConfig
         .closedLoop
         // Set PID values for position control
-        .p(0.1)
-        .d(0.03)
+        .pidf(0.03, 0.0, 0.5, 0.0005)
         .outputRange(-1, 1)
         .maxMotion
         // Set MAXMotion parameters for position control
         .maxVelocity(3000)  // 4200
-        .maxAcceleration(3000) // 6000
+        .maxAcceleration(5000) // 6000
         .allowedClosedLoopError(0.5);
 
 

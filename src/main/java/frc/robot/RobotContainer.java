@@ -19,6 +19,7 @@ import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 import swervelib.SwerveDrive;
 import swervelib.SwerveInputStream;
 import edu.wpi.first.math.MathUtil;
@@ -50,6 +51,8 @@ public class RobotContainer {
   // private SwerveDrive drive;
   private IntakeSubsystem intake = new IntakeSubsystem();
   private ElevatorSubsystem elevatorSystem = new ElevatorSubsystem();
+
+  // private VisionSubsystem visionSubsystem = new VisionSubsystem();
 
   BooleanLogEntry myBooleanLog;
   DoubleLogEntry myDoubleLog;
@@ -121,7 +124,7 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    // driveBase.setDefaultCommand(driveFieldOrientedDirectAngle);
+    driveBase.setDefaultCommand(driveFieldOrientedDirectAngle);
 
     // if (RobotBase.isSimulation())
     // {

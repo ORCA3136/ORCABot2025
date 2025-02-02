@@ -10,17 +10,28 @@ import java.util.function.Supplier;
 
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 
+import com.ctre.phoenix6.hardware.Pigeon2;
+
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.Timer;
 import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 import swervelib.SwerveDrive;
 import swervelib.math.SwerveMath;
+import edu.wpi.first.math.estimator.PoseEstimator;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.Constants;
+import frc.robot.Constants.DriveConstants;
+import frc.robot.LimelightHelpers;
+
 import static edu.wpi.first.units.Units.Meter;
 
 
@@ -32,6 +43,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class SwerveSubsystem extends SubsystemBase {
   
   SwerveDrive  swerveDrive;
+
+  SwerveDrivePoseEstimator m_poseEstimator;
+  
+  private final Pigeon2 pigeon2 = new Pigeon2(9, "rio"); // Pigeon is on roboRIO CAN Bus with device ID 9
+
+
 
   public SwerveSubsystem(){
     
@@ -65,9 +82,18 @@ public class SwerveSubsystem extends SubsystemBase {
                                                1); // Enable if you want to resynchronize your absolute encoders and motor encoders periodically when they are not moving.
     swerveDrive.pushOffsetsToEncoders(); // Set the absolute encoder to be used over the internal encoder and push the offsets onto it. Throws warning if not possible
 
+    m_poseEstimator = new SwerveDrivePoseEstimator(
+      DriveConstants.kDriveKinematics,
+      swerveDrive.getPose().getRotation(),
+      swerveDrive.getModulePositions(), 
+    // 2024 code has 0-Frontleft, 1-FrontRight, 2-RearLeft, 3-RearRight
+      new Pose2d());
+
   }
 
-  
+
+
+
 
 
 
@@ -135,9 +161,17 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
    *
    * @return The robot's pose
    */
-  public Pose2d getPose()
-  {
-    return swerveDrive.getPose();
+  // public Pose2d getPose()
+  // {
+  //   return swerveDrive.getPose();
+  // }
+
+  public Pose2d getVisionPose() {
+    return m_poseEstimator.getEstimatedPosition();
+  }
+
+  public void visionPose(Pose2d pose, double timestamp) {
+    m_poseEstimator.addVisionMeasurement(pose, timestamp);
   }
 
     /**
@@ -148,10 +182,10 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
    */
   public Rotation2d getHeading()
   {
-    return getPose().getRotation();
+    return getVisionPose().getRotation();
   }
 
-    public Optional<SwerveDriveSimulation>getMapleSimDrive(){
+  public Optional<SwerveDriveSimulation>getMapleSimDrive(){
     return swerveDrive.getMapleSimDrive();
   }
 
@@ -165,6 +199,7 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
   public void zeroGyro()
   {
     swerveDrive.zeroGyro();
+    pigeon2.reset();
   }
 
    /**
@@ -177,11 +212,38 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
   public void resetOdometry(Pose2d initialHolonomicPose)
   {
     swerveDrive.resetOdometry(initialHolonomicPose);
+
+    m_poseEstimator.resetPosition(getHeading(), swerveDrive.getModulePositions(), initialHolonomicPose);
+  }
+
+  public void zeroHeading() {
+    pigeon2.reset();
+  }
+
+  public Command zeroHeadingCommand() {
+    return runOnce(
+      () -> {zeroHeading();} 
+      );
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+
+    NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Rotation").setNumber(getVisionPose().getRotation().getDegrees());
+    NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Position x").setNumber(getVisionPose().getX());
+    NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Position y").setNumber(getVisionPose().getY());
+
+    m_poseEstimator.update(pigeon2.getRotation2d(), swerveDrive.getModulePositions()); // TODO figure this out
+
+    if (LimelightHelpers.getTV("limelight-april")) {
+      if (DriverStation.isAutonomous())
+        if (LimelightHelpers.getTA("limelight-april") > 0.25)
+          visionPose(LimelightHelpers.getBotPose2d_wpiBlue("limelight-april"), Timer.getFPGATimestamp());
+      if (LimelightHelpers.getTA("limelight-april") > 0.125)
+        visionPose(LimelightHelpers.getBotPose2d_wpiBlue("limelight-april"), Timer.getFPGATimestamp());
+    }
+
   }
 
   @Override

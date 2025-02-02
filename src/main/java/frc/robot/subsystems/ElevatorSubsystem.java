@@ -8,6 +8,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants.ElevatorSetpoints;
 import frc.robot.Constants.SimulationRobotConstants;
 import frc.robot.Configs;
+import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -403,12 +404,12 @@ public class ElevatorSubsystem extends SubsystemBase {
 
    /** Zero the elevator encoder when the limit switch is pressed. */
    private void zeroElevatorOnLimitSwitch() {
-    if (!wasResetByLimit && !leftElevator.getReverseLimitSwitch().isPressed()) {
+    if (!wasResetByLimit && !elevatorLimitSwitch.get()) {
       // Zero the encoder only when the limit switch is switches from "unpressed" to "pressed" to
       // prevent constant zeroing while pressed
       elevatorEncoder.setPosition(0);
       wasResetByLimit = true;
-    } else if (leftElevator.getReverseLimitSwitch().isPressed()) {
+    } else if (elevatorLimitSwitch.get()) {
       wasResetByLimit = false;
     }
   }
@@ -470,7 +471,6 @@ public class ElevatorSubsystem extends SubsystemBase {
       
     }
 
-
     NetworkTableInstance.getDefault().getTable("Elevator").getEntry("Elevator current target").setNumber(elevatorCurrentTarget);
     NetworkTableInstance.getDefault().getTable("Elevator").getEntry("Elevator left output").setNumber(leftElevator.getAppliedOutput());
     NetworkTableInstance.getDefault().getTable("Elevator").getEntry("Elevator right output").setNumber(rightElevator.getAppliedOutput());
@@ -484,7 +484,9 @@ public class ElevatorSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Wrist current position", getWristPosition());
     SmartDashboard.putBoolean("Wrist blocking status", wristInTheWay());
     SmartDashboard.putNumber("Wrist current 'angle'", getWristAngle());
-    SmartDashboard.putBoolean("limit switch", leftElevator.getReverseLimitSwitch().isPressed());
+    // SmartDashboard.putBoolean("limit switch", leftElevator.getReverseLimitSwitch().isPressed());
+
+    SmartDashboard.putBoolean("limit switch", elevatorLimitSwitch.get());
 
     
 

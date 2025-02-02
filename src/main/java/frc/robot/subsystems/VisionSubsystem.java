@@ -61,14 +61,6 @@ public class VisionSubsystem extends SubsystemBase {
     output1 = DIO_1.get();
     sensorValues[1] = output1;
 
-    /*if (LimelightHelpers.getTV("limelight-april")) {
-      if (DriverStation.isAutonomous())
-        if (LimelightHelpers.getTA("limelight-april") > 0.25)
-          driveBase.visionPose(LimelightHelpers.getBotPose2d_wpiBlue("limelight-april"), Timer.getFPGATimestamp());
-      if (LimelightHelpers.getTA("limelight-april") > 0.125)
-        driveBase.visionPose(LimelightHelpers.getBotPose2d_wpiBlue("limelight-april"), Timer.getFPGATimestamp());
-    }*/
-
     // This method will be called once per scheduler run
 
     NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");

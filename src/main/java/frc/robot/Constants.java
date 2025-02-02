@@ -183,7 +183,6 @@ public final class Constants {
 
     //Patterns 
     public static final double Rainbow = -0.99;
-    240376
 
     //Basic colors
     public static final double Hot_Pink = 0.57;
