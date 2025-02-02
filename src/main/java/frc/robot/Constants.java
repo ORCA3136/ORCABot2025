@@ -106,9 +106,11 @@ public final class Constants {
 
     public static final class WristSetpoints {
       public static final double unblock = 80;
-      public static final double ks1 = 80;
-      public static final double kLevel1 = 80; //2-> 80 temp names and values; change when identified
-      public static final double kLevel4 = 80; // 35-> 80
+      public static final int kFeederStation = 1;
+      public static final int kLevel1 = 1;
+      public static final int kLevel2 = 30; 
+      public static final int kLevel3 = 50;
+      public static final int kLevel4 = 80; 
     }
 
     public static final class WristPowerLevels {

@@ -121,7 +121,7 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    driveBase.setDefaultCommand(driveFieldOrientedDirectAngle);
+    // driveBase.setDefaultCommand(driveFieldOrientedDirectAngle);
 
     // if (RobotBase.isSimulation())
     // {
@@ -153,8 +153,8 @@ public class RobotContainer {
       m_driverController.a().whileTrue(new RunElevator(elevatorSystem, Constants.ElevatorConstants.ElevatorPowerLevels.kDown));
       m_driverController.b().whileTrue(new RunElevator(elevatorSystem, Constants.ElevatorConstants.ElevatorPowerLevels.kUp));
       // Was y
-      m_driverController.x().whileTrue(new RunWrist(elevatorSystem, Constants.WristConstants.WristPowerLevels.kUp));
-      m_driverController.y().whileTrue(new RunWrist(elevatorSystem, Constants.WristConstants.WristPowerLevels.kDown));
+      m_driverController.y().whileTrue(new RunWrist(elevatorSystem, Constants.WristConstants.WristPowerLevels.kUp));
+      m_driverController.x().whileTrue(new RunWrist(elevatorSystem, Constants.WristConstants.WristPowerLevels.kDown));
       // Was b
 
       m_driverController.povDown().whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel1)));

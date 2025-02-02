@@ -262,7 +262,7 @@ public class ElevatorSubsystem extends SubsystemBase {
       }
     }
 
-    if (!isWristManuallyMoving()) {
+    if (!isWristManuallyMoving() && false) {
       if (wristBool) {
         wristMoveToSetpoint();
       } else {
@@ -321,7 +321,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   // }
 
   public double getWristAngle() {
-    return 360 - getWristPosition();
+    return getWristPosition();
   }
 
   /**
@@ -337,7 +337,7 @@ public class ElevatorSubsystem extends SubsystemBase {
           switch (setpoint) {
             case kFeederStation:
               elevatorCurrentTarget = ElevatorSetpoints.kFeederStation;
-              wristCurrentTarget = Constants.WristConstants.WristSetpoints.ks1;
+              wristCurrentTarget = Constants.WristConstants.WristSetpoints.kFeederStation;
               break;
             case kLevel1:
               elevatorCurrentTarget = ElevatorSetpoints.kLevel1;
@@ -345,11 +345,11 @@ public class ElevatorSubsystem extends SubsystemBase {
               break;
             case kLevel2:
               elevatorCurrentTarget = ElevatorSetpoints.kLevel2;
-              wristCurrentTarget = Constants.WristConstants.WristSetpoints.kLevel1;
+              wristCurrentTarget = Constants.WristConstants.WristSetpoints.kLevel2;
               break;
             case kLevel3:
               elevatorCurrentTarget = ElevatorSetpoints.kLevel3;
-              wristCurrentTarget = Constants.WristConstants.WristSetpoints.kLevel1;
+              wristCurrentTarget = Constants.WristConstants.WristSetpoints.kLevel3;
               break;
             case kLevel4:
               elevatorCurrentTarget = ElevatorSetpoints.kLevel4;
@@ -458,9 +458,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     zeroElevatorOnLimitSwitch();
-    //if () {
 
-    //}
     if (!wristManuallyMoving) {
       // if (!wrist.isWristInTheWay()) {
 
@@ -472,13 +470,10 @@ public class ElevatorSubsystem extends SubsystemBase {
       
     }
 
-    if (getWristAngle() < Constants.Limits.kWristSafetyThreshold || getWristAngle() > 350) {
-      setWristBlocking(true);
-    } else {
-      setWristBlocking(false);
-    }
 
     NetworkTableInstance.getDefault().getTable("Elevator").getEntry("Elevator current target").setNumber(elevatorCurrentTarget);
+    NetworkTableInstance.getDefault().getTable("Elevator").getEntry("Elevator left output").setNumber(leftElevator.getAppliedOutput());
+    NetworkTableInstance.getDefault().getTable("Elevator").getEntry("Elevator right output").setNumber(rightElevator.getAppliedOutput());
 
     SmartDashboard.putNumber("Elevator current target", elevatorCurrentTarget);
     SmartDashboard.putNumber("Elevator current position", getElevatorPosition());

@@ -34,6 +34,7 @@ public final class Configs {
         .closedLoop
         // Set PID values for position control
         .p(0.1)
+        .d(0.03)
         .outputRange(-1, 1)
         .maxMotion
         // Set MAXMotion parameters for position control
@@ -57,7 +58,7 @@ public final class Configs {
 
     static {
       wristMotorConfig
-        .inverted(false)
+        .inverted(true)
         .idleMode(IdleMode.kBrake); // IDK about this; verify
 
       wristMotorConfig
@@ -69,7 +70,7 @@ public final class Configs {
         .outputRange(-1, 1)
         .maxMotion
         // Set MAXMotion parameters for position control
-        .maxVelocity(220)
+        .maxVelocity(400)
         .maxAcceleration(600)
         .allowedClosedLoopError(0.5);
     }
