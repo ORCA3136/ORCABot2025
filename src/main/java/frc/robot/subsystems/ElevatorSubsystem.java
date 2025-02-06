@@ -361,6 +361,10 @@ public class ElevatorSubsystem extends SubsystemBase {
               break;
           }
   }
+
+  public void setWristTarget(double target) {
+    wristCurrentTarget = target;
+  }
   
 
   public void setWristManuallyMoving(boolean bool) {
