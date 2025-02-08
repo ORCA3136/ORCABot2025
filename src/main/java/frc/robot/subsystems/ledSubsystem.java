@@ -36,18 +36,27 @@ public class ledSubsystem extends SubsystemBase {
           /* one-time action goes here */
         });
   }
-//This should be the 5 meter strip of LEDs
-AddressableLEDBuffer m_buffer = new AddressableLEDBuffer(500);
+//This should be the 5 meter (12 Volt) strip of LEDs
+AddressableLEDBuffer m_buffer_12Volt = new AddressableLEDBuffer(500);
 
 // This is the view for the section of the strip on the left side of the robot.
 // This section spans LEDs from index 0 through index 249, inclusive.
-AddressableLEDBufferView m_left = m_buffer.createView(0, 249);
+AddressableLEDBufferView m_1st_12V_section = m_buffer.createView(0, 249);
 
 // This is the section of the strip on the right side of the robot.
 // This section spans LEDs from index 250 through index 499, inclusive.
 // The "reversed()" three lines down was on the example but probably isn't useful
-AddressableLEDBufferView m_right = m_buffer.createView(250, 499)
-/*.reversed()*/;
+AddressableLEDBufferView m_2nd_12V_section = m_buffer.createView(250, 499);
+/*.reversed()*/
+
+//This should help control the 1 meter (5 Volt) strip of LEDs
+AddressableLEDBuffer m_buffer_5Volt = new AddressableLEDBuffer(100);
+
+//This is the first section of the 1 meter strip (currently out of 2)
+AddressableLEDBufferView m_1st_5V_section = m_buffer.createView(0,49);
+
+
+AddressableLEDBufferView m_2nd_5V_section = m_buffer.createView(50,99);
 
 /**
    * An example method querying a boolean state of the subsystem (for example, a digital sensor).
