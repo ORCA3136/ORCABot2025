@@ -10,26 +10,34 @@ import edu.wpi.first.wpilibj2.command.Command;
 /** This command will eventually corospond with ledSubsystem */
 public class RunLEDsCommand extends Command {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final ExampleSubsystem m_subsystem;
+  private final LEDSubsystem ledSubsystem;
+  private double color;
 
   /**
    * Creates a new ExampleCommand.
    *
-   * @param subsystem The subsystem used by this command.
+   * @param LEDSubsystem The subsystem used by this command.
    */
-  public ExampleCommand(ExampleSubsystem subsystem) {
-    m_subsystem = subsystem;
+  public RunLEDsCommand(LEDSubsystem subsystem, double color) {
+    ledSubsystem = subsystem;
+    this.color = color;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    ledSubsystem.setLedColor
+    
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {}
+  // @Override
+  // public void execute() {
+    
+
+  // }
 
   // Called once the command ends or is interrupted.
   @Override
