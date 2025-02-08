@@ -17,11 +17,14 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LEDSubsystem extends SubsystemBase {
 
+  Spark blinkin;
+
   private AddressableLED m_led;
 
-  
+  public LEDSubsystem() {
 
-  public LEDSubsystem() {}
+    blinkin = new spark(0)
+  }
 
   /**
    * Example command factory method.
@@ -36,6 +39,7 @@ public class LEDSubsystem extends SubsystemBase {
           /* one-time action goes here */
         });
   }
+  
 //This should be the 5 meter (12 Volt) strip of LEDs
 AddressableLEDBuffer m_buffer_12Volt = new AddressableLEDBuffer(500);
 
@@ -60,7 +64,7 @@ AddressableLEDBufferView m_1st_5V_section = m_buffer.createView(0,99);
 
 
 public void setLedColor(Blue) {
-    // Query some boolean state, such as a digital sensor.
+    
     return false;
   }
 
