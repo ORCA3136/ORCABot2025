@@ -31,7 +31,7 @@ public class IntakeSubsystem extends SubsystemBase {
     intakeMotor.configure(Configs.IntakeConfigs.intakeMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
-  // this one is pretty self explanitory
+  /** this one is pretty self explanitory*/
   public void setIntakePower(double power) {
     intakeMotor.set(power);
   }

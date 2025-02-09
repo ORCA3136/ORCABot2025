@@ -11,6 +11,7 @@ import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.RunElevator;
 import frc.robot.commands.RunElevatorCommand;
+import frc.robot.commands.RunIntake;
 import frc.robot.commands.RunIntakeCommand;
 import frc.robot.commands.RunWrist;
 import frc.robot.commands.RunWristCommand;
@@ -48,15 +49,14 @@ import edu.wpi.first.wpilibj.DataLogManager;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem driveBase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/ORCA2025")); // where to configure the robot or "choose" it
-  // private SwerveDrive drive;
   private IntakeSubsystem intake = new IntakeSubsystem();
   private ElevatorSubsystem elevatorSystem = new ElevatorSubsystem();
+  private VisionSubsystem vision = new VisionSubsystem();
 
-  // private VisionSubsystem visionSubsystem = new VisionSubsystem();
 
-  BooleanLogEntry myBooleanLog;
-  DoubleLogEntry myDoubleLog;
-  StringLogEntry myStringLog;
+  // BooleanLogEntry myBooleanLog;
+  // DoubleLogEntry myDoubleLog;
+  // StringLogEntry myStringLog;
   
 
 
@@ -132,12 +132,12 @@ public class RobotContainer {
     //                             driveFieldOrientedDirectAngle :
     //                             driveFieldOrientedDirectAngleSim);
     // }
-    if (Robot.isSimulation())
-    {
-      m_driverController.start().onTrue(Commands.runOnce(() -> driveBase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
-    }
-    else
-    {
+    // if (Robot.isSimulation())
+    // {
+    //   m_driverController.start().onTrue(Commands.runOnce(() -> driveBase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
+    // }
+    // else
+    // {
       m_driverController.start().onTrue(Commands.runOnce(driveBase::zeroGyro));
 
 
@@ -155,7 +155,7 @@ public class RobotContainer {
 
       m_driverController.a().whileTrue(new RunElevator(elevatorSystem, Constants.ElevatorConstants.ElevatorPowerLevels.kDown));
       m_driverController.b().whileTrue(new RunElevator(elevatorSystem, Constants.ElevatorConstants.ElevatorPowerLevels.kUp));
-      // Was y
+      // // Was y
       m_driverController.y().whileTrue(new RunWrist(elevatorSystem, Constants.WristConstants.WristPowerLevels.kUp));
       m_driverController.x().whileTrue(new RunWrist(elevatorSystem, Constants.WristConstants.WristPowerLevels.kDown));
       // Was b
@@ -169,15 +169,20 @@ public class RobotContainer {
       // m_driverController.axisGreaterThan(3, 0.5).whileTrue(new RunWristCommand(wrist, Constants.WristConstants.WristPowerLevels.kDown));  // was used in testing
       // m_driverController.axisGreaterThan(2, 0.5).whileTrue(new RunWristCommand(wrist, Constants.WristConstants.WristPowerLevels.kUp));
 
-      m_driverController.axisGreaterThan(3, 0.4).whileTrue(new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kIn));
-      m_driverController.axisGreaterThan(2, 0.4).whileTrue(new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kOut));
+      m_driverController.axisGreaterThan(3, 0.4).whileTrue(new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kIn, vision));
+      m_driverController.axisGreaterThan(2, 0.4).whileTrue(new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kOut, vision));
+
+      // m_driverController.axisGreaterThan(3, 0.4).whileTrue(new RunIntake(intake, Constants.IntakeConstants.IntakePowerLevels.kIn));
+      // m_driverController.axisGreaterThan(2, 0.4).whileTrue(new RunIntake(intake, Constants.IntakeConstants.IntakePowerLevels.kOut));
+    
+      
       // m_driverController.leftBumper().onTrue(new RunCommand( () -> DataLogManager.log("sez=======================Start of error zone=======================")));
       // m_driverController.rightBumper().onTrue(new RunCommand( () -> DataLogManager.log("eez========================end of error zone========================")));
 
       //m_driverController.y().whileTrue(new RunElevatorCommand(elevatorSystem, m_driverController.getLeftTriggerAxis()));
       m_driverController.back().whileTrue(new ZeroElevatorCommand(elevatorSystem));
 
-    }
+  //   }
   }
 
   /**
@@ -187,6 +192,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return driveBase.getAutonomousCommand("New Auto");
+    // return driveBase.getAutonomousCommand("New Auto");
+    return null;
   }
 }

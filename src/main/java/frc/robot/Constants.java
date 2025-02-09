@@ -50,6 +50,10 @@ public final class Constants {
     // Intake
     public static final int kIntakeCanId = 21;
 
+    // Climber
+    public static final int kClimberCanId = 30;
+    public static final int kFootCanId = 31;
+
 
     // // Elevator 
     // public static final int kLeftElevatorCanId = 12;
@@ -59,6 +63,7 @@ public final class Constants {
     // public static final int kWristCanId = 14;
 
     // // Intake
+    // //public static final int kIntakeCanId = 31;
     // public static final int kIntakeCanId = 15;
 
 
@@ -122,8 +127,8 @@ public final class Constants {
   public static final class IntakeConstants {
     
     public static final class IntakePowerLevels {
-      public static final double kIn = -0.40;
-      public static final double kOut = 0.40;
+      public static final double kIn = -0.07;
+      public static final double kOut = 0.07;
     }
   }
 

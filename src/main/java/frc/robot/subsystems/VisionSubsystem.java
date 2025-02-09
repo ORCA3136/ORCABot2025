@@ -20,46 +20,48 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.units.Measure;
+import au.grapplerobotics.LaserCan;
+import au.grapplerobotics.interfaces.LaserCanInterface.Measurement;
 
 public class VisionSubsystem extends SubsystemBase {
 
-   private static DigitalInput DIO_1;
-   private boolean output1;
-   private boolean[] sensorValues = new boolean[2];
+  //  private static DigitalInput DIO_1;
+  //  private boolean output1;
+  //  private boolean[] sensorValues = new boolean[2];
+   private LaserCan lidar;
 
   /** Creates a new VisionSubsystem. */
   public VisionSubsystem() {
 
-    DIO_1 = new DigitalInput(1);
+    // DIO_1 = new DigitalInput(1);
+
+    lidar = new LaserCan(22);
 
   }
 
-
+  public double getCoralInIntake() {
+    Measurement it = lidar.getMeasurement();
+    if (it != null) {
+      return it.distance_mm;
+    }
+    return -999999999;
+  }
 
   
-
-  
-
-  /*SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(
-            DriveConstants.kDriveKinematics,
-            getHeading(),
-            new SwerveModulePosition[] {
-                    m_frontLeft.getPosition(),
-                    m_frontRight.getPosition(),
-                    m_rearLeft.getPosition(),
-                    m_rearRight.getPosition()
-            }, 
-            new Pose2d());
-
-  public void visionPose(Pose2d pose, double timestamp) {
-    m_poseEstimator.addVisionMeasurement(pose, timestamp);
-  }*/
 
   @Override
   public void periodic() {
 
-    output1 = DIO_1.get();
-    sensorValues[1] = output1;
+    // output1 = DIO_1.get();
+    // sensorValues[1] = output1;
+
+    LaserCan.Measurement measurement = lidar.getMeasurement();
+    if (measurement != null) {
+      SmartDashboard.putNumber("Lidar distance", measurement.distance_mm);
+      SmartDashboard.putNumber("Lidar status", measurement.status);
+    }
+    
 
     // This method will be called once per scheduler run
 
@@ -89,12 +91,12 @@ public class VisionSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run during simulation
   }
 
-  public boolean getIntakeSensor(int sensorNum) {
+  // public boolean getIntakeSensor(int sensorNum) {
 
-    if (sensorNum > 0 && sensorNum < sensorValues.length) 
-      return sensorValues[sensorNum];
+  //   if (sensorNum > 0 && sensorNum < sensorValues.length) 
+  //     return sensorValues[sensorNum];
 
-    return false;
-  }
+  //   return false;
+  // }
 
 }

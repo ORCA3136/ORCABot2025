@@ -5,34 +5,49 @@
 package frc.robot.commands;
 
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
+import au.grapplerobotics.LaserCan;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /** An example command that uses an example subsystem. */
 public class RunIntakeCommand extends Command {
   private final IntakeSubsystem intakeSubsystem;
   private final double powerSetPoint;
+  //private LaserCan lidarObect;
+  private VisionSubsystem lidar;
+  private boolean hasCoral;
+  private boolean hasSwitched;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public RunIntakeCommand( IntakeSubsystem intakeSubsystem, double power) {
+  public RunIntakeCommand(IntakeSubsystem intakeSubsystem, double power, VisionSubsystem vision) {
     this.intakeSubsystem = intakeSubsystem;
     powerSetPoint = power;
+    lidar = vision;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(intakeSubsystem);
+    addRequirements(intakeSubsystem, vision);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     intakeSubsystem.setIntakePower(powerSetPoint);
+    hasCoral = lidar.getCoralInIntake() < 150;
+    hasSwitched = !hasCoral;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    hasCoral = lidar.getCoralInIntake() < 150;
+    // if (hasCoral == hasSwitched) {
+    //   // Stop the input only when the lidar sensor switches from false to true
+    //   hasSwitched = true;
+    // }
+  }
 
   // Called once the command ends or is interrupted.
   @Override
@@ -44,6 +59,10 @@ public class RunIntakeCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    if (hasCoral == hasSwitched) {
+      // Stop the input only when the lidar sensor switches
+      return true;
+    }
     return false;
   }
 }
