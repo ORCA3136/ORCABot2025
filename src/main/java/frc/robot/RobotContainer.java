@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -53,6 +54,7 @@ public class RobotContainer {
   private ElevatorSubsystem elevatorSystem = new ElevatorSubsystem();
   private VisionSubsystem vision = new VisionSubsystem();
 
+  
 
   // BooleanLogEntry myBooleanLog;
   // DoubleLogEntry myDoubleLog;
@@ -63,6 +65,8 @@ public class RobotContainer {
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
+
+  private final CommandJoystick m_secondaryController = new CommandJoystick(1);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -154,9 +158,9 @@ public class RobotContainer {
       // m_driverController.y().onTrue(new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kIn));
 
       m_driverController.a().whileTrue(new RunElevator(elevatorSystem, Constants.ElevatorConstants.ElevatorPowerLevels.kDown));
-      m_driverController.b().whileTrue(new RunElevator(elevatorSystem, Constants.ElevatorConstants.ElevatorPowerLevels.kUp));
+      m_driverController.y().whileTrue(new RunElevator(elevatorSystem, Constants.ElevatorConstants.ElevatorPowerLevels.kUp));
       // // Was y
-      m_driverController.y().whileTrue(new RunWrist(elevatorSystem, Constants.WristConstants.WristPowerLevels.kUp));
+      m_driverController.b().whileTrue(new RunWrist(elevatorSystem, Constants.WristConstants.WristPowerLevels.kUp));
       m_driverController.x().whileTrue(new RunWrist(elevatorSystem, Constants.WristConstants.WristPowerLevels.kDown));
       // Was b
 
@@ -171,6 +175,11 @@ public class RobotContainer {
 
       m_driverController.axisGreaterThan(3, 0.4).whileTrue(new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kIn, vision));
       m_driverController.axisGreaterThan(2, 0.4).whileTrue(new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kOut, vision));
+
+      m_secondaryController.button(8).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel4)));
+      m_secondaryController.button(7).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel3)));
+      m_secondaryController.button(6).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel2)));
+      m_secondaryController.button(5).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel1)));
 
       // m_driverController.axisGreaterThan(3, 0.4).whileTrue(new RunIntake(intake, Constants.IntakeConstants.IntakePowerLevels.kIn));
       // m_driverController.axisGreaterThan(2, 0.4).whileTrue(new RunIntake(intake, Constants.IntakeConstants.IntakePowerLevels.kOut));

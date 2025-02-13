@@ -318,7 +318,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   // private Angle convertSensorUnitsToAngle(Angle measurement) {
-  //   return Rotations.of(measurement.in(Rotations)/268); // make a constant -> WristReduction (AKA grar ratio)
+  //   return Rotations.of(measurement.in(Rotations)/268); // make a constant -> WristReduction (AKA gear ratio)
   // }
 
   public double getWristAngle() {
