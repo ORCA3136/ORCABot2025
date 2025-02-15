@@ -31,7 +31,7 @@ public class LightsTemplate extends SubsystemBase {
     blinkin.set(color);
 
   }
-src/main/java/frc/robot/commands/ExampleCommand.java
+ src/main/java/frc/robot/commands/ExampleCommand.java
   public void ChangeColorOffRobotState(boolean Reading) {
 
     if (Reading == false) {

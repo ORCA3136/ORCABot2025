@@ -29,7 +29,7 @@ public class RunLEDsCommand extends Command {
   @Override
   public void initialize() {
     ledSubsystem.setLedColor
-    
+    blinkin.setLedColor
   }
 
   // Called every time the scheduler runs while the command is scheduled.
