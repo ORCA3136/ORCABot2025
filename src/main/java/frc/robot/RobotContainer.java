@@ -15,6 +15,7 @@ import frc.robot.commands.RunIntake;
 import frc.robot.commands.RunIntakeCommand;
 import frc.robot.commands.RunWrist;
 import frc.robot.commands.RunWristCommand;
+import frc.robot.commands.SpeakerCentering;
 import frc.robot.commands.ZeroElevatorCommand;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
@@ -52,7 +53,7 @@ public class RobotContainer {
   private final SwerveSubsystem driveBase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/ORCA2025")); // where to configure the robot or "choose" it
   private IntakeSubsystem intake = new IntakeSubsystem();
   private ElevatorSubsystem elevatorSystem = new ElevatorSubsystem();
-  private VisionSubsystem vision = new VisionSubsystem();
+  private VisionSubsystem vision = new VisionSubsystem(driveBase);
 
   
 
@@ -160,8 +161,8 @@ public class RobotContainer {
       m_driverController.a().whileTrue(new RunElevator(elevatorSystem, Constants.ElevatorConstants.ElevatorPowerLevels.kDown));
       m_driverController.y().whileTrue(new RunElevator(elevatorSystem, Constants.ElevatorConstants.ElevatorPowerLevels.kUp));
       // // Was y
-      m_driverController.b().whileTrue(new RunWrist(elevatorSystem, Constants.WristConstants.WristPowerLevels.kUp));
-      m_driverController.x().whileTrue(new RunWrist(elevatorSystem, Constants.WristConstants.WristPowerLevels.kDown));
+      m_driverController.b().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kUp));
+      m_driverController.x().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kDown));
       // Was b
 
       m_driverController.povDown().whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel1)));
@@ -180,6 +181,8 @@ public class RobotContainer {
       m_secondaryController.button(7).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel3)));
       m_secondaryController.button(6).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel2)));
       m_secondaryController.button(5).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel1)));
+
+      m_driverController.leftBumper().onTrue(new SpeakerCentering(vision, driveBase, m_driverController));
 
       // m_driverController.axisGreaterThan(3, 0.4).whileTrue(new RunIntake(intake, Constants.IntakeConstants.IntakePowerLevels.kIn));
       // m_driverController.axisGreaterThan(2, 0.4).whileTrue(new RunIntake(intake, Constants.IntakeConstants.IntakePowerLevels.kOut));

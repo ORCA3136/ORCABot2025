@@ -19,20 +19,23 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Filesystem;
+// import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
+// import edu.wpi.first.wpilibj.XboxController;
 import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 import swervelib.SwerveDrive;
 import swervelib.math.SwerveMath;
-import edu.wpi.first.math.estimator.PoseEstimator;
+import edu.wpi.first.math.MathUtil;
+// import edu.wpi.first.math.MathUtil;
+// import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
+// import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
@@ -44,7 +47,10 @@ import static edu.wpi.first.units.Units.Meter;
 
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+// import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 public class SwerveSubsystem extends SubsystemBase {
   
@@ -53,6 +59,10 @@ public class SwerveSubsystem extends SubsystemBase {
   SwerveDrivePoseEstimator m_poseEstimator;
   
   private final Pigeon2 pigeon2 = new Pigeon2(9, "rio"); // Pigeon is on roboRIO CAN Bus with device ID 9
+
+  private double m_currentRotation = 0.0;
+  private double m_currentTranslationDir = 0.0;
+  private double m_currentTranslationMag = 0.0;
 
 
 
@@ -145,6 +155,10 @@ public Command driveCommand(DoubleSupplier translationX, DoubleSupplier translat
     });
   }
 
+  // public Command drive(double Y, double x, double rot) {
+  //   return 
+  // }
+
 
 
 
@@ -232,6 +246,7 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
       () -> {zeroHeading();} 
       );
   }
+  
 
   @Override
   public void periodic() {
@@ -252,6 +267,23 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
         visionPose(LimelightHelpers.getBotPose2d_wpiBlue("limelight-april"), Timer.getFPGATimestamp());
     }
 
+  }
+
+
+  public ChassisSpeeds getRobotRelativeSpeeds() {
+    ChassisSpeeds chassisSpeeds = new ChassisSpeeds(m_currentTranslationMag, m_currentTranslationDir, m_currentRotation);
+    return chassisSpeeds;
+  }
+
+  // TODO understand this
+
+  public Command speakerCentering(CommandXboxController xboxController, VisionSubsystem sensor) {
+    return new RunCommand(
+          () -> this.driveCommand(
+              () -> -xboxController.getLeftY(),// -MathUtil.applyDeadband(xboxController.getLeftY(), .05), //     OIConstants.kDriveDeadband     ???
+              () -> -xboxController.getLeftX(),// -MathUtil.applyDeadband(xboxController.getLeftX(), .05),
+              () -> sensor.SpeakerRotation(this)// -MathUtil.applyDeadband(sensor.SpeakerRotation(this), .05)   // OIConstants.kCenteringDeadband 
+              ));
   }
 
   /**

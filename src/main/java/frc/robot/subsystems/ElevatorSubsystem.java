@@ -387,7 +387,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public double getWristPosition() {
-    return wristEncoder.getPosition(); // -1 because of the direction of rotation
+    return wristEncoder.getPosition(); // 
   }
 
   private void setWristBlocking(boolean bool) {
