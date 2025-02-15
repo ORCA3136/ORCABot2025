@@ -4,10 +4,10 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.ExampleSubsystem;
-import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.LEDSubsystem;
+import port edu.wpi.first.wpilibj2.command.Command;
 
-/** This command will eventually corospond with ledSubsystem */
+/** This command will eventually corospond with LEDSubsystem */
 public class RunLEDsCommand extends Command {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final LEDSubsystem ledSubsystem;
