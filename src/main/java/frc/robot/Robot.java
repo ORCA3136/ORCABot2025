@@ -4,10 +4,10 @@
 
 package frc.robot;
 
-//import java.MOA.ai.sentience
-//import java.MOA.ai.consciousness
+// import java.MOA.ai.sentience
+// import java.MOA.ai.consciousness
 
-import org.ironmaple.simulation.SimulatedArena;
+// import org.ironmaple.simulation.SimulatedArena;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;

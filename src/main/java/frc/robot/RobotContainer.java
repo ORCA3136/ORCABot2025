@@ -183,6 +183,8 @@ public class RobotContainer {
       m_secondaryController.button(6).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel2)));
       m_secondaryController.button(5).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel1)));
 
+      // m_driverController.leftBumper().whileTrue(new AprilTagFollowCommand(driveBase));
+
       // m_driverController.axisGreaterThan(3, 0.4).whileTrue(new RunIntake(intake, Constants.IntakeConstants.IntakePowerLevels.kIn));
       // m_driverController.axisGreaterThan(2, 0.4).whileTrue(new RunIntake(intake, Constants.IntakeConstants.IntakePowerLevels.kOut));
     
@@ -200,7 +202,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    // return driveBase.getAutonomousCommand("New Auto");
-    return null;
+    return driveBase.getAutonomousCommand("Red Side Test");
+    // return null;
   }
 }

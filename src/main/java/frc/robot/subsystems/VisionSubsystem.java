@@ -84,20 +84,18 @@ public class VisionSubsystem extends SubsystemBase {
 
   public void updatePoseEstimator(SwerveDrive swerve) {
     PoseEstimate  poseEst = getEstimatedGlobalPose("limelight-two");
-        if (poseEst != null) {
-          PoseEstimate pose = poseEst;
-          swerve.addVisionMeasurement(poseEst.pose,
-                                      pose.timestampSeconds
-          );
-        }
+      if (poseEst != null) {
+        swerve.addVisionMeasurement(poseEst.pose, poseEst.timestampSeconds
+        );
       }
+  }
     
-      private PoseEstimate getEstimatedGlobalPose(String limelight) {
+  private PoseEstimate getEstimatedGlobalPose(String limelight) {
         PoseEstimate poseEst = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight);
         return poseEst;
-      }
+  }
     
-      @Override
+  @Override
   public void periodic() {
 
     // output1 = DIO_1.get();
@@ -158,13 +156,6 @@ public class VisionSubsystem extends SubsystemBase {
 
   //   return false;
   // }
-
-
-
-
-
-
-
 
 
 }

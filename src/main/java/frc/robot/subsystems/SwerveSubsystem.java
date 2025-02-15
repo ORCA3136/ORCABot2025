@@ -58,8 +58,6 @@ public class SwerveSubsystem extends SubsystemBase {
   
   SwerveDrive  swerveDrive;
 
-  SwerveDrivePoseEstimator m_poseEstimator;
-
   VisionSubsystem vision;
   
   private final Pigeon2 pigeon2 = new Pigeon2(9, "rio"); // Pigeon is on roboRIO CAN Bus with device ID 9
@@ -103,13 +101,6 @@ public class SwerveSubsystem extends SubsystemBase {
                                                swerveDrive.setModuleEncoderAutoSynchronize(false,
                                                1); // Enable if you want to resynchronize your absolute encoders and motor encoders periodically when they are not moving.
     swerveDrive.pushOffsetsToEncoders(); // Set the absolute encoder to be used over the internal encoder and push the offsets onto it. Throws warning if not possible
-
-    m_poseEstimator = new SwerveDrivePoseEstimator(
-      DriveConstants.kDriveKinematics,
-      swerveDrive.getPose().getRotation(),
-      swerveDrive.getModulePositions(), 
-    // 2024 code has 0-Frontleft, 1-FrontRight, 2-RearLeft, 3-RearRight
-      new Pose2d());
 
     setupPathPlanner();
   }
@@ -312,14 +303,6 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
   //   return swerveDrive.getPose();
   // }
 
-  public Pose2d getVisionPose() {
-    return m_poseEstimator.getEstimatedPosition();
-  }
-
-  public void visionPose(Pose2d pose, double timestamp) {
-    m_poseEstimator.addVisionMeasurement(pose, timestamp);
-  }
-
     /**
    * Gets the current yaw angle of the robot, as reported by the swerve pose estimator in the underlying drivebase.
    * Note, this is not the raw gyro reading, this may be corrected from calls to resetOdometry().
@@ -328,7 +311,7 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
    */
   public Rotation2d getHeading()
   {
-    return getVisionPose().getRotation();
+    return swerveDrive.getYaw();
   }
 
   public Optional<SwerveDriveSimulation>getMapleSimDrive(){
@@ -355,11 +338,10 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
    *
    * @param initialHolonomicPose The pose to set the odometry to
    */
+
   public void resetOdometry(Pose2d initialHolonomicPose)
   {
     swerveDrive.resetOdometry(initialHolonomicPose);
-
-    m_poseEstimator.resetPosition(getHeading(), swerveDrive.getModulePositions(), initialHolonomicPose);
   }
 
   public void zeroHeading() {
@@ -377,23 +359,12 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
   public void periodic() {
     // This method will be called once per scheduler run
 
-    NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Rotation").setNumber(getVisionPose().getRotation().getDegrees());
-    NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Position x").setNumber(getVisionPose().getX());
-    NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Position y").setNumber(getVisionPose().getY());
+    NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Rotation").setNumber(swerveDrive.getPose().getRotation().getDegrees());
+    NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Position x").setNumber(swerveDrive.getPose().getX());
+    NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Position y").setNumber(swerveDrive.getPose().getY());
     NetworkTableInstance.getDefault().getTable("Odometry").getEntry("yaw").setNumber(swerveDrive.getYaw().getDegrees());
 
-    m_poseEstimator.update(pigeon2.getRotation2d(), swerveDrive.getModulePositions()); // TODO figure this out
-
-    if (LimelightHelpers.getTV("limelight-april")) {
-      if (DriverStation.isAutonomous())
-        if (LimelightHelpers.getTA("limelight-april") > 0.25)
-          visionPose(LimelightHelpers.getBotPose2d_wpiBlue("limelight-april"), Timer.getFPGATimestamp());
-      if (LimelightHelpers.getTA("limelight-april") > 0.125)
-        visionPose(LimelightHelpers.getBotPose2d_wpiBlue("limelight-april"), Timer.getFPGATimestamp());
-    }
-
     vision.updatePoseEstimator(swerveDrive);
-
 
   }
 
@@ -467,7 +438,7 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
     } catch (Exception e)
     {
       // Handle exception as needed
-      // e.printStackTrace();
+      e.printStackTrace();
     }
   }
 
