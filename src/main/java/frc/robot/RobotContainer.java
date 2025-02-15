@@ -7,6 +7,7 @@ package frc.robot;
 import java.io.File;
 
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.AprilTagFollowCommand;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.RunElevator;
@@ -15,7 +16,6 @@ import frc.robot.commands.RunIntake;
 import frc.robot.commands.RunIntakeCommand;
 import frc.robot.commands.RunWrist;
 import frc.robot.commands.RunWristCommand;
-import frc.robot.commands.SpeakerCentering;
 import frc.robot.commands.ZeroElevatorCommand;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
@@ -50,10 +50,11 @@ import edu.wpi.first.wpilibj.DataLogManager;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final SwerveSubsystem driveBase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/ORCA2025")); // where to configure the robot or "choose" it
+  private VisionSubsystem vision = new VisionSubsystem();
+  private final SwerveSubsystem driveBase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/ORCA2025"), vision); // where to configure the robot or "choose" it
   private IntakeSubsystem intake = new IntakeSubsystem();
   private ElevatorSubsystem elevatorSystem = new ElevatorSubsystem();
-  private VisionSubsystem vision = new VisionSubsystem(driveBase);
+
 
   
 
@@ -182,14 +183,9 @@ public class RobotContainer {
       m_secondaryController.button(6).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel2)));
       m_secondaryController.button(5).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel1)));
 
-      m_driverController.leftBumper().onTrue(new SpeakerCentering(vision, driveBase, m_driverController));
-
       // m_driverController.axisGreaterThan(3, 0.4).whileTrue(new RunIntake(intake, Constants.IntakeConstants.IntakePowerLevels.kIn));
       // m_driverController.axisGreaterThan(2, 0.4).whileTrue(new RunIntake(intake, Constants.IntakeConstants.IntakePowerLevels.kOut));
     
-      
-      // m_driverController.leftBumper().onTrue(new RunCommand( () -> DataLogManager.log("sez=======================Start of error zone=======================")));
-      // m_driverController.rightBumper().onTrue(new RunCommand( () -> DataLogManager.log("eez========================end of error zone========================")));
 
       //m_driverController.y().whileTrue(new RunElevatorCommand(elevatorSystem, m_driverController.getLeftTriggerAxis()));
       m_driverController.back().whileTrue(new ZeroElevatorCommand(elevatorSystem));
