@@ -89,10 +89,18 @@ public class VisionSubsystem extends SubsystemBase {
         );
       }
   }
+
+  // public Optional<EstimatedRobotPose> getEstimatedGlobalPose(VisionSubsystem camera) {
+  //   Optional<EstimatedRobotPose> poseEst = camera.getEstimatedGlobalPose();
+  //   return poseEst;
+  // }
     
-  private PoseEstimate getEstimatedGlobalPose(String limelight) {
-        PoseEstimate poseEst = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight);
-        return poseEst;
+  public PoseEstimate getEstimatedGlobalPose(String limelight) {
+    if (LimelightHelpers.getTV(limelight)) {
+      PoseEstimate poseEst = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight);
+      return poseEst;
+    }
+    return new PoseEstimate(); // IDK abt ths
   }
     
   @Override
