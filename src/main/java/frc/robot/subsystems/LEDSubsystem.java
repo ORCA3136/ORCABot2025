@@ -81,10 +81,34 @@ public class LEDSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
- //This is commented out because we probably won't use the LEDs durring simulation
- // @Override
- // public void simulationPeriodic() {
- //   // This method will be called once per scheduler run during simulation
- // }
-}
+  public void setInitialColor(double color) {
 
+    Blinkin.set(constants.colors.Blue)
+  }
+
+  public void ChangeLedColor (Boolean reading) {
+
+   if (lined_up == True) {
+
+      Blinkin.set(constants.colors.Green)
+
+   }else if (april_tag_sighted == True) {
+
+      Blinkin.set(constants.colors.)
+  
+   }else if (coral_present == True) {
+
+      Blinkin.set(constants.colors.Lawn_Green)
+
+   }else if (algae_present == True) {
+
+      Blinkin.set(constants.colors.Blue_Violet)
+
+   }else {
+
+    setInitialColor()
+   }
+
+  }
+
+}
