@@ -3,69 +3,48 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.0,
-        "y": 7.0
+        "x": 2.685245901639344,
+        "y": 5.217776639344262
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.104815573770492,
-        "y": 7.66326844262295
+        "x": 3.500409836065574,
+        "y": 5.193801229508197
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.7861680327868854,
-        "y": 5.937038934426229
+        "x": 4.08780737704918,
+        "y": 5.745235655737704
       },
       "prevControl": {
-        "x": 2.0261142140951236,
-        "y": 5.866854676393574
+        "x": 3.4644467213114747,
+        "y": 5.733247950819671
       },
       "nextControl": {
-        "x": 1.5462218514786474,
-        "y": 6.007223192458883
+        "x": 4.675096331740894,
+        "y": 5.75652967409716
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.993852459016393,
-        "y": 1.5015881147540984
+        "x": 5.262602459016393,
+        "y": 5.217776639344262
       },
       "prevControl": {
-        "x": 3.6682377049180324,
-        "y": 0.7703381147540986
-      },
-      "nextControl": {
-        "x": 6.232340839638099,
-        "y": 1.5765767292794801
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 5.993852459016393,
-        "y": 0.5545594262295083
-      },
-      "prevControl": {
-        "x": 5.993852459016393,
-        "y": 0.8045594262295083
+        "x": 4.675204918032787,
+        "y": 5.25373975409836
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 1,
-      "rotationDegrees": -170.8033441083711
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -79,7 +58,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -91.50743575877503
+    "rotation": 2.0
   },
   "reversed": false,
   "folder": null,

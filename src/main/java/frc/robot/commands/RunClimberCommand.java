@@ -4,29 +4,30 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.ClimberSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /** An example command that uses an example subsystem. */
-public class ZeroElevatorCommand extends Command {
-  @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final ElevatorSubsystem m_subsystem;
+public class RunClimberCommand extends Command {
+  private final ClimberSubsystem climberSubsystem;
+  private final double powerSetPoint;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ZeroElevatorCommand(ElevatorSubsystem subsystem) {
-    m_subsystem = subsystem;
+  public RunClimberCommand(ClimberSubsystem climberSubsystem, double power) {
+    this.climberSubsystem = climberSubsystem;
+    powerSetPoint = power;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(subsystem);
+    addRequirements(climberSubsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_subsystem.zeroElevator();
+  climberSubsystem.setClimberPower(powerSetPoint);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -35,7 +36,10 @@ public class ZeroElevatorCommand extends Command {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+  climberSubsystem.setClimberPower(0);
+    // isFinished();
+  }
 
   // Returns true when the command should end.
   @Override

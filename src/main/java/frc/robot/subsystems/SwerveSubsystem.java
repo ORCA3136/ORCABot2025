@@ -39,9 +39,11 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 // import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.LimelightHelpers;
+import frc.robot.LimelightHelpers.PoseEstimate;
 
 import static edu.wpi.first.units.Units.Meter;
 
@@ -77,12 +79,11 @@ public class SwerveSubsystem extends SubsystemBase {
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
     this.vision = vision;
 
-
     try
     {
       swerveDrive = new SwerveParser(directory).createSwerveDrive(Constants.Limits.MAX_SPEED,
-                                                                  new Pose2d(new Translation2d(Meter.of(1),
-                                                                                               Meter.of(4)),
+                                                                  new Pose2d(new Translation2d(Meter.of(0),
+                                                                                               Meter.of(0)),
                                                                              Rotation2d.fromDegrees(0)));
       // DataLogManager.log("Found and read the file");
 
@@ -298,10 +299,10 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
    *
    * @return The robot's pose
    */
-  // public Pose2d getPose()
-  // {
-  //   return swerveDrive.getPose();
-  // }
+  public Pose2d getPose()
+  {
+    return swerveDrive.getPose();
+  }
 
     /**
    * Gets the current yaw angle of the robot, as reported by the swerve pose estimator in the underlying drivebase.
@@ -362,12 +363,19 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
     NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Rotation").setNumber(swerveDrive.getPose().getRotation().getDegrees());
     NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Position x").setNumber(swerveDrive.getPose().getX());
     NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Position y").setNumber(swerveDrive.getPose().getY());
-    NetworkTableInstance.getDefault().getTable("Odometry").getEntry("yaw").setNumber(swerveDrive.getYaw().getDegrees());
+    NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Yaw").setNumber(swerveDrive.getYaw().getDegrees());
 
     vision.updatePoseEstimator(swerveDrive);
 
-  }
+    // String[] limelights = {"limelight-one"/*, "limelight-two", "limelight-three"*/};
+    // PoseEstimate[] poses = vision.getEstimatedGlobalPose(limelights);
 
+    // LimelightHelpers.SetRobotOrientation("limelight-one",getHeading().getDegrees(),0,0,0,0,0);
+    LimelightHelpers.SetRobotOrientation("limelight-two",getHeading().getDegrees(),0,0,0,0,0);
+    // LimelightHelpers.SetRobotOrientation("limelight-three",getHeading().getDegrees(),0,0,0,0,0);
+
+    
+  }
 
   public ChassisSpeeds getRobotRelativeSpeeds() {
     ChassisSpeeds chassisSpeeds = new ChassisSpeeds(m_currentTranslationMag, m_currentTranslationDir, m_currentRotation);
@@ -450,14 +458,31 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
    */
   public Command driveToPose(Pose2d pose)
   {
-// Create the constraints to use while pathfinding
+    // Create the constraints to use while pathfinding
     PathConstraints constraints = new PathConstraints(
-        swerveDrive.getMaximumChassisVelocity(), 4.0,
-        swerveDrive.getMaximumChassisAngularVelocity(), Units.degreesToRadians(720));
+        1, 4.0,
+        Units.degreesToRadians(100), Units.degreesToRadians(720));
 
-// Since AutoBuilder is configured, we can use it to build pathfinding commands
+    // Since AutoBuilder is configured, we can use it to build pathfinding commands
     return AutoBuilder.pathfindToPose(
         pose,
+        constraints,
+        edu.wpi.first.units.Units.MetersPerSecond.of(0) // Goal end velocity in meters/sec
+                                     );
+  }
+
+  public Command driveToPoseRobotRelative(Pose2d pose)
+  {
+    Pose2d robot2d = getPose();
+// Create the constraints to use while pathfinding
+    PathConstraints constraints = new PathConstraints(
+        0.3, 4.0,
+        Units.degreesToRadians(100), Units.degreesToRadians(720));
+
+    // Since AutoBuilder is configured, we can use it to build pathfinding commands
+    return AutoBuilder.pathfindToPose(
+        new Pose2d(pose.getX()+robot2d.getX(), pose.getY()+robot2d.getY(), 
+            new Rotation2d(pose.getRotation().getRadians()+robot2d.getRotation().getRadians())),
         constraints,
         edu.wpi.first.units.Units.MetersPerSecond.of(0) // Goal end velocity in meters/sec
                                      );
@@ -480,3 +505,4 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
     return new PathPlannerAuto(pathName);
   }
 }
+

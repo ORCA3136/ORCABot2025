@@ -4,21 +4,26 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.SwerveSubsystem;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /** An example command that uses an example subsystem. */
-public class ZeroElevatorCommand extends Command {
+public class DriveToPoseCommand extends Command {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final ElevatorSubsystem m_subsystem;
+  private final SwerveSubsystem swerve;
+  private final Pose2d targetpose;
+  private final Pose2d[] midpose;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ZeroElevatorCommand(ElevatorSubsystem subsystem) {
-    m_subsystem = subsystem;
+  public DriveToPoseCommand(SwerveSubsystem subsystem, Pose2d pose, Pose2d[] midpose) {
+    this.swerve = subsystem;
+    this.targetpose = pose;
+    this.midpose = midpose;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
   }
@@ -26,7 +31,10 @@ public class ZeroElevatorCommand extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_subsystem.zeroElevator();
+    if (midpose.length == 0) {
+      swerve.driveToPose(targetpose);
+    }
+    
   }
 
   // Called every time the scheduler runs while the command is scheduled.

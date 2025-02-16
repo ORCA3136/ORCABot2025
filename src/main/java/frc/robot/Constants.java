@@ -52,7 +52,7 @@ public final class Constants {
 
     // Climber
     public static final int kClimberCanId = 30;
-    public static final int kFootCanId = 31;
+    public static final int kFunnelCanId = 31;
 
 
     // // Elevator 

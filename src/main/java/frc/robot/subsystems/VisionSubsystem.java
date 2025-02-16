@@ -102,6 +102,23 @@ public class VisionSubsystem extends SubsystemBase {
     }
     return new PoseEstimate(); // IDK abt ths
   }
+
+  public PoseEstimate[] getEstimatedGlobalPose(String[] limelights) {
+    PoseEstimate[] poseEsts = new PoseEstimate[limelights.length];
+    int num = 0;
+    for (String limelight : limelights) {
+      if (LimelightHelpers.getTV(limelight)) {
+        PoseEstimate poseEst = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight);
+        poseEsts[num] = poseEst;
+      }
+      else {
+        poseEsts[num] = new PoseEstimate();
+      }
+      num++;
+    }
+    return poseEsts;
+     // IDK abt ths
+  }
     
   @Override
   public void periodic() {

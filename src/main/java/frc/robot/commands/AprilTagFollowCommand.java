@@ -4,7 +4,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.SwerveSubsystem;
-import java.math.*;
+// import java.math.*;
 
 import frc.robot.LimelightHelpers;
 
@@ -33,7 +33,7 @@ public class AprilTagFollowCommand extends Command {
     //Positive: Target is right of cursor
     double m_tx = LimelightHelpers.getTX(limelightName);
     //Positive: Target is above cursor
-    double m_ty = LimelightHelpers.getTY(limelightName);
+    // double m_ty = LimelightHelpers.getTY(limelightName);
     //Bigger number means closer
     double m_ta = LimelightHelpers.getTA(limelightName);
 

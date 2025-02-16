@@ -10,13 +10,16 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.AprilTagFollowCommand;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.RunClimberCommand;
 import frc.robot.commands.RunElevator;
 import frc.robot.commands.RunElevatorCommand;
+import frc.robot.commands.RunFunnelCommand;
 import frc.robot.commands.RunIntake;
 import frc.robot.commands.RunIntakeCommand;
 import frc.robot.commands.RunWrist;
 import frc.robot.commands.RunWristCommand;
 import frc.robot.commands.ZeroElevatorCommand;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -27,11 +30,14 @@ import swervelib.SwerveInputStream;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -41,6 +47,7 @@ import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -54,6 +61,7 @@ public class RobotContainer {
   private final SwerveSubsystem driveBase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/ORCA2025"), vision); // where to configure the robot or "choose" it
   private IntakeSubsystem intake = new IntakeSubsystem();
   private ElevatorSubsystem elevatorSystem = new ElevatorSubsystem();
+  private ClimberSubsystem climber = new ClimberSubsystem();
 
 
   
@@ -72,6 +80,7 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    DriverStation.silenceJoystickConnectionWarning(true);
 
     // Configure the trigger bindings
     configureBindings();
@@ -132,6 +141,8 @@ public class RobotContainer {
   private void configureBindings() {
     driveBase.setDefaultCommand(driveFieldOrientedDirectAngle);
 
+    // driveBase.driveTankDrive();
+
     // if (RobotBase.isSimulation())
     // {
     //   driveBase.setDefaultCommand(RobotBase.isSimulation() ? 
@@ -153,23 +164,28 @@ public class RobotContainer {
       //m_driverController.leftBumper().onTrue(Commands.runOnce(  () -> {elevator.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel4);       wrist.setSetpointCommand(WristSubsystem.Setpoint.ks3);}));
       //m_driverController.rightBumper().onTrue(Commands.runOnce( () -> {elevator.setSetpointCommand(ElevatorSubsystem.Setpoint.kFeederStation);wrist.setSetpointCommand(WristSubsystem.Setpoint.ks1);}));
 
+      m_driverController.rightBumper().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kUp));
+      m_driverController.leftBumper().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kDown));
       
-      // m_driverController.a().onTrue(Commands.runOnce( () -> elevator.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel2)));
-      // m_driverController.b().onTrue(Commands.runOnce( () -> elevator.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel3)));
-      // m_driverController.x().onTrue(Commands.runOnce( () -> wrist.setSetpointCommand(WristSubsystem.Setpoint.ks1)));
-      // m_driverController.y().onTrue(new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kIn));
+      m_driverController.a().whileTrue(new RunClimberCommand(climber, 0.4));
+      m_driverController.b().whileTrue(new RunClimberCommand(climber, -0.6));
+      m_driverController.x().whileTrue(new RunFunnelCommand(climber, -0.1));
+      // m_driverController.y().whileTrue(new RunFunnelCommand(climber, -0.5));
 
-      m_driverController.a().whileTrue(new RunElevator(elevatorSystem, Constants.ElevatorConstants.ElevatorPowerLevels.kDown));
-      m_driverController.y().whileTrue(new RunElevator(elevatorSystem, Constants.ElevatorConstants.ElevatorPowerLevels.kUp));
-      // // Was y
-      m_driverController.b().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kUp));
-      m_driverController.x().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kDown));
-      // Was b
+      // m_driverController.a().whileTrue(new RunElevator(elevatorSystem, Constants.ElevatorConstants.ElevatorPowerLevels.kDown));
+      // m_driverController.y().whileTrue(new RunElevator(elevatorSystem, Constants.ElevatorConstants.ElevatorPowerLevels.kUp));
+      // m_driverController.b().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kUp));
+      // m_driverController.x().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kDown));
 
-      m_driverController.povDown().whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel1)));
-      m_driverController.povLeft().whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel2)));
-      m_driverController.povRight().whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel3)));
-      m_driverController.povUp().whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel4)));
+      m_driverController.povDown().whileTrue(driveBase.driveToPoseRobotRelative(new Pose2d(-1, 0, new Rotation2d(0))));
+      m_driverController.povUp().whileTrue(driveBase.driveToPoseRobotRelative(new Pose2d(1, 0, new Rotation2d(0))));
+      m_driverController.povLeft().whileTrue(driveBase.driveToPoseRobotRelative(new Pose2d(0, 0, new Rotation2d(Math.PI/4))));
+      m_driverController.povRight().whileTrue(driveBase.driveToPoseRobotRelative(new Pose2d(0, 0, new Rotation2d(-Math.PI/4))));
+
+      // m_driverController.povDown().whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel1)));
+      // m_driverController.povLeft().whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel2)));
+      // m_driverController.povRight().whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel3)));
+      // m_driverController.povUp().whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel4)));
 
 
       // m_driverController.axisGreaterThan(3, 0.5).whileTrue(new RunWristCommand(wrist, Constants.WristConstants.WristPowerLevels.kDown));  // was used in testing
@@ -201,8 +217,12 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
-    return driveBase.getAutonomousCommand("Red Side Test");
-    // return null;
+    
+    // Command AutoCommand = new SequentialCommandGroup(driveBase.getAutonomousCommand("Red Side Test"), new WaitCommand(1), new RunIntakeCommand(intake, 0, vision));
+
+
+
+
+    return driveBase.getAutonomousCommand("First Test Auto");
   }
 }

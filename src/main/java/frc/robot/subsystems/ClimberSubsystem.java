@@ -4,40 +4,57 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj2.command.Command;
+import java.io.ObjectInputFilter.Config;
+
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+// import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Configs;
+import frc.robot.Constants;
 
 public class ClimberSubsystem extends SubsystemBase {
-  /** Creates a new ExampleSubsystem. */
-  public ClimberSubsystem() {}
 
-  /**
-   * Example command factory method.
-   *
-   * @return a command
-   */
-  public Command exampleMethodCommand() {
-    // Inline construction of command goes here.
-    // Subsystem::RunOnce implicitly requires `this` subsystem.
-    return runOnce(
-        () -> {
-          /* one-time action goes here */
-        });
+  SparkMax climberMotor = new SparkMax(Constants.SparkConstants.kClimberCanId, MotorType.kBrushless);
+  SparkMax funnelMotor = new SparkMax(Constants.SparkConstants.kFunnelCanId, MotorType.kBrushless);
+
+  private RelativeEncoder climberEncoder = climberMotor.getEncoder();
+  private RelativeEncoder funnelEncoder = funnelMotor.getEncoder();
+
+
+  /** Creates a new ExampleSubsystem. */
+  public ClimberSubsystem() {
+    funnelMotor.configure(Configs.ClimberConfigs.funnelMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    climberMotor.configure(Configs.ClimberConfigs.climberMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
-  /**
-   * An example method querying a boolean state of the subsystem (for example, a digital sensor).
-   *
-   * @return value of some boolean subsystem state, such as a digital sensor.
-   */
-  public boolean exampleCondition() {
-    // Query some boolean state, such as a digital sensor.
-    return false;
+  
+  public void setClimberPower(double power) {
+    climberMotor.set(power);
+  }
+
+  public void setFunnelPower(double power) {
+    funnelMotor.set(power);
+  }
+
+  public double getFunnelPosition() {
+    return funnelEncoder.getPosition();
+  }
+
+  public double getClimberPosition() {
+    return climberEncoder.getPosition();
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("funnel position", getFunnelPosition());
+    SmartDashboard.putNumber("climber Position", getClimberPosition());
   }
 
   @Override

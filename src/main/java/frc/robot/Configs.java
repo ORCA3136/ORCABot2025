@@ -91,4 +91,22 @@ public final class Configs {
     }
   }
 
+  public static final class ClimberConfigs {
+    public static final SparkFlexConfig funnelMotorConfig = new SparkFlexConfig();
+
+    static {
+      funnelMotorConfig
+        .inverted(false)
+        .idleMode(IdleMode.kCoast);
+      }
+
+    public static final SparkFlexConfig climberMotorConfig = new SparkFlexConfig();
+
+    static {
+      climberMotorConfig
+        .inverted(false)
+        .idleMode(IdleMode.kBrake);
+      }
+  }
+
 }
