@@ -7,8 +7,11 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.AddressableLEDBufferView;
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import frc.robot.LimelightHelpers;
 
 public class LEDSubsystem extends SubsystemBase {
   //Creates a new subsystem for the LEDs
@@ -19,21 +22,7 @@ public class LEDSubsystem extends SubsystemBase {
 
   public LEDSubsystem() {
 
-    blinkin = new spark(0)
-  }
-
-  /**
-   * Example command factory method.
-   *
-   * @return a command
-   */
-  public Command exampleMethodCommand() {
-    // Inline construction of command goes here.
-    // Subsystem::RunOnce implicitly requires `this` subsystem.
-    return runOnce(
-        () -> {
-          /* one-time action goes here */
-        });
+    blinkin = new Spark(0);
   }
   
   // //These Adressable LED buffers are probably not going to be used, but I will leave them here just in case we want to divide the LEDs into multiple sections
@@ -61,19 +50,9 @@ public class LEDSubsystem extends SubsystemBase {
   // //AddressableLEDBufferView m_2nd_5V_section = m_buffer.createView(50,99);
 
 
-  public void setLedColor(Blue) {
+  public void setLedColor(double color) {
     
-    return false;
-  }
-
-  /**
-   * An example method querying a boolean state of the subsystem (for example, a digital sensor).
-   *
-   * @return value of some boolean subsystem state, such as a digital sensor.
-   */
-  public boolean exampleCondition() {
-    // Query some boolean state, such as a digital sensor.
-    return false;
+    blinkin.set(color);
   }
 
   @Override
@@ -81,34 +60,64 @@ public class LEDSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  public void setInitialColor(double color) {
+  public void setInitialColor() {
 
-    Blinkin.set(constants.colors.Blue)
+    setLedColor(Constants.Colors.Blue);
   }
 
-  public void ChangeLedColor (Boolean reading) {
+  public void ChangeLedColor () {
 
-   if (lined_up == True) {
+   if (/*lined_up*/ false) {
 
-      Blinkin.set(constants.colors.Green)
+      blinkin.set(Colors.Green);
 
-   }else if (april_tag_sighted == True) {
+   }else if (LimelightHelpers.getTV("limelight-two")) {
 
-      Blinkin.set(constants.colors.)
+      blinkin.set(Colors.Red);
   
-   }else if (coral_present == True) {
+   }else if (/*coral_present*/ false) {
 
-      Blinkin.set(constants.colors.Lawn_Green)
+      blinkin.set(Colors.Lawn_Green);
 
-   }else if (algae_present == True) {
+   }else if (/*algae_present*/ false) {
 
-      Blinkin.set(constants.colors.Blue_Violet)
+      blinkin.set(Colors.Blue_Violet);
 
    }else {
 
-    setInitialColor()
+    setInitialColor();
    }
 
+  }
+
+
+
+
+
+
+  public static final class Colors{
+    public static final double Hot_Pink = 0.57;
+    public static final double Dark_Red = 0.59;
+    public static final double Red = 0.61;
+    public static final double Red_Orange = 0.63;
+    public static final double Orange = 0.65;
+    public static final double Gold = 0.67;
+    public static final double Yellow = 0.69;
+    public static final double Lawn_Green = 0.71;
+    public static final double Lime = 0.73;
+    public static final double Dark_Green = 0.75;
+    public static final double Green = 0.77;
+    public static final double Blue_Green = 0.79;
+    public static final double Aqua = 0.81;
+    public static final double Sky_Blue = 0.83;
+    public static final double Dark_Blue = 0.85;
+    public static final double Blue = 0.87;
+    public static final double Blue_Violet = 0.89;
+    public static final double Violet = 0.91;
+    public static final double White = 0.93;
+    public static final double Gray = 0.95;
+    public static final double Dark_Gray = 0.97;
+    public static final double Black = 0.99;
   }
 
 }
