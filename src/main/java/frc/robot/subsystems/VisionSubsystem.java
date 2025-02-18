@@ -62,6 +62,11 @@ public class VisionSubsystem extends SubsystemBase {
 
     lidar = new LaserCan(22);
 
+    if (DriverStation.isFMSAttached()) {
+      if (DriverStation.getAlliance().isPresent()) {
+        red = DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
+      }
+    }
 
 
   }
@@ -85,8 +90,7 @@ public class VisionSubsystem extends SubsystemBase {
   public void updatePoseEstimator(SwerveDrive swerve) {
     PoseEstimate  poseEst = getEstimatedGlobalPose("limelight-two");
       if (poseEst != null) {
-        swerve.addVisionMeasurement(poseEst.pose, poseEst.timestampSeconds
-        );
+        swerve.addVisionMeasurement(poseEst.pose, poseEst.timestampSeconds);
       }
   }
 
@@ -132,17 +136,7 @@ public class VisionSubsystem extends SubsystemBase {
       SmartDashboard.putNumber("Lidar status", measurement.status);
     }
 
-
-    if (DriverStation.isFMSAttached()) {
-      if (DriverStation.getAlliance().isPresent()) {
-        red = DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
-      }
-    }
-
-
-
-
-
+      
 
     // This method will be called once per scheduler run
 

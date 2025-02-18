@@ -13,8 +13,6 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.util.datalog.DataLog;
-import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotController;
@@ -98,8 +96,6 @@ public class ElevatorSubsystem extends SubsystemBase {
   private boolean elevatorManuallyMoving = true;
 
 
-  DoubleLogEntry elevatorLog;
-  DoubleLogEntry wristLog;
 
   private boolean wasResetByLimit = false;
 
@@ -167,13 +163,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     // rightElevatorEncoder.setPosition(0);
     // <l/r>ElevatorEncoder.setPosition(0);
 
-  // Starts recording to data log
-  DataLogManager.start();
-  // Set up custom log entries
-  DataLog log = DataLogManager.getLog();
-
-  wristLog = new DoubleLogEntry(log, "/wrist/angle");
-  elevatorLog = new DoubleLogEntry(log, "/elevator/position");
     
     Configs.ElevatorConfigs.rightElevatorConfig
           .follow(leftElevator, false);
@@ -493,9 +482,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("limit switch", elevatorLimitSwitch.get());
 
     
-
-    elevatorLog.append(getElevatorPosition());
-    wristLog.append(getWristAngle());
 
      // Update mechanism2d
     m_elevatorMech2d.setLength(

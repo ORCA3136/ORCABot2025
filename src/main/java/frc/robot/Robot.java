@@ -4,8 +4,8 @@
 
 package frc.robot;
 
-// import java.MOA.ai.sentience
-// import java.MOA.ai.consciousness
+// import java.MOA.ai.sentience;
+// import java.MOA.ai.consciousness;
 
 // import org.ironmaple.simulation.SimulatedArena;
 

@@ -42,10 +42,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-import edu.wpi.first.util.datalog.BooleanLogEntry;
-import edu.wpi.first.util.datalog.DataLog;
-import edu.wpi.first.util.datalog.DoubleLogEntry;
-import edu.wpi.first.util.datalog.StringLogEntry;
+
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 
@@ -166,8 +163,8 @@ public class RobotContainer {
 
       m_driverController.rightBumper().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kUp));
       m_driverController.leftBumper().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kDown));
-      
-      m_driverController.a().whileTrue(new RunClimberCommand(climber, 0.4));
+
+      m_driverController.a().whileTrue(new RunClimberCommand(climber, 0.4)); 
       m_driverController.b().whileTrue(new RunClimberCommand(climber, -0.6));
       m_driverController.x().whileTrue(new RunFunnelCommand(climber, -0.1));
       // m_driverController.y().whileTrue(new RunFunnelCommand(climber, -0.5));
