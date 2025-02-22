@@ -23,6 +23,7 @@ import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import swervelib.SwerveDrive;
@@ -59,7 +60,7 @@ public class RobotContainer {
   private IntakeSubsystem intake = new IntakeSubsystem();
   private ElevatorSubsystem elevatorSystem = new ElevatorSubsystem();
   private ClimberSubsystem climber = new ClimberSubsystem();
-
+  private LEDSubsystem ledSubsystem = new LEDSubsystem();
 
   
 
@@ -197,6 +198,11 @@ public class RobotContainer {
       m_secondaryController.button(7).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel3)));
       m_secondaryController.button(6).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel2)));
       m_secondaryController.button(5).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel1)));
+
+      m_secondaryController.button(4).whileTrue(Commands.runOnce(() -> ledSubsystem.ChangeLedColor(2)));
+      m_secondaryController.button(3).whileTrue(Commands.runOnce(() -> ledSubsystem.ChangeLedColor(5)));
+      m_secondaryController.button(2).whileTrue(Commands.runOnce(() -> ledSubsystem.setLedColor(Constants.Colors.Rainbow_Forest_Pallet)));
+      m_secondaryController.button(1).whileTrue(Commands.runOnce(() -> ledSubsystem.setLedColor(Constants.Colors.Gold)));
 
       // m_driverController.leftBumper().whileTrue(new AprilTagFollowCommand(driveBase));
 
