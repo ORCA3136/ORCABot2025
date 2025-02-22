@@ -184,13 +184,18 @@ public final class Constants {
     public static final double kIntakeBarAngleRads = Units.degreesToRadians(-60);
   }
 
-  //This will hold all the LED options for the Blinkin, These might only work with the 5 volt strip, I'm not sure
+ 
   public static final class Colors{
+    //These are all the led optios, if you want more you will have to go to a REV website called "LED BLINKIN DRIVER"
 
-    //Patterns 
-    public static final double Rainbow = -0.99;
+    //Patterns:
+    public static final double Rainbow_Rainbow_Pallet = -0.99;
+    public static final double Rainbow_Ocean_Pallet = -0.95;
+    public static final double Rainbow_Forest_Pallet = -0.91;
+    public static final double Fire_Medium = -0.59;
+    public static final double Fire_Large = -0.57;
 
-    //Basic colors
+    //Basic colors:
     public static final double Hot_Pink = 0.57;
     public static final double Dark_Red = 0.59;
     public static final double Red = 0.61;

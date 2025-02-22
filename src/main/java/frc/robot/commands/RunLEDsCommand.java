@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import frc.robot.subsystems.LEDSubsystem;
+import frc.robot.Constants.Colors;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /** This command will eventually corospond with LEDSubsystem */
@@ -28,7 +29,7 @@ public class RunLEDsCommand extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    ledSubsystem.setLedColor(LEDSubsystem.Colors.Blue);
+    ledSubsystem.setLedColor(Colors.Blue);
     ledSubsystem.setInitialColor();
   }
 
@@ -36,7 +37,7 @@ public class RunLEDsCommand extends Command {
   @Override
   public void execute() {
     
-    ledSubsystem.setLedColor(LEDSubsystem.Colors.Blue);
+    ledSubsystem.setLedColor(Colors.Blue);
   }
 
   // Called once the command ends or is interrupted.
