@@ -100,7 +100,8 @@ public class RobotContainer {
 
   
   SwerveInputStream driveDirectAngle = driveAngularVelocity.copy()
-                                                          .withControllerHeadingAxis(m_driverController::getRightX, m_driverController::getRightY).headingWhile(false);
+                                                          .withControllerHeadingAxis(m_driverController::getRightX, 
+                                                          m_driverController::getRightY).headingWhile(false);
                                                          //withControllerHeadingAxis(m_driverController::getRightX, m_driverController::getRightX  <- change this to Y for special mode
   Command driveFieldOrientedDirectAngle = driveBase.driveFieldOriented(driveDirectAngle);
   Command driveFieldOrientedAngularVelocity = driveBase.driveFieldOriented(driveAngularVelocity);
@@ -137,6 +138,7 @@ public class RobotContainer {
    */
   private void configureBindings() {
     driveBase.setDefaultCommand(driveFieldOrientedDirectAngle);
+    // Yagsl - driveFieldOrientedAngularVelocity
 
     // driveBase.driveTankDrive();
 
