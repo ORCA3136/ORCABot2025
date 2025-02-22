@@ -2,18 +2,18 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-/*  package frc.robot.commands;
+   package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LightsTemplate;
 
 public class RunLEDsExampleCommand extends Command {
   // Creates a new IntakeLights. 
   LightsTemplate m_lights;
-  Intake m_intake;
+  IntakeSubsystem m_intake;
  
-  public IntakeLights(Lights Lights, Intake Intake) {
+  public RunLEDsExampleCommand (LightsTemplate Lights, IntakeSubsystem Intake) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_lights = Lights;
     m_intake = Intake;
@@ -30,7 +30,7 @@ public class RunLEDsExampleCommand extends Command {
   @Override
   public void execute() {
 
-    m_lights.ChangeColorOffRobotState(m_intake.GetSensor());
+    // m_lights.ChangeColorOffRobotState(m_intake.GetSensor());
 
   }
 
@@ -44,4 +44,3 @@ public class RunLEDsExampleCommand extends Command {
     return false;
   }
 }
-*/
