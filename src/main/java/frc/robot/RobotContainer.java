@@ -6,6 +6,8 @@ package frc.robot;
 
 import java.io.File;
 
+import com.pathplanner.lib.auto.NamedCommands;
+
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.AprilTagFollowCommand;
 import frc.robot.commands.Autos;
@@ -82,16 +84,17 @@ public class RobotContainer {
 
     // Configure the trigger bindings
     configureBindings();
-
-    // DataLogManager.start();
-    // DataLog log = DataLogManager.getLog();
-    // myBooleanLog = new BooleanLogEntry(log, "/my/boolean");
-    // myDoubleLog = new DoubleLogEntry(log, "/my/double");
-    // myStringLog = new StringLogEntry(log, "/my/string");
-
-  }
-
-  SwerveInputStream driveAngularVelocity  = SwerveInputStream.of(driveBase.getSwerveDrive(),
+    configureNamedCommands();
+    
+        // DataLogManager.start();
+        // DataLog log = DataLogManager.getLog();
+        // myBooleanLog = new BooleanLogEntry(log, "/my/boolean");
+        // myDoubleLog = new DoubleLogEntry(log, "/my/double");
+        // myStringLog = new StringLogEntry(log, "/my/string");
+    
+      }
+    
+      SwerveInputStream driveAngularVelocity  = SwerveInputStream.of(driveBase.getSwerveDrive(),
                                             () -> -m_driverController.getLeftY(), 
                                             () -> -m_driverController.getLeftX())
                                             .withControllerRotationAxis(() -> -m_driverController.getRightX())
@@ -168,11 +171,6 @@ public class RobotContainer {
       m_driverController.rightBumper().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kUp));
       m_driverController.leftBumper().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kDown));
 
-      // m_driverController.a().whileTrue(new RunClimberCommand(climber, 0.4)); 
-      // m_driverController.b().whileTrue(new RunClimberCommand(climber, -0.6));
-      // m_driverController.x().whileTrue(new RunFunnelCommand(climber, -0.1));
-        // m_driverController.y().whileTrue(new RunFunnelCommand(climber, -0.5));
-
       m_driverController.a().whileTrue(new RunElevator(elevatorSystem, Constants.ElevatorConstants.ElevatorPowerLevels.kDown));
       m_driverController.y().whileTrue(new RunElevator(elevatorSystem, Constants.ElevatorConstants.ElevatorPowerLevels.kUp));
       m_driverController.b().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kUp));
@@ -194,6 +192,10 @@ public class RobotContainer {
 
       m_driverController.axisGreaterThan(3, 0.4).whileTrue(new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kIn, vision));
       m_driverController.axisGreaterThan(2, 0.4).whileTrue(new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kOut, vision));
+
+      m_secondaryController.button(11).whileTrue(new RunClimberCommand(climber, Constants.ClimberConstants.kClimberIn));
+      m_secondaryController.button(10).whileTrue(new RunClimberCommand(climber, Constants.ClimberConstants.kClimberOut));
+      m_secondaryController.button(9).whileTrue(new RunFunnelCommand(climber, Constants.ClimberConstants.kFunnelSpeed));
 
       m_secondaryController.button(8).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel4)));
       m_secondaryController.button(7).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel3)));
@@ -217,6 +219,15 @@ public class RobotContainer {
   //   }
   }
 
+  private void configureNamedCommands() {
+    NamedCommands.registerCommand("Intake score", new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kIn, vision).withTimeout(0.5));
+    NamedCommands.registerCommand("Intake in", new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kIn, vision).withTimeout(3));
+    NamedCommands.registerCommand("Elevator L1", Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel1)));
+    NamedCommands.registerCommand("Elevator L2", Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel2)));
+    NamedCommands.registerCommand("Elevator L3", Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel3)));
+    NamedCommands.registerCommand("Elevator L4", Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel4)));
+  }
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
@@ -229,6 +240,6 @@ public class RobotContainer {
 
 
 
-    return driveBase.getAutonomousCommand("First Test Auto");
+    return driveBase.getAutonomousCommand("Right Score I3");
   }
 }

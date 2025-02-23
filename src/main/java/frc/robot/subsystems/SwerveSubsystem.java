@@ -370,7 +370,7 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
     // PoseEstimate[] poses = vision.getEstimatedGlobalPose(limelights);
 
     // LimelightHelpers.SetRobotOrientation("limelight-one",getHeading().getDegrees(),0,0,0,0,0);
-    LimelightHelpers.SetRobotOrientation("limelight-two",getHeading().getDegrees(),0,0,0,0,0);
+    LimelightHelpers.SetRobotOrientation("limelight-two",swerveDrive.getPose().getRotation().getDegrees(),0,0,0,0,0);
     // LimelightHelpers.SetRobotOrientation("limelight-three",getHeading().getDegrees(),0,0,0,0,0);
 
     

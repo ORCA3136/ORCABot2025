@@ -96,9 +96,12 @@ public final class Constants {
     public static final class ElevatorSetpoints {
       public static final int kFeederStation = 0;
       public static final int kLevel1 = 0;
-      public static final int kLevel2 = 14; // 0 -> 50
-      public static final int kLevel3 = 50;
-      public static final int kLevel4 = 85; // 92
+      public static final int kLevel2 = 21; // 0 -> 50
+      public static final int kLevel3 = 65;
+      public static final int kLevel4 = 94; // 92
+      public static final int kProcessor = 0; 
+      public static final int kAlgae1 = 1; // Between 2 and 3
+      public static final int kAlgae2 = 1; // Between 3 and 4
     }
     public static final class ElevatorPowerLevels {
       public static final double kUp = 0.3;
@@ -115,9 +118,12 @@ public final class Constants {
       public static final double unblock = 80;
       public static final int kFeederStation = 3;
       public static final int kLevel1 = 3;
-      public static final int kLevel2 = 30; 
+      public static final int kLevel2 = 50; 
       public static final int kLevel3 = 50;
-      public static final int kLevel4 = 100; 
+      public static final int kLevel4 = 81; 
+      public static final int kProcessor = 165; 
+      public static final int kAlgae1 = 165; 
+      public static final int kAlgae2 = 165; 
     }
 
     public static final class WristPowerLevels {
@@ -132,6 +138,13 @@ public final class Constants {
       public static final double kIn = -0.4;
       public static final double kOut = 0.4;
     }
+  }
+
+  public static final class ClimberConstants {
+    
+    public static final double kFunnelSpeed = -0.3;
+    public static final double kClimberIn = -1;
+    public static final double kClimberOut = 1;
   }
 
   public static final class Limits {
@@ -185,6 +198,7 @@ public final class Constants {
     public static final double kIntakeLongBarLength = 0.3048;
     public static final double kIntakeBarAngleRads = Units.degreesToRadians(-60);
   }
+
 
  
   public static final class Colors{

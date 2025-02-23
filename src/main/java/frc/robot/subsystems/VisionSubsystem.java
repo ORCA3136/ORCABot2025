@@ -101,7 +101,7 @@ public class VisionSubsystem extends SubsystemBase {
     
   public PoseEstimate getEstimatedGlobalPose(String limelight) {
     if (LimelightHelpers.getTV(limelight)) {
-      PoseEstimate poseEst = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight);
+      PoseEstimate poseEst = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelight);
       return poseEst;
     }
     return new PoseEstimate(); // IDK abt ths

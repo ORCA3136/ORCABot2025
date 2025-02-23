@@ -285,14 +285,14 @@ public class ElevatorSubsystem extends SubsystemBase {
             elTarget = 22;
           } // is elevator just free here
         } 
-        // else if (40 < getElevatorPosition() && getElevatorPosition() < 65) {
-        //   if (elevatorCurrentTarget < 40) {
-        //     elTarget = 40;
-        //   }
-        //   if (elevatorCurrentTarget > 65) {
-        //     elTarget = 65;
-        //   }
-        // }
+      //   else if (40 < getElevatorPosition() && getElevatorPosition() < 65) {
+      //     if (elevatorCurrentTarget < 40) {
+      //       elTarget = 40;
+      //     }
+      //     if (elevatorCurrentTarget > 65) {
+      //       elTarget = 65;
+      //     }
+      //   }
         
       // } else if (getWristAngle() > 15 && getElevatorPosition() > 40) {
       //   if (elevatorCurrentTarget < 40) {
