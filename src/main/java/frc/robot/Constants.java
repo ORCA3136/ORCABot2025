@@ -101,8 +101,8 @@ public final class Constants {
       public static final int kLevel4 = 85; // 92
     }
     public static final class ElevatorPowerLevels {
-      public static final double kUp = 0.2;
-      public static final double kDown = -0.1;
+      public static final double kUp = 0.3;
+      public static final double kDown = -0.2;
     }
 
   }
@@ -117,7 +117,7 @@ public final class Constants {
       public static final int kLevel1 = 3;
       public static final int kLevel2 = 30; 
       public static final int kLevel3 = 50;
-      public static final int kLevel4 = 80; 
+      public static final int kLevel4 = 100; 
     }
 
     public static final class WristPowerLevels {
@@ -146,7 +146,7 @@ public final class Constants {
 
 
     public static final double kWristMinAngle = WristConstants.wristOffset + 1; // degrees
-    public static final double kWristMaxAngle = 110; // degrees  110 untested; was 94
+    public static final double kWristMaxAngle = 230; // degrees  110 untested; was 94
 
     public static final double MAX_SPEED = Units.feetToMeters(14);  // theoretical: 14.63 Ft/s
     public static final double PATHPLANNER_MAX_SPEED = Units.feetToMeters(5);

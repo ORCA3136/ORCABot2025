@@ -68,7 +68,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
 
   public SwerveSubsystem(File directory, VisionSubsystem vision) {
-    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
+    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.NONE;
     this.vision = vision;
 
     try

@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.TreeMap;
+
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.sim.SparkLimitSwitchSim;
@@ -179,30 +181,14 @@ public class ElevatorSubsystem extends SubsystemBase {
     boolean wristBool = false;
     double wristTarget = 3;
 
-    if (getWristAngle() > 70 && getWristAngle() < 350) {
+    if (getWristAngle() > 80 && getWristAngle() < 350) {
       elBool = true;
     } else if (getWristAngle() > 25) {
       if (getElevatorPosition() < 22) {
-        if (elevatorCurrentTarget > 22) { // can wrist go around???
+        if (elevatorCurrentTarget > 22) { 
           elTarget = 22;
-        } // is elevator just free here
+        } 
       } 
-      // else if (40 < getElevatorPosition() && getElevatorPosition() < 65) {
-      //   if (elevatorCurrentTarget < 40) {
-      //     elTarget = 40;
-      //   }
-      //   if (elevatorCurrentTarget > 65) {
-      //     elTarget = 65;
-      //   }
-      // }
-      
-    // } else if (getWristAngle() > 15 && getElevatorPosition() > 40) {
-    //   if (elevatorCurrentTarget < 40) {
-    //     elTarget = 40;
-    //   }
-    //   if (elevatorCurrentTarget > 65) {
-    //     elTarget = 65;
-    //   }
     } else {
       if (elevatorCurrentTarget > 5) {
         elTarget = 5;
@@ -216,17 +202,9 @@ public class ElevatorSubsystem extends SubsystemBase {
       if (wristCurrentTarget < 25) {
         wristTarget = 25;
       }
-    // } else if (getElevatorPosition() < 40) {
-    //   if (wristCurrentTarget < 70) {
-    //     wristTarget = 70;
-    //   }
-    // } else if (getElevatorPosition() < 65) {
-    //   if (wristCurrentTarget < 15) {
-    //     wristTarget = 15;
-    //   }
     } else {
-      if (wristCurrentTarget < 70) {
-        wristTarget = 70;
+      if (wristCurrentTarget < 80) {
+        wristTarget = 80;
       }
     }
 
@@ -256,6 +234,10 @@ public class ElevatorSubsystem extends SubsystemBase {
         }
       }
     }
+
+    NetworkTableInstance.getDefault().getTable("Elevator").getEntry("Temp Elevator Target").setNumber(elTarget);
+    NetworkTableInstance.getDefault().getTable("Elevator").getEntry("Temp Wrist Target").setNumber(wristTarget);
+
   }
 
   //
@@ -266,56 +248,84 @@ public class ElevatorSubsystem extends SubsystemBase {
     boolean wristBool = false;
     double wristTarget = 3;
 
-    int zoneIn;
+    int currentZone;
+    int targetZone;
+    boolean differentZones = false;
+    
+    if (getElevatorPosition() < 23) {
+      currentZone = 1;
+    } else if (getElevatorPosition() < 39) {
+      currentZone = 2;
+    } else {
+      currentZone = 3;
+    }
 
-    if (getWristAngle() > 70 && getWristAngle() < 350) {
-      elBool = true;
-    } else if (getWristAngle() > 25) {
-      if (getElevatorPosition() < 22) {
-        if (elevatorCurrentTarget > 22) { // can wrist go around???
-          elTarget = 22;
-        } // is elevator just free here
-      } 
-      // else if (40 < getElevatorPosition() && getElevatorPosition() < 65) {
+    if (elevatorCurrentTarget < 23) {
+      targetZone = 1;
+    } else if (elevatorCurrentTarget < 39) {
+      targetZone = 2;
+    } else {
+      targetZone = 3;
+    }
+
+    if (currentZone == 1 && targetZone == 3 || currentZone == 3 && targetZone == 1) {
+      differentZones = true;
+    }
+
+    if (differentZones) {
+     elTarget = 31;
+     wristTarget = 80;
+    } else if (currentZone == 1) {
+
+      if (getWristAngle() > 70 && getWristAngle() < 350) {
+        elBool = true;
+      } else if (getWristAngle() > 25) {
+        if (getElevatorPosition() < 22) {
+          if (elevatorCurrentTarget > 22) { // can wrist go around???
+            elTarget = 22;
+          } // is elevator just free here
+        } 
+        // else if (40 < getElevatorPosition() && getElevatorPosition() < 65) {
+        //   if (elevatorCurrentTarget < 40) {
+        //     elTarget = 40;
+        //   }
+        //   if (elevatorCurrentTarget > 65) {
+        //     elTarget = 65;
+        //   }
+        // }
+        
+      // } else if (getWristAngle() > 15 && getElevatorPosition() > 40) {
       //   if (elevatorCurrentTarget < 40) {
       //     elTarget = 40;
       //   }
       //   if (elevatorCurrentTarget > 65) {
       //     elTarget = 65;
       //   }
-      // }
-      
-    // } else if (getWristAngle() > 15 && getElevatorPosition() > 40) {
-    //   if (elevatorCurrentTarget < 40) {
-    //     elTarget = 40;
-    //   }
-    //   if (elevatorCurrentTarget > 65) {
-    //     elTarget = 65;
-    //   }
-    } else {
-      if (elevatorCurrentTarget > 5) {
-        elTarget = 5;
+      } else {
+        if (elevatorCurrentTarget > 5) {
+          elTarget = 5;
+        }
       }
-    }
 
-    
-    if (getElevatorPosition() < 5) {
-      wristBool = true;
-    } else if (getElevatorPosition() < 22) {
-      if (wristCurrentTarget < 25) {
-        wristTarget = 25;
-      }
-    // } else if (getElevatorPosition() < 40) {
-    //   if (wristCurrentTarget < 70) {
-    //     wristTarget = 70;
-    //   }
-    // } else if (getElevatorPosition() < 65) {
-    //   if (wristCurrentTarget < 15) {
-    //     wristTarget = 15;
-    //   }
-    } else {
-      if (wristCurrentTarget < 70) {
-        wristTarget = 70;
+      
+      if (getElevatorPosition() < 5) {
+        wristBool = true;
+      } else if (getElevatorPosition() < 22) {
+        if (wristCurrentTarget < 25) {
+          wristTarget = 25;
+        }
+      // } else if (getElevatorPosition() < 40) {
+      //   if (wristCurrentTarget < 70) {
+      //     wristTarget = 70;
+      //   }
+      // } else if (getElevatorPosition() < 65) {
+      //   if (wristCurrentTarget < 15) {
+      //     wristTarget = 15;
+      //   }
+      } else {
+        if (wristCurrentTarget < 70) {
+          wristTarget = 70;
+        }
       }
     }
 
@@ -359,13 +369,11 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   private void wristMoveToSetpoint(double pos) {
-    NetworkTableInstance.getDefault().getTable("Wrist").getEntry("wrist Temp Target").setNumber(pos);
     wristClosedLoopController.setReference(
         pos, ControlType.kMAXMotionPositionControl);
   }
 
   private void elevatorMoveToSetpoint(double pos) {
-    NetworkTableInstance.getDefault().getTable("Elevator").getEntry("Elevator Temp Target").setNumber(pos);
     elevatorClosedLoopController.setReference(
       pos, ControlType.kMAXMotionPositionControl);
   }

@@ -33,17 +33,17 @@ public final class Configs {
       leftElevatorConfig
         .closedLoop
         // Set PID values for position control
-        .pidf(0.03, 0.0, 0.5, 0.0005)
+        .pidf(0.2, 0.0, 0.5, 0.0003) // .pidf(0.03, 0.0, 0.5, 0.0005)
         .outputRange(-1, 1)
         .maxMotion
         // Set MAXMotion parameters for position control
-        .maxVelocity(300)  // 4200
-        .maxAcceleration(500) // 6000
+        .maxVelocity(1200)  // 4200
+        .maxAcceleration(1200) // 6000
         .allowedClosedLoopError(0.5);
 
 
-      rightElevatorConfig
-        .closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
+      // rightElevatorConfig
+      //   .closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
       rightElevatorConfig
         .idleMode(IdleMode.kBrake);
         
@@ -64,13 +64,13 @@ public final class Configs {
         .closedLoop
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
         // Set PID values for position control
-        .p(0.01)
+        .pid(0.005, 0.0, 0)
         //.i(0.02)
         .outputRange(-1, 1)
         .maxMotion
         // Set MAXMotion parameters for position control
-        .maxVelocity(400)
-        .maxAcceleration(600)
+        .maxVelocity(5700)
+        .maxAcceleration(10000)
         .allowedClosedLoopError(0.5);
     }
   }
