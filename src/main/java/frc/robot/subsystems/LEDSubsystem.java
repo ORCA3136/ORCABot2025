@@ -19,6 +19,8 @@ public class LEDSubsystem extends SubsystemBase {
 
   Spark blinkin;
 
+  boolean discoOn = false;
+
   private AddressableLED m_led;
 
   public LEDSubsystem() {
@@ -28,27 +30,29 @@ public class LEDSubsystem extends SubsystemBase {
   
   //These Adressable LED buffers are for seperateing individual strings of LEDs into multiple sections
   //This should be the 5 meter (12 Volt) strip of LEDs
-  AddressableLEDBuffer m_buffer_12Volt = new AddressableLEDBuffer(500);
+  AddressableLEDBuffer m_buffer_12Volt = new AddressableLEDBuffer(300);
 
   // This is the view for the section of the strip on the left side of the robot.
   // This section spans LEDs from index 0 through index 249, inclusive.
-  AddressableLEDBufferView m_1st_12V_section = m_buffer_12Volt.createView(0, 249);
+  AddressableLEDBufferView m_1st_12V_section = m_buffer_12Volt.createView(0, 149);
 
   // This is the section of the strip on the right side of the robot.
   // This section spans LEDs from index 250 through index 499, inclusive.
-  // The "reversed()" three lines down was on the example but probably isn't useful
-  AddressableLEDBufferView m_2nd_12V_section = m_buffer_12Volt.createView(250, 499);
-  /*.reversed()*/
+  // The "reversed()" 2 lines down was on the example but probably isn't useful
+  AddressableLEDBufferView m_2nd_12V_section = m_buffer_12Volt.createView(150, 299);
+  //.reversed()
 
   //This should control the 1 meter (5 Volt) strip of LEDs
-  AddressableLEDBuffer m_buffer_5Volt = new AddressableLEDBuffer(100);
+  AddressableLEDBuffer m_buffer_5Volt = new AddressableLEDBuffer(60);
 
-  //This is the first section of the 1 meter strip (currently out of 2)
-  AddressableLEDBufferView m_1st_5V_section = m_buffer_12Volt.createView(0,49);
+  //This is the 1st section of the 1 meter strip (currently out of 3)
+  AddressableLEDBufferView m_1st_5V_section = m_buffer_5Volt.createView(0,19);
 
-  //this will be used if we want the leds to be two
-  AddressableLEDBufferView m_2nd_5V_section = m_buffer_12Volt.createView(50,99);
+  //this is the 2nd out of 3
+  AddressableLEDBufferView m_2nd_5V_section = m_buffer_5Volt.createView(20,39);
 
+  //This is the 3rd out of 3
+  AddressableLEDBufferView m_3rd_5V_section = m_buffer_5Volt.createView(40,59);
 
   public void setLedColor(double color) {
     
@@ -58,6 +62,48 @@ public class LEDSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    if (discoOn) {
+
+      setRandomColor();
+    }
+
+  }
+
+  public void setRandomColor() {
+    int min = 1;
+    int max = 11;
+    int randomNum = (int)(Math.random() * (max - min + 1) + min);
+    // randomNum will be between 1 and 11, inclusive
+
+    //This will chose a random color out of the 11 bellow, yes there is more blue than any other color, yes that is intentional
+    Double randomColor = null;
+    switch (randomNum) {
+      case 1: randomColor =  Colors.Hot_Pink;
+        break;
+      case 2: randomColor =  Colors.Red;
+        break;
+      case 3: randomColor =  Colors.Orange;
+        break;
+      case 4: randomColor =  Colors.Yellow;
+        break;
+      case 5: randomColor =  Colors.Green;
+        break;
+      case 6: randomColor =  Colors.Aqua;
+        break;
+      case 7: randomColor =  Colors.Dark_Blue;
+        break;
+      case 8: randomColor =  Colors.Blue;
+        break;
+      case 9: randomColor =  Colors.Violet;
+        break;
+      case 10: randomColor =  Colors.White;
+        break;
+      case 11: randomColor =  Colors.Black;
+        break;
+    
+    }
+
+    setLedColor(randomColor);
   }
 
   public void setInitialColor() {
@@ -66,7 +112,7 @@ public class LEDSubsystem extends SubsystemBase {
   }
 
   public void ChangeLedColor (int num) {
-
+    discoOn = false;
     switch (num) {
       case 1:  // lined_up
         blinkin.set(Colors.Green);
@@ -74,20 +120,19 @@ public class LEDSubsystem extends SubsystemBase {
       case 2: // LimelightHelpers.getTV("limelight-two");
         blinkin.set(Colors.Red);
         break;
-      case 3: // coralSensor
+      case 3: // coralSensor (Lidar I think)
         blinkin.set(Colors.Lawn_Green);
         break;
       case 4: // algaeSensor
         blinkin.set(Colors.Blue_Violet);
         break;
+      case 5: 
+        discoOn = true;
       default:
         setInitialColor();
         break;
     }
 
-
-
   }
-
 
 }
