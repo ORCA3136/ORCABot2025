@@ -4,15 +4,20 @@
 
 package frc.robot.subsystems;
 
-import frc.robot.Constants;
-import frc.robot.Constants.ElevatorConstants.ElevatorSetpoints;
-import frc.robot.Constants.SimulationRobotConstants;
-import frc.robot.Configs;
-import edu.wpi.first.math.controller.ElevatorFeedforward;
+import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.sim.SparkLimitSwitchSim;
+import com.revrobotics.sim.SparkMaxSim;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotController;
@@ -22,28 +27,11 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkMaxConfig;
-
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Rotation;
-import static edu.wpi.first.units.Units.Rotations;
-
-
-import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.sim.SparkMaxSim;
-import com.revrobotics.sim.SparkFlexSim;
-import com.revrobotics.sim.SparkLimitSwitchSim;
-import com.revrobotics.spark.SparkBase.ControlType;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkFlex;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import frc.robot.Configs;
+import frc.robot.Constants;
+import frc.robot.Constants.ElevatorConstants.ElevatorSetpoints;
+import frc.robot.Constants.SimulationRobotConstants;
 
 public class ElevatorSubsystem extends SubsystemBase {
 
@@ -195,25 +183,26 @@ public class ElevatorSubsystem extends SubsystemBase {
       elBool = true;
     } else if (getWristAngle() > 25) {
       if (getElevatorPosition() < 22) {
-        if (elevatorCurrentTarget > 22) {
+        if (elevatorCurrentTarget > 22) { // can wrist go around???
           elTarget = 22;
-        }
-      } else if (40 < getElevatorPosition() && getElevatorPosition() < 65) {
-        if (elevatorCurrentTarget < 40) {
-          elTarget = 40;
-        }
-        if (elevatorCurrentTarget > 65) {
-          elTarget = 65;
-        }
-      }
+        } // is elevator just free here
+      } 
+      // else if (40 < getElevatorPosition() && getElevatorPosition() < 65) {
+      //   if (elevatorCurrentTarget < 40) {
+      //     elTarget = 40;
+      //   }
+      //   if (elevatorCurrentTarget > 65) {
+      //     elTarget = 65;
+      //   }
+      // }
       
-    } else if (getWristAngle() > 15 && getElevatorPosition() > 40) {
-      if (elevatorCurrentTarget < 40) {
-        elTarget = 40;
-      }
-      if (elevatorCurrentTarget > 65) {
-        elTarget = 65;
-      }
+    // } else if (getWristAngle() > 15 && getElevatorPosition() > 40) {
+    //   if (elevatorCurrentTarget < 40) {
+    //     elTarget = 40;
+    //   }
+    //   if (elevatorCurrentTarget > 65) {
+    //     elTarget = 65;
+    //   }
     } else {
       if (elevatorCurrentTarget > 5) {
         elTarget = 5;
@@ -227,14 +216,14 @@ public class ElevatorSubsystem extends SubsystemBase {
       if (wristCurrentTarget < 25) {
         wristTarget = 25;
       }
-    } else if (getElevatorPosition() < 40) {
-      if (wristCurrentTarget < 70) {
-        wristTarget = 70;
-      }
-    } else if (getElevatorPosition() < 65) {
-      if (wristCurrentTarget < 15) {
-        wristTarget = 15;
-      }
+    // } else if (getElevatorPosition() < 40) {
+    //   if (wristCurrentTarget < 70) {
+    //     wristTarget = 70;
+    //   }
+    // } else if (getElevatorPosition() < 65) {
+    //   if (wristCurrentTarget < 15) {
+    //     wristTarget = 15;
+    //   }
     } else {
       if (wristCurrentTarget < 70) {
         wristTarget = 70;
@@ -249,15 +238,21 @@ public class ElevatorSubsystem extends SubsystemBase {
         if (elTarget != 3) {
           elevatorMoveToSetpoint(elTarget);
         }
+        else {
+          elevatorMoveToSetpoint();
+        }
       }
     }
 
-    if (!isWristManuallyMoving() && false) {
+    if (!isWristManuallyMoving()) {
       if (wristBool) {
         wristMoveToSetpoint();
       } else {
         if (wristTarget != 3) {
           wristMoveToSetpoint(wristTarget);
+        }
+        else {
+          wristMoveToSetpoint();
         }
       }
     }
@@ -379,13 +374,13 @@ public class ElevatorSubsystem extends SubsystemBase {
     return wristEncoder.getPosition(); // 
   }
 
-  private void setWristBlocking(boolean bool) {
-    wristBlocking = bool;
-  }
+  // private void setWristBlocking(boolean bool) {
+  //   wristBlocking = bool;
+  // }
 
-  private void setElevatorBlocking(boolean bool) {
-    elevatorBlocking = bool;
-  }
+  // private void setElevatorBlocking(boolean bool) {
+  //   elevatorBlocking = bool;
+  // }
 
   public boolean elevatorInTheWay() {  // ported from separate subsystem times, need to redefine
     return elevatorBlocking;
@@ -453,7 +448,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   public void periodic() {
     zeroElevatorOnLimitSwitch();
 
-    if (!wristManuallyMoving) {
+    if (!wristManuallyMoving || !elevatorManuallyMoving) {
       // if (!wrist.isWristInTheWay()) {
 
         moveToSetpoint();

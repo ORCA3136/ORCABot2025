@@ -83,7 +83,7 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
 
-    DataLogManager.start();
+    // DataLogManager.start();
     // DataLog log = DataLogManager.getLog();
     // myBooleanLog = new BooleanLogEntry(log, "/my/boolean");
     // myDoubleLog = new DoubleLogEntry(log, "/my/double");
@@ -140,6 +140,7 @@ public class RobotContainer {
   private void configureBindings() {
     driveBase.setDefaultCommand(driveFieldOrientedDirectAngle);
     // Yagsl - driveFieldOrientedAngularVelocity
+    // us    - driveFieldOrientedDirectAngle
 
     // driveBase.driveTankDrive();
 
@@ -167,15 +168,15 @@ public class RobotContainer {
       m_driverController.rightBumper().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kUp));
       m_driverController.leftBumper().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kDown));
 
-      m_driverController.a().whileTrue(new RunClimberCommand(climber, 0.4)); 
-      m_driverController.b().whileTrue(new RunClimberCommand(climber, -0.6));
-      m_driverController.x().whileTrue(new RunFunnelCommand(climber, -0.1));
-      // m_driverController.y().whileTrue(new RunFunnelCommand(climber, -0.5));
+      // m_driverController.a().whileTrue(new RunClimberCommand(climber, 0.4)); 
+      // m_driverController.b().whileTrue(new RunClimberCommand(climber, -0.6));
+      // m_driverController.x().whileTrue(new RunFunnelCommand(climber, -0.1));
+        // m_driverController.y().whileTrue(new RunFunnelCommand(climber, -0.5));
 
-      // m_driverController.a().whileTrue(new RunElevator(elevatorSystem, Constants.ElevatorConstants.ElevatorPowerLevels.kDown));
-      // m_driverController.y().whileTrue(new RunElevator(elevatorSystem, Constants.ElevatorConstants.ElevatorPowerLevels.kUp));
-      // m_driverController.b().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kUp));
-      // m_driverController.x().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kDown));
+      m_driverController.a().whileTrue(new RunElevator(elevatorSystem, Constants.ElevatorConstants.ElevatorPowerLevels.kDown));
+      m_driverController.y().whileTrue(new RunElevator(elevatorSystem, Constants.ElevatorConstants.ElevatorPowerLevels.kUp));
+      m_driverController.b().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kUp));
+      m_driverController.x().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kDown));
 
       m_driverController.povDown().whileTrue(driveBase.driveToPoseRobotRelative(new Pose2d(-1, 0, new Rotation2d(0))));
       m_driverController.povUp().whileTrue(driveBase.driveToPoseRobotRelative(new Pose2d(1, 0, new Rotation2d(0))));

@@ -20,6 +20,7 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
   public static final boolean devMode = false;
+
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
     public static final double DEADBAND = 0.1;
@@ -100,36 +101,36 @@ public final class Constants {
       public static final int kLevel4 = 85; // 92
     }
     public static final class ElevatorPowerLevels {
-      public static final double kUp = 0.5;
-      public static final double kDown = -0.3;
+      public static final double kUp = 0.2;
+      public static final double kDown = -0.1;
     }
 
   }
 
   public static final class WristConstants {
 
-    
+    public static final double wristOffset = 2.5;
 
     public static final class WristSetpoints {
       public static final double unblock = 80;
-      public static final int kFeederStation = 1;
-      public static final int kLevel1 = 1;
+      public static final int kFeederStation = 3;
+      public static final int kLevel1 = 3;
       public static final int kLevel2 = 30; 
       public static final int kLevel3 = 50;
       public static final int kLevel4 = 80; 
     }
 
     public static final class WristPowerLevels {
-      public static final double kUp = 0.3;
-      public static final double kDown = -0.3;
+      public static final double kUp = 0.15;
+      public static final double kDown = -0.15;
     }
   }
 
   public static final class IntakeConstants {
     
     public static final class IntakePowerLevels {
-      public static final double kIn = -0.6;
-      public static final double kOut = 0.6;
+      public static final double kIn = -0.4;
+      public static final double kOut = 0.4;
     }
   }
 
@@ -144,10 +145,11 @@ public final class Constants {
     public static final double kWristSafetyThreshold = 80; //   -> -39
 
 
-    public static final double kWristMinAngle = 1; // degrees
+    public static final double kWristMinAngle = WristConstants.wristOffset + 1; // degrees
     public static final double kWristMaxAngle = 110; // degrees  110 untested; was 94
 
     public static final double MAX_SPEED = Units.feetToMeters(14);  // theoretical: 14.63 Ft/s
+    public static final double PATHPLANNER_MAX_SPEED = Units.feetToMeters(5);
   }
 
 
