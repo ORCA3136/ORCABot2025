@@ -94,7 +94,7 @@ public class RobotContainer {
   SwerveInputStream driveAngularVelocity  = SwerveInputStream.of(driveBase.getSwerveDrive(),
                                             () -> -m_driverController.getLeftY(), 
                                             () -> -m_driverController.getLeftX())
-                                            .withControllerRotationAxis(m_driverController::getRightX)
+                                            .withControllerRotationAxis(() -> -m_driverController.getRightX())
                                             .deadband(OperatorConstants.DEADBAND)
                                             .scaleTranslation(0.8)
                                             .allianceRelativeControl(true);
@@ -138,7 +138,7 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    driveBase.setDefaultCommand(driveFieldOrientedDirectAngle);
+    driveBase.setDefaultCommand(driveFieldOrientedAngularVelocity);
     // Yagsl - driveFieldOrientedAngularVelocity
     // us    - driveFieldOrientedDirectAngle
 

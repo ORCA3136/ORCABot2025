@@ -65,19 +65,10 @@ public class SwerveSubsystem extends SubsystemBase {
   
   private final Pigeon2 pigeon2 = new Pigeon2(9, "rio"); // Pigeon is on roboRIO CAN Bus with device ID 9
 
-  private double m_currentRotation = 0.0;
-  private double m_currentTranslationDir = 0.0;
-  private double m_currentTranslationMag = 0.0;
 
-
-
-  public SwerveSubsystem(){
-    
-
-  }
 
   public SwerveSubsystem(File directory, VisionSubsystem vision) {
-    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.LOW;
+    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
     this.vision = vision;
 
     try
@@ -371,6 +362,9 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
     NetworkTableInstance.getDefault().getTable("Odometry").getEntry("MT2 Rotation").setNumber(getHeading().getDegrees());
 
     vision.updatePoseEstimator(swerveDrive);
+    swerveDrive.updateOdometry(); // Might be redundant
+
+
 
     // String[] limelights = {"limelight-one"/*, "limelight-two", "limelight-three"*/};
     // PoseEstimate[] poses = vision.getEstimatedGlobalPose(limelights);
@@ -380,11 +374,6 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
     // LimelightHelpers.SetRobotOrientation("limelight-three",getHeading().getDegrees(),0,0,0,0,0);
 
     
-  }
-
-  public ChassisSpeeds getRobotRelativeSpeeds() {
-    ChassisSpeeds chassisSpeeds = new ChassisSpeeds(m_currentTranslationMag, m_currentTranslationDir, m_currentRotation);
-    return chassisSpeeds;
   }
 
 

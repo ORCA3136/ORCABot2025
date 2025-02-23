@@ -258,6 +258,96 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
   }
 
+  //
+  private void moveToSetpointBetter() {
+    boolean elBool = false;
+    double elTarget = 3;
+
+    boolean wristBool = false;
+    double wristTarget = 3;
+
+    int zoneIn;
+
+    if (getWristAngle() > 70 && getWristAngle() < 350) {
+      elBool = true;
+    } else if (getWristAngle() > 25) {
+      if (getElevatorPosition() < 22) {
+        if (elevatorCurrentTarget > 22) { // can wrist go around???
+          elTarget = 22;
+        } // is elevator just free here
+      } 
+      // else if (40 < getElevatorPosition() && getElevatorPosition() < 65) {
+      //   if (elevatorCurrentTarget < 40) {
+      //     elTarget = 40;
+      //   }
+      //   if (elevatorCurrentTarget > 65) {
+      //     elTarget = 65;
+      //   }
+      // }
+      
+    // } else if (getWristAngle() > 15 && getElevatorPosition() > 40) {
+    //   if (elevatorCurrentTarget < 40) {
+    //     elTarget = 40;
+    //   }
+    //   if (elevatorCurrentTarget > 65) {
+    //     elTarget = 65;
+    //   }
+    } else {
+      if (elevatorCurrentTarget > 5) {
+        elTarget = 5;
+      }
+    }
+
+    
+    if (getElevatorPosition() < 5) {
+      wristBool = true;
+    } else if (getElevatorPosition() < 22) {
+      if (wristCurrentTarget < 25) {
+        wristTarget = 25;
+      }
+    // } else if (getElevatorPosition() < 40) {
+    //   if (wristCurrentTarget < 70) {
+    //     wristTarget = 70;
+    //   }
+    // } else if (getElevatorPosition() < 65) {
+    //   if (wristCurrentTarget < 15) {
+    //     wristTarget = 15;
+    //   }
+    } else {
+      if (wristCurrentTarget < 70) {
+        wristTarget = 70;
+      }
+    }
+
+
+    if (!isElevatorManuallyMoving()) {
+      if (elBool) {
+        elevatorMoveToSetpoint();
+      } else {
+        if (elTarget != 3) {
+          elevatorMoveToSetpoint(elTarget);
+        }
+        else {
+          elevatorMoveToSetpoint();
+        }
+      }
+    }
+
+    if (!isWristManuallyMoving()) {
+      if (wristBool) {
+        wristMoveToSetpoint();
+      } else {
+        if (wristTarget != 3) {
+          wristMoveToSetpoint(wristTarget);
+        }
+        else {
+          wristMoveToSetpoint();
+        }
+      }
+    }
+  }
+  //
+
   private void wristMoveToSetpoint() {
     wristClosedLoopController.setReference(
         wristCurrentTarget, ControlType.kMAXMotionPositionControl);
