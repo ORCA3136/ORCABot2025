@@ -135,8 +135,9 @@ public final class Constants {
   public static final class IntakeConstants {
     
     public static final class IntakePowerLevels {
-      public static final double kIn = -0.4;
-      public static final double kOut = 0.4;
+      public static final double kOut = -0.9;
+      public static final double kFeed = -0.4;
+      public static final double kIn = 0.4;
     }
   }
 
@@ -161,7 +162,7 @@ public final class Constants {
     public static final double kWristMinAngle = WristConstants.wristOffset + 1; // degrees
     public static final double kWristMaxAngle = 230; // degrees  110 untested; was 94
 
-    public static final double MAX_SPEED = Units.feetToMeters(14);  // theoretical: 14.63 Ft/s
+    public static final double MAX_SPEED = Units.feetToMeters(7);  // theoretical: 14.63 Ft/s
     public static final double PATHPLANNER_MAX_SPEED = Units.feetToMeters(5);
   }
 

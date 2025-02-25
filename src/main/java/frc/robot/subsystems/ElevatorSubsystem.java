@@ -153,7 +153,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     // rightElevatorEncoder.setPosition(0);
     // <l/r>ElevatorEncoder.setPosition(0);
 
-    
+    zeroElevator();
     Configs.ElevatorConfigs.rightElevatorConfig
           .follow(leftElevator, false);
     
