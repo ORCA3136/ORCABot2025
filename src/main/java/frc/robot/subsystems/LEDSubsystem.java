@@ -107,8 +107,15 @@ public class LEDSubsystem extends SubsystemBase {
   }
 
   public void setInitialColor() {
-
+    
     setLedColor(Constants.Colors.Blue);
+
+    // private String teamColor = input()
+    // if (teamColor == Blue) {
+    //   setLedColor(Constants.Colors.Blue);
+    // }else if (teamColor == Red) {
+    //   setLedColor(Constants.Colors.Red);
+    // }
   }
 
   public void ChangeLedColor (int num) {
