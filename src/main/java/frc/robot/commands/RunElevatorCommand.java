@@ -77,7 +77,7 @@ public class RunElevatorCommand extends Command {
 
     // if ( (elevatorSubsystem.getElevatorPosition() < 7 && 7 < eTarget) || (elevatorSubsystem.getElevatorPosition() > 7 && 7 > eTarget) ) {
     //     if (elevatorSubsystem.getBottomWristX() > 9.75 || elevatorSubsystem.getHandX() > 9.75) {
-    //       if (wTarget > 80 ) {
+    //       if (wTarget > Constants.WristConstants.WristSetpoints.unblock ) {
     //         // wait at the right pos
     //         elevatorSubsystem.setElevatorPower(0);
             
@@ -86,7 +86,7 @@ public class RunElevatorCommand extends Command {
     //       elevatorSubsystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kUnblock);
     //       System.out.println("case1");
     //       }
-    //     } else if (elevatorSubsystem.getWristPower() < 0 && wTarget < 80) {
+    //     } else if (elevatorSubsystem.getWristPower() < 0 && wTarget < Constants.WristConstants.WristSetpoints.unblock) {
     //       //also clear wrist, but go
     //       elevatorSubsystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kUnblock);
     //       System.out.println("case2");

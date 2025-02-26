@@ -115,7 +115,7 @@ public final class Constants {
     public static final double wristOffset = 2.5;
 
     public static final class WristSetpoints {
-      public static final double unblock = 80;
+      public static final double unblock = 90;
       public static final int kFeederStation = 3;
       public static final int kLevel1 = 3;
       public static final int kLevel2 = 50; 
@@ -156,7 +156,7 @@ public final class Constants {
     public static final double kElevatorMinHeight = 0.0;
 
 
-    public static final double kWristSafetyThreshold = 80; //   -> -39
+    public static final double kWristSafetyThreshold = 90; //   -> -39
 
 
     public static final double kWristMinAngle = WristConstants.wristOffset + 1; // degrees

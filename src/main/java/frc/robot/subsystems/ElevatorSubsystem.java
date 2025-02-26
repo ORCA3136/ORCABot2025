@@ -181,7 +181,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     boolean wristBool = false;
     double wristTarget = 3;
 
-    if (getWristAngle() > 80 && getWristAngle() < 350) {
+    if (getWristAngle() > Constants.WristConstants.WristSetpoints.unblock && getWristAngle() < 350) {
       elBool = true;
     } else if (getWristAngle() > 25) {
       if (getElevatorPosition() < 22) {
@@ -203,8 +203,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         wristTarget = 25;
       }
     } else {
-      if (wristCurrentTarget < 80) {
-        wristTarget = 80;
+      if (wristCurrentTarget < Constants.WristConstants.WristSetpoints.unblock) {
+        wristTarget = Constants.WristConstants.WristSetpoints.unblock;
       }
     }
 
@@ -274,10 +274,10 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     if (differentZones) {
      elTarget = 31;
-     wristTarget = 80;
+     wristTarget = Constants.WristConstants.WristSetpoints.unblock;
     } else if (currentZone == 1) {
 
-      if (getWristAngle() > 70 && getWristAngle() < 350) {
+      if (getWristAngle() > Constants.WristConstants.WristSetpoints.unblock && getWristAngle() < 350) {
         elBool = true;
       } else if (getWristAngle() > 25) {
         if (getElevatorPosition() < 22) {
@@ -315,16 +315,16 @@ public class ElevatorSubsystem extends SubsystemBase {
           wristTarget = 25;
         }
       // } else if (getElevatorPosition() < 40) {
-      //   if (wristCurrentTarget < 70) {
-      //     wristTarget = 70;
+      //   if (wristCurrentTarget < Constants.WristConstants.WristSetpoints.unblock) {
+      //     wristTarget = Constants.WristConstants.WristSetpoints.unblock;
       //   }
       // } else if (getElevatorPosition() < 65) {
       //   if (wristCurrentTarget < 15) {
       //     wristTarget = 15;
       //   }
       } else {
-        if (wristCurrentTarget < 70) {
-          wristTarget = 70;
+        if (wristCurrentTarget < Constants.WristConstants.WristSetpoints.unblock) {
+          wristTarget = Constants.WristConstants.WristSetpoints.unblock;
         }
       }
     }
