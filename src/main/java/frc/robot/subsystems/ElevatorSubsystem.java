@@ -20,7 +20,6 @@ import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
@@ -29,6 +28,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
 import frc.robot.Constants;
@@ -67,7 +67,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   private SparkClosedLoopController wristClosedLoopController =
       wristMotor.getClosedLoopController();
 
-  private RelativeEncoder elevatorEncoder = rightElevator.getEncoder(); //need a relative encoder to get number of ticks
+  private RelativeEncoder elevatorEncoder = leftElevator.getEncoder(); //need a relative encoder to get number of ticks
    //private RelativeEncoder elevatorEncoder = leftElevator.getEncoder(); we might want to get both left and right encoder and average the values
 
 
@@ -170,7 +170,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     elevatorLimitSwitchSim = new SparkLimitSwitchSim(leftElevator, false);
     armMotorSim = new SparkMaxSim(wristMotor, armMotorModel);
 
-    elevatorLimitSwitch = new DigitalInput(0);
+    elevatorLimitSwitch = new DigitalInput(0); //might want to consider moving this to the spark to prevent some stuff
 
   }
 
@@ -412,7 +412,6 @@ public class ElevatorSubsystem extends SubsystemBase {
    * positions for the given setpoint.
    */
   public void setSetpointCommand(Setpoint setpoint) {  // see wrist subsystem counterpart
-    DataLogManager.log("setpoint command");
     //return this.runOnce(
         //() -> {
           setWristManuallyMoving(false);
@@ -493,7 +492,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     if (!wasResetByLimit && !elevatorLimitSwitch.get()) {
       // Zero the encoder only when the limit switch is switches from "unpressed" to "pressed" to
       // prevent constant zeroing while pressed
-      elevatorEncoder.setPosition(0);
+      new PrintCommand("RESETTING ELEVATOR");
+      zeroElevator();      
       wasResetByLimit = true;
     } else if (elevatorLimitSwitch.get()) {
       wasResetByLimit = false;

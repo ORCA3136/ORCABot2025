@@ -28,10 +28,13 @@ public final class Configs {
     static {
       leftElevatorConfig
         .inverted(false)
-        .idleMode(IdleMode.kBrake);
+        .idleMode(IdleMode.kBrake)
+        .smartCurrentLimit(50)
+        .voltageCompensation(12);
 
       leftElevatorConfig
         .closedLoop
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         // Set PID values for position control
         .pidf(0.2, 0.0, 0.5, 0.0003) // .pidf(0.03, 0.0, 0.5, 0.0005)
         .outputRange(-1, 1)
@@ -45,7 +48,9 @@ public final class Configs {
       // rightElevatorConfig
       //   .closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
       rightElevatorConfig
-        .idleMode(IdleMode.kBrake);
+        .idleMode(IdleMode.kBrake)
+        .smartCurrentLimit(50)
+        .voltageCompensation(12);
         
 
     }
