@@ -17,6 +17,7 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
@@ -32,8 +33,10 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Configs;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants;
@@ -553,6 +556,58 @@ public class ElevatorSubsystem extends SubsystemBase {
       wrist.setSetpointCommand(WristSubsystem.Setpoint.unblock);
     }
   }  */
+
+  ////-------SOME STUFF FOR PID CONTROL--------//////
+   /**
+   * Run control loop to reach and maintain goal.
+   *
+   * @param goal the position to maintain in meters.
+   */
+  public void reachGoal(double goal)
+  {
+    double voltsOut = MathUtil.clamp(
+        m_controller.calculate(goal) +
+        m_feedforward.calculateWithVelocities(elevatorEncoder.getVelocity(),
+                                              m_controller.getSetpoint().velocity),
+        -12,
+        12); // 7 is the max voltage to send out.
+    leftElevator.setVoltage(voltsOut);
+  }
+
+  /**
+   * Set the goal of the elevator
+   *
+   * @param goal Goal in meters
+   * @return {@link edu.wpi.first.wpilibj2.command.Command}
+   */
+    public Command setGoal(double goal)
+    {
+      return run(() -> reachGoal(goal));
+    }
+
+  /**
+   * Stop the control loop and motor output.
+   */
+  public void stop()
+  {
+    leftElevator.set(0.0);
+  }
+
+    /**
+   * A trigger for when the height is at an acceptable tolerance.
+   *
+   * @param height    Height in encoder units
+   * @param tolerance Tolerance in units.
+   * @return {@link Trigger}
+   */
+  public Trigger atHeight(double height, double tolerance)
+  {
+    return new Trigger(() -> MathUtil.isNear(height,
+                                             elevatorEncoder.getPosition(),
+                                             tolerance));
+  }
+
+
 
 
   @Override
