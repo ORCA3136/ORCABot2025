@@ -108,6 +108,22 @@ public final class Constants {
       public static final double kDown = -0.2;
     }
 
+    public static final class ElevatorPIDConstants
+    {
+      //FOR THE PROFILED MOTION
+      public static final double kElevatorKp = 0;
+      public static final double kElevatorKi = 0;
+      public static final double kElevatorKd = 0;
+      public static final double kMaxVelocity = 0;
+      public static final double kMaxAcceleration = 0;
+
+      //FOR THE FEED FORWARD
+      public static final double kElevatorkS = 0;
+      public static final double  kElevatorkG = 0;
+      public static final double kElevatorkV = 0;
+      public static final double kElevatorkA = 0;
+    }
+
   }
 
   public static final class WristConstants {

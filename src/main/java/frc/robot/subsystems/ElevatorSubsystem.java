@@ -17,6 +17,10 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
+import edu.wpi.first.math.controller.ElevatorFeedforward;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -32,6 +36,8 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
 import frc.robot.Constants;
+import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.ElevatorConstants.ElevatorPIDConstants;
 import frc.robot.Constants.ElevatorConstants.ElevatorSetpoints;
 import frc.robot.Constants.SimulationRobotConstants;
 
@@ -70,11 +76,20 @@ public class ElevatorSubsystem extends SubsystemBase {
   private RelativeEncoder elevatorEncoder = leftElevator.getEncoder(); //need a relative encoder to get number of ticks
    //private RelativeEncoder elevatorEncoder = leftElevator.getEncoder(); we might want to get both left and right encoder and average the values
 
-
   private AbsoluteEncoder wristEncoder = wristMotor.getAbsoluteEncoder();
-  //wristEncoder.scaledInputs();
 
-
+ // Closed Loop Controller + Feedback
+  private final ProfiledPIDController m_controller  = new ProfiledPIDController(ElevatorPIDConstants.kElevatorKp,
+                                                                                ElevatorPIDConstants.kElevatorKi,
+                                                                                ElevatorPIDConstants.kElevatorKd,
+                                                                                new Constraints(ElevatorPIDConstants.kMaxVelocity,
+                                                                                ElevatorPIDConstants.kMaxAcceleration));
+  private final ElevatorFeedforward   m_feedforward =
+      new ElevatorFeedforward(
+        ElevatorPIDConstants.kElevatorkS,
+        ElevatorPIDConstants.kElevatorkG,
+        ElevatorPIDConstants.kElevatorkV,
+        ElevatorPIDConstants.kElevatorkA);
 
   // Member variables for subsystem state management
   private boolean wasResetByButton = false;
@@ -84,8 +99,6 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   private boolean wristManuallyMoving = true;
   private boolean elevatorManuallyMoving = true;
-
-
 
   private boolean wasResetByLimit = false;
 
@@ -603,8 +616,8 @@ public class ElevatorSubsystem extends SubsystemBase {
  public void simulationPeriodic() {
     // In this method, we update our simulation of what our elevator is doing
     // First, we set our "inputs" (voltages)
-    m_elevatorSim.setInput(leftElevator.getAppliedOutput() * RobotController.getBatteryVoltage());
-    m_armSim.setInput(wristMotor.getAppliedOutput() * RobotController.getBatteryVoltage());
+    m_elevatorSim.setInput(elevatorMotorSim.getAppliedOutput() * RobotController.getBatteryVoltage());
+    m_armSim.setInput(armMotorSim.getAppliedOutput() * RobotController.getBatteryVoltage());
 
     // Update sim limit switch
     elevatorLimitSwitchSim.setPressed(m_elevatorSim.getPositionMeters() == 0);
