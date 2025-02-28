@@ -170,8 +170,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     // <l/r>ElevatorEncoder.setPosition(0);
 
     zeroElevator();
-    Configs.ElevatorConfigs.rightElevatorConfig
-          .follow(leftElevator, false);
+    // Configs.ElevatorConfigs.rightElevatorConfig // ================================ changed lots ====================================
+    //       .follow(leftElevator, false);
     
     leftElevator.configure(Configs.ElevatorConfigs.leftElevatorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
     rightElevator.configure(Configs.ElevatorConfigs.rightElevatorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
@@ -480,7 +480,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public double getElevatorPosition() {
-    return elevatorEncoder.getPosition();// might need to be scaled by the gear ratio
+    return -1 * elevatorEncoder.getPosition();// might need to be scaled by the gear ratio
   }
 
   public double getWristPosition() {

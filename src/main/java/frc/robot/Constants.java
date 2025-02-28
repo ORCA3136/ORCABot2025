@@ -178,7 +178,8 @@ public final class Constants {
     public static final double kWristMinAngle = WristConstants.wristOffset + 1; // degrees
     public static final double kWristMaxAngle = 230; // degrees  110 untested; was 94
 
-    public static final double MAX_SPEED = Units.feetToMeters(7);  // theoretical: 14.63 Ft/s
+    public static final double MAX_SPEED = Units.feetToMeters(7);
+    public static final double MEDIUM_SPEED = Units.feetToMeters(2);  // theoretical: 14.63 Ft/s
     public static final double PATHPLANNER_MAX_SPEED = Units.feetToMeters(5);
   }
 

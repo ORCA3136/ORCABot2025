@@ -65,6 +65,8 @@ public class SwerveSubsystem extends SubsystemBase {
   
   private final Pigeon2 pigeon2 = new Pigeon2(9, "rio"); // Pigeon is on roboRIO CAN Bus with device ID 9
 
+  private double speed = Constants.Limits.MAX_SPEED;
+
 
 
   public SwerveSubsystem(File directory, VisionSubsystem vision) {
@@ -73,7 +75,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     try
     {
-      swerveDrive = new SwerveParser(directory).createSwerveDrive(Constants.Limits.MAX_SPEED,
+      swerveDrive = new SwerveParser(directory).createSwerveDrive(whatSpeed(),
                                                                   new Pose2d(new Translation2d(Meter.of(0),
                                                                                                Meter.of(0)),
                                                                              Rotation2d.fromDegrees(0)));
@@ -173,7 +175,7 @@ public class SwerveSubsystem extends SubsystemBase {
                                                         headingX,
                                                         headingY,
                                                         getHeading().getRadians(),
-                                                        Constants.Limits.MAX_SPEED);
+                                                        whatSpeed());
   }
 
   /**
@@ -211,7 +213,7 @@ public class SwerveSubsystem extends SubsystemBase {
                                                         scaledInputs.getY(),
                                                         angle.getRadians(),
                                                         getHeading().getRadians(),
-                                                        Constants.Limits.MAX_SPEED);
+                                                        whatSpeed());
   }
 
   public ChassisSpeeds getTargetSpeeds(double xInput, double yInput, Rotation2d angle, double maxSpeed)
@@ -267,6 +269,14 @@ public class SwerveSubsystem extends SubsystemBase {
   // public Command drive(double Y, double x, double rot) {
   //   return 
   // }
+
+  public double whatSpeed() {
+    return speed;
+  }
+
+  public void setSpeed(double sped) {
+    speed = sped;
+  }
 
 
 
@@ -346,6 +356,20 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
       () -> {zeroHeading();} 
       );
   }
+
+  /**
+   * Returns a Command that drives the swerve drive to a specific distance at a given speed.
+   *
+   * @param distanceInMeters       the distance to drive in meters
+   * @param speedInMetersPerSecond the speed at which to drive in meters per second
+   * @return a Command that drives the swerve drive to a specific distance at a given speed
+   */
+  public Command driveToDistanceCommand(double distanceInMeters, double speedInMetersPerSecond)
+  {
+    return run(() -> drive(new ChassisSpeeds(speedInMetersPerSecond, 0, 0)))
+        .until(() -> swerveDrive.getPose().getTranslation().getDistance(new Translation2d(0, 0)) >
+                     distanceInMeters);
+  }
   
 
   @Override
@@ -360,6 +384,7 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
     NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Robot Velocity x").setNumber(swerveDrive.getRobotVelocity().vxMetersPerSecond);
     NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Robot Velocity y").setNumber(swerveDrive.getRobotVelocity().vyMetersPerSecond);
     NetworkTableInstance.getDefault().getTable("Odometry").getEntry("MT2 Rotation").setNumber(getHeading().getDegrees());
+    NetworkTableInstance.getDefault().getTable("Swerve").getEntry("Speed").setNumber(whatSpeed());
 
     vision.updatePoseEstimator(swerveDrive);
     swerveDrive.updateOdometry(); // Might be redundant
@@ -440,6 +465,7 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
     } catch (Exception e)
     {
       // Handle exception as needed
+      System.out.println("Error above line 457");
       e.printStackTrace();
     }
   }
@@ -454,7 +480,7 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
   {
     // Create the constraints to use while pathfinding
     PathConstraints constraints = new PathConstraints(
-        1, 4.0,
+        1.0, 4.0,
         Units.degreesToRadians(100), Units.degreesToRadians(720));
 
     // Since AutoBuilder is configured, we can use it to build pathfinding commands

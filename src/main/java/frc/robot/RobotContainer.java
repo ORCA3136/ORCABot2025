@@ -34,6 +34,7 @@ import swervelib.SwerveInputStream;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -193,17 +194,20 @@ public class RobotContainer {
       m_driverController.axisGreaterThan(3, 0.4).whileTrue(new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kOut, vision));
       m_driverController.axisGreaterThan(2, 0.4).whileTrue(new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kIn, vision));
       m_driverController.rightBumper().whileTrue(new RunIntakeRoutine(intake, Constants.IntakeConstants.IntakePowerLevels.kFeed, vision));
+      m_driverController.leftBumper().onTrue(Commands.runOnce(() -> driveBase.setSpeed(Constants.Limits.MEDIUM_SPEED))).onFalse(Commands.runOnce(() -> driveBase.setSpeed(Constants.Limits.MAX_SPEED)));
+      // m_driverController.leftBumper().onFalse(Commands.runOnce(() -> driveBase.setSpeed(Constants.Limits.MEDIUM_SPEED))).onTrue(Commands.runOnce(() -> driveBase.setSpeed(Constants.Limits.MAX_SPEED)));
 
       m_secondaryController.button(11).whileTrue(new RunClimberCommand(climber, Constants.ClimberConstants.kClimberIn));
       m_secondaryController.button(10).whileTrue(new RunClimberCommand(climber, Constants.ClimberConstants.kClimberOut));
       m_secondaryController.button(9).whileTrue(new RunFunnelCommand(climber, Constants.ClimberConstants.kFunnelSpeed));
+      m_secondaryController.button(12).whileTrue(driveBase.driveToPoseRobotRelative(new Pose2d(new Translation2d(1, 0), Rotation2d.fromDegrees(0))));
 
       m_secondaryController.button(1).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel4)));
       m_secondaryController.button(2).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel3)));
       m_secondaryController.button(3).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel2)));
       m_secondaryController.button(4).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel1)));
 
-      m_secondaryController.button(8).whileTrue(Commands.runOnce(() -> ledSubsystem.ChangeLedColor(2)));
+      m_secondaryController.button(8).whileTrue(Commands.runOnce(() -> driveBase.resetOdometry(new Pose2d())));
       m_secondaryController.button(7).whileTrue(Commands.runOnce(() -> ledSubsystem.ChangeLedColor(5)));
       m_secondaryController.button(6).whileTrue(Commands.runOnce(() -> ledSubsystem.setLedColor(Constants.Colors.Rainbow_Forest_Pallet)));
       m_secondaryController.button(5).whileTrue(Commands.runOnce(() -> ledSubsystem.setLedColor(Constants.Colors.Gold)));
