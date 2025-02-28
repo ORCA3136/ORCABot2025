@@ -6,6 +6,7 @@ package frc.robot;
 
 import java.io.File;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import frc.robot.Constants.OperatorConstants;
@@ -38,6 +39,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -64,6 +67,8 @@ public class RobotContainer {
   private ElevatorSubsystem elevatorSystem = new ElevatorSubsystem();
   private ClimberSubsystem climber = new ClimberSubsystem();
   private LEDSubsystem ledSubsystem = new LEDSubsystem();
+  private final SendableChooser<Command> autoChooser;
+
 
   
 
@@ -87,13 +92,11 @@ public class RobotContainer {
     configureBindings();
     configureNamedCommands();
     
-        // DataLogManager.start();
-        // DataLog log = DataLogManager.getLog();
-        // myBooleanLog = new BooleanLogEntry(log, "/my/boolean");
-        // myDoubleLog = new DoubleLogEntry(log, "/my/double");
-        // myStringLog = new StringLogEntry(log, "/my/string");
+    autoChooser = AutoBuilder.buildAutoChooser("My Default Auto"); //pick a default
+    SmartDashboard.putData("Auto Chooser", autoChooser);
+
     
-      }
+    }
     
       SwerveInputStream driveAngularVelocity  = SwerveInputStream.of(driveBase.getSwerveDrive(),
                                             () -> -m_driverController.getLeftY(), 
@@ -242,9 +245,8 @@ public class RobotContainer {
     
     // Command AutoCommand = new SequentialCommandGroup(driveBase.getAutonomousCommand("Red Side Test"), new WaitCommand(1), new RunIntakeCommand(intake, 0, vision));
 
+    return autoChooser.getSelected();
 
 
-
-    return driveBase.getAutonomousCommand("Right Score I3");
   }
 }
