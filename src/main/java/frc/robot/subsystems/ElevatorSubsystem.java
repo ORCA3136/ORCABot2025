@@ -170,8 +170,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     // <l/r>ElevatorEncoder.setPosition(0);
 
     zeroElevator();
-    // Configs.ElevatorConfigs.rightElevatorConfig // ================================ changed lots ====================================
-    //       .follow(leftElevator, false);
+    Configs.ElevatorConfigs.rightElevatorConfig // ================================ changed lots ====================================
+         .follow(leftElevator, true);
     
     leftElevator.configure(Configs.ElevatorConfigs.leftElevatorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
     rightElevator.configure(Configs.ElevatorConfigs.rightElevatorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);

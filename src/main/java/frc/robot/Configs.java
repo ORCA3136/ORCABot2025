@@ -48,7 +48,7 @@ public final class Configs {
       // rightElevatorConfig
       //   .closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
       rightElevatorConfig
-        .idleMode(IdleMode.kCoast)
+        .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(50)
         .voltageCompensation(12);
         

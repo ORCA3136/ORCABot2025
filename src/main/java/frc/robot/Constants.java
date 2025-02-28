@@ -104,8 +104,8 @@ public final class Constants {
       public static final int kAlgae2 = 1; // Between 3 and 4
     }
     public static final class ElevatorPowerLevels {
-      public static final double kUp = 0.3;
-      public static final double kDown = -0.2;
+      public static final double kUp = -0.3;
+      public static final double kDown = 0.2;
     }
 
     public static final class ElevatorPIDConstants
