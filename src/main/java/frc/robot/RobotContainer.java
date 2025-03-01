@@ -211,8 +211,8 @@ public class RobotContainer {
       m_secondaryController.button(4).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel1)));
 
       m_secondaryController.button(8).whileTrue(Commands.runOnce(() -> driveBase.resetOdometry(new Pose2d())));
-      m_secondaryController.button(7).whileTrue(driveBase.driveToPose(new Pose2d(new Translation2d(5.134, 4.941), Rotation2d.fromDegrees(-112.9))));
-      m_secondaryController.button(6).whileTrue(Commands.runOnce(() -> ledSubsystem.setLedColor(Constants.Colors.Rainbow_Forest_Pallet)));
+      m_secondaryController.button(7).whileTrue(driveBase.driveToPose(new Pose2d(new Translation2d(4.937, 4.871), Rotation2d.fromDegrees(-116))));
+      m_secondaryController.button(6).whileTrue(Commands.runOnce(() ->elevatorSystem.setWristTarget(67)));
       m_secondaryController.button(5).whileTrue(Commands.runOnce(() -> ledSubsystem.setLedColor(Constants.Colors.Gold)));
 
       // m_driverController.leftBumper().whileTrue(new AprilTagFollowCommand(driveBase));
@@ -234,6 +234,9 @@ public class RobotContainer {
     NamedCommands.registerCommand("Elevator L2", Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel2)));
     NamedCommands.registerCommand("Elevator L3", Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel3)));
     NamedCommands.registerCommand("Elevator L4", Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel4)));
+    NamedCommands.registerCommand("lvl4 pt2", Commands.runOnce(() -> elevatorSystem.setWristTarget(67)));
+    NamedCommands.registerCommand("drive to score pose I", driveBase.driveToPose(new Pose2d(new Translation2d(4.937, 4.871), Rotation2d.fromDegrees(-116))));
+    
   }
 
   /**

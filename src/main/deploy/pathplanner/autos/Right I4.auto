@@ -24,6 +24,24 @@
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 10.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "I after elevator"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "lvl4 pt2"
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "Intake score"
