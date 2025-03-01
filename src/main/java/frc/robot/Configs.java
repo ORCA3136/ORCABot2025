@@ -27,7 +27,7 @@ public final class Configs {
 
     static {
       leftElevatorConfig
-        .inverted(false)
+        .inverted(true)
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(50)
         .voltageCompensation(12);

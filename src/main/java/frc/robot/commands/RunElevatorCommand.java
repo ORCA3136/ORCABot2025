@@ -101,7 +101,6 @@ public class RunElevatorCommand extends Command {
   @Override
   public void end(boolean interrupted) {
     elevatorSubsystem.setElevatorPower(0);
-    // isFinished();
   }
 
   // Returns true when the command should end.

@@ -200,9 +200,9 @@ public class ElevatorSubsystem extends SubsystemBase {
     if (getWristAngle() > Constants.WristConstants.WristSetpoints.unblock && getWristAngle() < 350) {
       elBool = true;
     } else if (getWristAngle() > 25) {
-      if (getElevatorPosition() < 22) {
-        if (elevatorCurrentTarget > 22) { 
-          elTarget = 22;
+      if (getElevatorPosition() < 20) {
+        if (elevatorCurrentTarget > 20) { 
+          elTarget = 20;
         } 
       } 
     } else {
@@ -214,7 +214,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     
     if (getElevatorPosition() < 5) {
       wristBool = true;
-    } else if (getElevatorPosition() < 22) {
+    } else if (getElevatorPosition() < 20) {
       if (wristCurrentTarget < 25) {
         wristTarget = 25;
       }
@@ -480,7 +480,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public double getElevatorPosition() {
-    return -1 * elevatorEncoder.getPosition();// might need to be scaled by the gear ratio
+    return elevatorEncoder.getPosition();// might need to be scaled by the gear ratio
   }
 
   public double getWristPosition() {

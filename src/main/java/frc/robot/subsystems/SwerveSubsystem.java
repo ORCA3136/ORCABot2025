@@ -13,11 +13,13 @@ import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.pathfinding.Pathfinding;
 
 import edu.wpi.first.wpilibj.DriverStation;
 // import edu.wpi.first.wpilibj.Filesystem;
@@ -70,7 +72,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
 
   public SwerveSubsystem(File directory, VisionSubsystem vision) {
-    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.NONE;
+    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
     this.vision = vision;
 
     try
@@ -395,7 +397,7 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
     // PoseEstimate[] poses = vision.getEstimatedGlobalPose(limelights);
 
     // LimelightHelpers.SetRobotOrientation("limelight-one",getHeading().getDegrees(),0,0,0,0,0);
-    LimelightHelpers.SetRobotOrientation("limelight-two",swerveDrive.getPose().getRotation().getDegrees(),0,0,0,0,0);
+    LimelightHelpers.SetRobotOrientation("limelight-one",swerveDrive.getPose().getRotation().getDegrees(),0,0,0,0,0);
     // LimelightHelpers.SetRobotOrientation("limelight-three",getHeading().getDegrees(),0,0,0,0,0);
 
     
@@ -468,6 +470,7 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
       System.out.println("Error above line 457");
       e.printStackTrace();
     }
+    PathfindingCommand.warmupCommand().schedule();
   }
 
   /**
@@ -496,7 +499,7 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
     Pose2d robot2d = getPose();
 // Create the constraints to use while pathfinding
     PathConstraints constraints = new PathConstraints(
-        0.3, 4.0,
+        1, 3.0,
         Units.degreesToRadians(100), Units.degreesToRadians(720));
 
     // Since AutoBuilder is configured, we can use it to build pathfinding commands

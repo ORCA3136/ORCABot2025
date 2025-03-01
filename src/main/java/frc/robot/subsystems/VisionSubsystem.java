@@ -80,15 +80,15 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   public boolean getTV() {
-    return LimelightHelpers.getTV("limelight-two");
+    return LimelightHelpers.getTV("limelight-one");
   }
 
   public double getTX() {
-    return LimelightHelpers.getTX("limelight-two");
+    return LimelightHelpers.getTX("limelight-one");
   }
 
   public void updatePoseEstimator(SwerveDrive swerve) {
-    PoseEstimate  poseEst = getEstimatedGlobalPose("limelight-two");
+    PoseEstimate  poseEst = getEstimatedGlobalPose("limelight-one");
       if (poseEst != null) {
         swerve.addVisionMeasurement(poseEst.pose, poseEst.timestampSeconds);
       }
@@ -102,8 +102,15 @@ public class VisionSubsystem extends SubsystemBase {
   public PoseEstimate getEstimatedGlobalPose(String limelight) {
     if (LimelightHelpers.getTV(limelight)) {
       PoseEstimate poseEst = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelight);
+     
+      SmartDashboard.putBoolean("limelightTV", LimelightHelpers.getTV(limelight));
+      SmartDashboard.putNumber("limelightX", poseEst.pose.getX());
+      SmartDashboard.putNumber("limelightY", poseEst.pose.getY());
       return poseEst;
     }
+    SmartDashboard.putBoolean("limelightTV", LimelightHelpers.getTV(limelight));
+    SmartDashboard.putNumber("limelightX", new PoseEstimate().pose.getX());
+    SmartDashboard.putNumber("limelightY", new PoseEstimate().pose.getY());
     return new PoseEstimate(); // IDK abt ths
   }
 
@@ -112,7 +119,7 @@ public class VisionSubsystem extends SubsystemBase {
     int num = 0;
     for (String limelight : limelights) {
       if (LimelightHelpers.getTV(limelight)) {
-        PoseEstimate poseEst = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight);
+        PoseEstimate poseEst = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelight);
         poseEsts[num] = poseEst;
       }
       else {
@@ -140,7 +147,7 @@ public class VisionSubsystem extends SubsystemBase {
 
     // This method will be called once per scheduler run
 
-    NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-two");
+    NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-one");
     NetworkTableEntry tx = table.getEntry("tx");
     NetworkTableEntry ty = table.getEntry("ty");
     NetworkTableEntry ta = table.getEntry("ta");

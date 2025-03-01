@@ -104,8 +104,8 @@ public final class Constants {
       public static final int kAlgae2 = 1; // Between 3 and 4
     }
     public static final class ElevatorPowerLevels {
-      public static final double kUp = -0.3;
-      public static final double kDown = 0.2;
+      public static final double kDown = -0.2;
+      public static final double kUp = 0.3;
     }
 
     public static final class ElevatorPIDConstants
@@ -131,12 +131,12 @@ public final class Constants {
     public static final double wristOffset = 2.5;
 
     public static final class WristSetpoints {
-      public static final double unblock = 90;
+      public static final double unblock = 97;
       public static final int kFeederStation = 3;
       public static final int kLevel1 = 3;
       public static final int kLevel2 = 50; 
-      public static final int kLevel3 = 50;
-      public static final int kLevel4 = 81; 
+      public static final int kLevel3 = 98; // 95 -> 50; //bc can't go back, motion graph must be 1:1, need moveToSetpointBetter()
+      public static final int kLevel4 = 98; // 81; 
       public static final int kProcessor = 165; 
       public static final int kAlgae1 = 165; 
       public static final int kAlgae2 = 165; 
