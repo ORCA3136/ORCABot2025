@@ -196,24 +196,39 @@ public class RobotContainer {
 
       m_driverController.axisGreaterThan(3, 0.4).whileTrue(new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kOut, vision));
       m_driverController.axisGreaterThan(2, 0.4).whileTrue(new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kIn, vision));
+
+      // m_driverController.rightBumper().whileTrue(Commands.runOnce(() -> elevatorSystem.setWristManuallyMoving(true)));
+      // m_driverController.leftBumper() .whileTrue(Commands.runOnce(() -> elevatorSystem.setElevatorManuallyMoving(true)));
       m_driverController.rightBumper().whileTrue(new RunIntakeRoutine(intake, Constants.IntakeConstants.IntakePowerLevels.kFeed, vision));
-      m_driverController.leftBumper().onTrue(Commands.runOnce(() -> driveBase.setSpeed(Constants.Limits.MEDIUM_SPEED))).onFalse(Commands.runOnce(() -> driveBase.setSpeed(Constants.Limits.MAX_SPEED)));
+
+      
+      // m_driverController.leftBumper().onTrue(Commands.runOnce(() -> driveBase.setSpeed(Constants.Limits.MEDIUM_SPEED))).onFalse(Commands.runOnce(() -> driveBase.setSpeed(Constants.Limits.MAX_SPEED)));
       // m_driverController.leftBumper().onFalse(Commands.runOnce(() -> driveBase.setSpeed(Constants.Limits.MEDIUM_SPEED))).onTrue(Commands.runOnce(() -> driveBase.setSpeed(Constants.Limits.MAX_SPEED)));
 
-      m_secondaryController.button(11).whileTrue(new RunClimberCommand(climber, Constants.ClimberConstants.kClimberIn));
-      m_secondaryController.button(10).whileTrue(new RunClimberCommand(climber, Constants.ClimberConstants.kClimberOut));
-      m_secondaryController.button(9).whileTrue(new RunFunnelCommand(climber, Constants.ClimberConstants.kFunnelSpeed));
-      m_secondaryController.button(12).whileTrue(driveBase.driveToPoseRobotRelative(new Pose2d(new Translation2d(1, 0), Rotation2d.fromDegrees(0))));
+      // m_secondaryController.button(11).whileTrue(new RunClimberCommand(climber, Constants.ClimberConstants.kClimberInSpeed));
+      // m_secondaryController.button(10).whileTrue(new RunClimberCommand(climber, Constants.ClimberConstants.kClimberOutSpeed));
+      // m_secondaryController.button(9).whileTrue(new RunFunnelCommand(climber, Constants.ClimberConstants.kFunnelSpeed));
+      // m_secondaryController.button(12).whileTrue(driveBase.driveToPoseRobotRelative(new Pose2d(new Translation2d(1, 0), Rotation2d.fromDegrees(0))));
 
       m_secondaryController.button(1).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel4)));
       m_secondaryController.button(2).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel3)));
       m_secondaryController.button(3).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel2)));
       m_secondaryController.button(4).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel1)));
 
-      m_secondaryController.button(8).whileTrue(Commands.runOnce(() -> driveBase.resetOdometry(new Pose2d())));
-      m_secondaryController.button(7).whileTrue(driveBase.driveToPose(new Pose2d(new Translation2d(4.937, 4.871), Rotation2d.fromDegrees(-116))));
-      m_secondaryController.button(6).whileTrue(Commands.runOnce(() ->elevatorSystem.setWristTarget(67)));
-      m_secondaryController.button(5).whileTrue(Commands.runOnce(() -> ledSubsystem.setLedColor(Constants.Colors.Gold)));
+      // m_secondaryController.button(8).whileTrue(Commands.runOnce(() -> driveBase.resetOdometry(new Pose2d())));
+      // m_secondaryController.button(7).whileTrue(driveBase.driveToPose(new Pose2d(new Translation2d(4.937, 4.871), Rotation2d.fromDegrees(-116))));
+      // m_secondaryController.button(6).whileTrue(Commands.runOnce(() ->elevatorSystem.setWristTarget(67)));
+      // m_secondaryController.button(5).whileTrue(Commands.runOnce(() -> ledSubsystem.setLedColor(Constants.Colors.Gold)));
+
+      m_secondaryController.button(8).whileTrue(Commands.runOnce(() -> elevatorSystem.setElevatorTarget(Constants.ElevatorConstants.ElevatorSetpoints.kLevel4)));
+      m_secondaryController.button(7).whileTrue(Commands.runOnce(() -> elevatorSystem.setElevatorTarget(Constants.ElevatorConstants.ElevatorSetpoints.kLevel3)));
+      m_secondaryController.button(6).whileTrue(Commands.runOnce(() -> elevatorSystem.setElevatorTarget(Constants.ElevatorConstants.ElevatorSetpoints.kLevel2)));
+      m_secondaryController.button(5).whileTrue(Commands.runOnce(() -> elevatorSystem.setElevatorTarget(Constants.ElevatorConstants.ElevatorSetpoints.kLevel1)));
+
+      m_secondaryController.button(12).whileTrue(Commands.runOnce(() -> elevatorSystem.setWristTarget(Constants.WristConstants.WristSetpoints.kLevel4)));
+      m_secondaryController.button(11).whileTrue(Commands.runOnce(() -> elevatorSystem.setWristTarget(Constants.WristConstants.WristSetpoints.kLevel3)));
+      m_secondaryController.button(10).whileTrue(Commands.runOnce(() -> elevatorSystem.setWristTarget(Constants.WristConstants.WristSetpoints.kLevel2)));
+      m_secondaryController.button(9).whileTrue(Commands.runOnce(() -> elevatorSystem.setWristTarget(Constants.WristConstants.WristSetpoints.kLevel1)));
 
       // m_driverController.leftBumper().whileTrue(new AprilTagFollowCommand(driveBase));
 
@@ -234,7 +249,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Elevator L2", Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel2)));
     NamedCommands.registerCommand("Elevator L3", Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel3)));
     NamedCommands.registerCommand("Elevator L4", Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel4)));
-    NamedCommands.registerCommand("lvl4 pt2", Commands.runOnce(() -> elevatorSystem.setWristTarget(67)));
+    NamedCommands.registerCommand("lvl4 pt2", Commands.runOnce(() -> elevatorSystem.wristMoveToSetpoint(67)));
     NamedCommands.registerCommand("drive to score pose I", driveBase.driveToPose(new Pose2d(new Translation2d(4.937, 4.871), Rotation2d.fromDegrees(-116))));
     
   }

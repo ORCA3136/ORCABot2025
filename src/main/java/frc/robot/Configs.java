@@ -36,13 +36,8 @@ public final class Configs {
         .closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         // Set PID values for position control
-        .pidf(0.2, 0.0, 0.5, 0.0003) // .pidf(0.03, 0.0, 0.5, 0.0005)
-        .outputRange(-1, 1)
-        .maxMotion
-        // Set MAXMotion parameters for position control
-        .maxVelocity(1200)  // 4200
-        .maxAcceleration(1500) // 6000
-        .allowedClosedLoopError(0.5);
+        .pidf(0.2, 0.0, 0.5, 0.0003)
+        .outputRange(-0.5, 0.5);
 
 
       // rightElevatorConfig
@@ -69,14 +64,8 @@ public final class Configs {
         .closedLoop
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
         // Set PID values for position control
-        .pid(0.005, 0.0, 0)
-        //.i(0.02)
-        .outputRange(-1, 1)
-        .maxMotion
-        // Set MAXMotion parameters for position control
-        .maxVelocity(5700)
-        .maxAcceleration(15000)
-        .allowedClosedLoopError(0.5);
+        .pid(0.08, 0.0, 0.1)
+        .outputRange(-0.25, 0.25);
     }
   }
 

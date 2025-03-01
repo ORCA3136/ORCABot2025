@@ -30,15 +30,15 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "I after elevator"
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "lvl4 pt2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "I after elevator"
           }
         },
         {

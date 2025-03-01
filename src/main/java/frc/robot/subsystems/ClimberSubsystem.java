@@ -4,7 +4,7 @@
 
 package frc.robot.subsystems;
 
-import java.io.ObjectInputFilter.Config;
+// import java.io.ObjectInputFilter.Config;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -49,6 +49,11 @@ public class ClimberSubsystem extends SubsystemBase {
   public double getClimberPosition() {
     return climberEncoder.getPosition();
   }
+
+  public boolean isFlipped() {
+    return getFunnelPosition() < Constants.ClimberConstants.kFunnelOutPos;
+  }
+  
 
   @Override
   public void periodic() {

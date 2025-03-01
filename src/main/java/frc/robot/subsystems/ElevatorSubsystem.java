@@ -82,11 +82,18 @@ public class ElevatorSubsystem extends SubsystemBase {
   private AbsoluteEncoder wristEncoder = wristMotor.getAbsoluteEncoder();
 
  // Closed Loop Controller + Feedback
+  private final ProfiledPIDController m_elevatorController  = new ProfiledPIDController(ElevatorPIDConstants.kElevatorKp,
+                                                                                ElevatorPIDConstants.kElevatorKi,
+                                                                                ElevatorPIDConstants.kElevatorKd,
+                                                                                new Constraints(ElevatorPIDConstants.kMaxVelocity,
+                                                                                ElevatorPIDConstants.kMaxAcceleration));
+
   private final ProfiledPIDController m_controller  = new ProfiledPIDController(ElevatorPIDConstants.kElevatorKp,
                                                                                 ElevatorPIDConstants.kElevatorKi,
                                                                                 ElevatorPIDConstants.kElevatorKd,
                                                                                 new Constraints(ElevatorPIDConstants.kMaxVelocity,
                                                                                 ElevatorPIDConstants.kMaxAcceleration));
+
   private final ElevatorFeedforward   m_feedforward =
       new ElevatorFeedforward(
         ElevatorPIDConstants.kElevatorkS,
@@ -214,6 +221,72 @@ public class ElevatorSubsystem extends SubsystemBase {
     
     if (getElevatorPosition() < 5) {
       wristBool = true;
+    } else if (getElevatorPosition() < 20) { // 17 -18
+      if (wristCurrentTarget < 25) {
+        wristTarget = 25;
+      }
+    } else {
+      if (wristCurrentTarget < Constants.WristConstants.WristSetpoints.unblock) {
+        wristTarget = Constants.WristConstants.WristSetpoints.unblock;
+      }
+    }
+
+
+    if (!isElevatorManuallyMoving()) {
+      if (elBool) {
+        elevatorMoveToSetpoint();
+      } else {
+        if (elTarget != 3) {
+          elevatorMoveToSetpoint(elTarget);
+        }
+        else {
+          elevatorMoveToSetpoint();
+        }
+      }
+    }
+
+    if (!isWristManuallyMoving()) {
+      if (wristBool) {
+        wristMoveToSetpoint();
+      } else {
+        if (wristTarget != 3) {
+          wristMoveToSetpoint(wristTarget);
+        }
+        else {
+          wristMoveToSetpoint();
+        }
+      }
+    }
+
+    NetworkTableInstance.getDefault().getTable("Elevator").getEntry("Temp Elevator Target").setNumber(elTarget);
+    NetworkTableInstance.getDefault().getTable("Elevator").getEntry("Temp Wrist Target").setNumber(wristTarget);
+
+  }
+
+  private void moveToSetpointPID() {
+    boolean elBool = false;
+    double elTarget = 3;
+
+    boolean wristBool = false;
+    double wristTarget = 3;
+
+    if (getWristAngle() > Constants.WristConstants.WristSetpoints.unblock && getWristAngle() < 350) {
+      elBool = true;
+    } else if (getWristAngle() > 25) {
+      if (getElevatorPosition() < 20) {
+        if (elevatorCurrentTarget > 20) { 
+          elTarget = 20;
+        } 
+      } 
+    } else {
+      if (elevatorCurrentTarget > 5) {
+        elTarget = 5;
+      }
+    }
+
+    
+    if (getElevatorPosition() < 5) {
+      wristBool = true;
     } else if (getElevatorPosition() < 20) {
       if (wristCurrentTarget < 25) {
         wristTarget = 25;
@@ -222,6 +295,15 @@ public class ElevatorSubsystem extends SubsystemBase {
       if (wristCurrentTarget < Constants.WristConstants.WristSetpoints.unblock) {
         wristTarget = Constants.WristConstants.WristSetpoints.unblock;
       }
+    }
+
+    if (getWristAngle() < wristCurrentTarget - 0.5) {
+      elBool = false;
+      elTarget = getElevatorPosition();
+    }
+    else if (Math.abs(getElevatorPosition() - elevatorCurrentTarget) > 0.5) {
+      wristBool = false;
+      wristTarget = getWristPosition();
     }
 
 
@@ -289,16 +371,15 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     if (differentZones) {
-     elTarget = 31;
-     wristTarget = Constants.WristConstants.WristSetpoints.unblock;
+      elTarget = 31;
     } else if (currentZone == 1) {
 
       if (getWristAngle() > Constants.WristConstants.WristSetpoints.unblock && getWristAngle() < 350) {
         elBool = true;
       } else if (getWristAngle() > 25) {
-        if (getElevatorPosition() < 22) {
-          if (elevatorCurrentTarget > 22) { // can wrist go around???
-            elTarget = 22;
+        if (getElevatorPosition() < 20) {
+          if (elevatorCurrentTarget > 20) { // can wrist go around???
+            elTarget = 20;
           } // is elevator just free here
         } 
       //   else if (40 < getElevatorPosition() && getElevatorPosition() < 65) {
@@ -322,11 +403,26 @@ public class ElevatorSubsystem extends SubsystemBase {
           elTarget = 5;
         }
       }
+    } else if (currentZone == 3) {
+      if (getWristAngle() > Constants.WristConstants.WristSetpoints.unblock && getWristAngle() < 350) {
+        elBool = true;
+      } else if (25 > getWristAngle() && getWristAngle() < Constants.WristConstants.WristSetpoints.unblock) {
+        if (getElevatorPosition() < 65 && getElevatorPosition() > 40) {
+          if (getElevatorCurrentTarget() > 65) {
+            elTarget = 65;
+          } else if (getElevatorCurrentTarget() < 40) {
+            elTarget = 40;
+          }
+        }
+      }
+    }
 
-      
+    if (differentZones) {
+      wristTarget = Constants.WristConstants.WristSetpoints.unblock + 10;
+    } else if (currentZone == 1) {
       if (getElevatorPosition() < 5) {
         wristBool = true;
-      } else if (getElevatorPosition() < 22) {
+      } else if (getElevatorPosition() < 20) {
         if (wristCurrentTarget < 25) {
           wristTarget = 25;
         }
@@ -341,6 +437,16 @@ public class ElevatorSubsystem extends SubsystemBase {
       } else {
         if (wristCurrentTarget < Constants.WristConstants.WristSetpoints.unblock) {
           wristTarget = Constants.WristConstants.WristSetpoints.unblock;
+        }
+      }
+    } else if (currentZone == 3) {
+      if (getElevatorPosition() < 40 || getElevatorPosition() > 65) {
+        if (wristCurrentTarget < Constants.WristConstants.WristSetpoints.unblock) {
+          wristTarget = Constants.WristConstants.WristSetpoints.unblock;
+        }
+      } else if (getElevatorPosition() < 65) {
+        if (wristCurrentTarget < 15) {
+          wristTarget = 15;
         }
       }
     }
@@ -376,22 +482,22 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   private void wristMoveToSetpoint() {
     wristClosedLoopController.setReference(
-        wristCurrentTarget, ControlType.kMAXMotionPositionControl);
+        wristCurrentTarget, ControlType.kPosition);
   }
 
-  private void elevatorMoveToSetpoint() {
+  public void elevatorMoveToSetpoint() {
     elevatorClosedLoopController.setReference(
-      elevatorCurrentTarget, ControlType.kMAXMotionPositionControl);
+      elevatorCurrentTarget, ControlType.kPosition);
   }
 
-  private void wristMoveToSetpoint(double pos) {
+  public void wristMoveToSetpoint(double pos) {
     wristClosedLoopController.setReference(
-        pos, ControlType.kMAXMotionPositionControl);
+        pos, ControlType.kPosition);
   }
 
-  private void elevatorMoveToSetpoint(double pos) {
+  public void elevatorMoveToSetpoint(double pos) {
     elevatorClosedLoopController.setReference(
-      pos, ControlType.kMAXMotionPositionControl);
+      pos, ControlType.kPosition);
   }
 
   /** Set the elevator motor power in the range of [-1, 1]. */
@@ -463,7 +569,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     wristCurrentTarget = target;
     setWristManuallyMoving(false);
   }
-  
 
   public void setWristManuallyMoving(boolean bool) {
     wristManuallyMoving = bool;
@@ -471,6 +576,11 @@ public class ElevatorSubsystem extends SubsystemBase {
   
   public boolean isWristManuallyMoving() {
     return wristManuallyMoving;
+  }
+
+  public void setElevatorTarget(double target) {
+    elevatorCurrentTarget = target;
+    setElevatorManuallyMoving(false);
   }
   
   public void setElevatorManuallyMoving(boolean bool) {
@@ -616,14 +726,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     zeroElevatorOnLimitSwitch();
 
     if (!wristManuallyMoving || !elevatorManuallyMoving) {
-      // if (!wrist.isWristInTheWay()) {
-
-        moveToSetpoint();
-      // } else {
-      //   wrist.setSetpointCommand(WristSubsystem.Setpoint.unblock);
-      // }
-      
-      
+      moveToSetpointPID();
     }
 
     NetworkTableInstance.getDefault().getTable("Elevator").getEntry("Elevator current target").setNumber(elevatorCurrentTarget);

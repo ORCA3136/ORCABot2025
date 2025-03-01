@@ -65,7 +65,7 @@ public class RunIntakeRoutine extends Command {
   public void end(boolean interrupted) {
     intakeSubsystem.setIntakePower(0);
     if (!interrupted && recursionDepth < 3) {
-      new RunIntakeRoutine(intakeSubsystem, powerSetPoint/-5, lidar, recursionDepth+1).schedule();
+      new RunIntakeRoutine(intakeSubsystem, powerSetPoint/-3, lidar, recursionDepth+1).schedule();
     }
     
     // isFinished();

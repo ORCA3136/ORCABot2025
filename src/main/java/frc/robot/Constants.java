@@ -111,15 +111,15 @@ public final class Constants {
     public static final class ElevatorPIDConstants
     {
       //FOR THE PROFILED MOTION
-      public static final double kElevatorKp = 0;
+      public static final double kElevatorKp = 0.2;
       public static final double kElevatorKi = 0;
-      public static final double kElevatorKd = 0;
-      public static final double kMaxVelocity = 0;
-      public static final double kMaxAcceleration = 0;
+      public static final double kElevatorKd = 0.5;
+      public static final double kMaxVelocity = 120;
+      public static final double kMaxAcceleration = 500;
 
       //FOR THE FEED FORWARD
       public static final double kElevatorkS = 0;
-      public static final double  kElevatorkG = 0;
+      public static final double  kElevatorkG = 0.0003;
       public static final double kElevatorkV = 0;
       public static final double kElevatorkA = 0;
     }
@@ -131,20 +131,36 @@ public final class Constants {
     public static final double wristOffset = 2.5;
 
     public static final class WristSetpoints {
-      public static final double unblock = 97;
+      public static final double unblock = Limits.kWristSafetyThreshold;
       public static final int kFeederStation = 3;
       public static final int kLevel1 = 3;
       public static final int kLevel2 = 50; 
-      public static final int kLevel3 = 98; // 95 -> 50; //bc can't go back, motion graph must be 1:1, need moveToSetpointBetter()
-      public static final int kLevel4 = 98; // 81; 
+      public static final int kLevel3 = 67; // 95 -> 50; //bc can't go back, motion graph must be 1:1, need moveToSetpointBetter()
+      public static final int kLevel4 = 100; // 67; 
       public static final int kProcessor = 165; 
       public static final int kAlgae1 = 165; 
       public static final int kAlgae2 = 165; 
     }
 
     public static final class WristPowerLevels {
-      public static final double kUp = 0.15;
-      public static final double kDown = -0.15;
+      public static final double kUp = 0.2;    // ditto
+      public static final double kDown = -0.2; // from -0.2
+    }
+
+    public static final class WristPIDConstants
+    {
+      //FOR THE PROFILED MOTION
+      public static final double kWristKp = 0.005;
+      public static final double kWristKi = 0;
+      public static final double kWristKd = 0;
+      public static final double kMaxVelocity = 120;
+      public static final double kMaxAcceleration = 500;
+
+      //FOR THE FEED FORWARD
+      public static final double kWristkS = 0;
+      public static final double  kWristkG = 0;
+      public static final double kWristkV = 0;
+      public static final double kWristkA = 0;
     }
   }
 
@@ -160,8 +176,12 @@ public final class Constants {
   public static final class ClimberConstants {
     
     public static final double kFunnelSpeed = -0.3;
-    public static final double kClimberIn = -1;
-    public static final double kClimberOut = 1;
+    public static final double kClimberInSpeed = -1;
+    public static final double kClimberOutSpeed = 1;
+
+    public static final double kClimberInPos = 35;
+    public static final double kClimberOutPos = -180;
+    public static final double kFunnelOutPos = 12;
   }
 
   public static final class Limits {
@@ -172,7 +192,7 @@ public final class Constants {
     public static final double kElevatorMinHeight = 0.0;
 
 
-    public static final double kWristSafetyThreshold = 90; //   -> -39
+    public static final double kWristSafetyThreshold = 97; //   -> -39
 
 
     public static final double kWristMinAngle = WristConstants.wristOffset + 1; // degrees
