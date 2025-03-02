@@ -65,6 +65,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     kUnblock;
   }
 
+  private Setpoint currentLevel;
+
   private boolean wristBlocking;
   private boolean elevatorBlocking;
 
@@ -106,11 +108,11 @@ public class ElevatorSubsystem extends SubsystemBase {
   private double elevatorCurrentTarget = Constants.ElevatorConstants.ElevatorSetpoints.kFeederStation;
   private double wristCurrentTarget = Constants.ElevatorConstants.ElevatorSetpoints.kFeederStation;
   
+  private boolean changedLevel = false;
+  
 
   private boolean wristManuallyMoving = true;
   private boolean elevatorManuallyMoving = true;
-
-  private boolean wasResetByLimit = false;
 
   private final DigitalInput elevatorLimitSwitch;
 
@@ -121,7 +123,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   private DCMotor elevatorMotorModel = DCMotor.getNEO(2);
   private SparkMaxSim elevatorMotorSim;
-  private SparkLimitSwitchSim elevatorLimitSwitchSim;
+  // private SparkLimitSwitchSim elevatorLimitSwitchSim;
   private final ElevatorSim m_elevatorSim =
       new ElevatorSim(
           elevatorMotorModel,
@@ -190,7 +192,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     // Initialize simulation values
     elevatorMotorSim = new SparkMaxSim(leftElevator, elevatorMotorModel);
-    elevatorLimitSwitchSim = new SparkLimitSwitchSim(leftElevator, false);
+    // elevatorLimitSwitchSim = new SparkLimitSwitchSim(leftElevator, false);
     armMotorSim = new SparkMaxSim(wristMotor, armMotorModel);
 
     elevatorLimitSwitch = new DigitalInput(0); //might want to consider moving this to the spark to prevent some stuff
@@ -270,12 +272,17 @@ public class ElevatorSubsystem extends SubsystemBase {
     boolean wristBool = false;
     double wristTarget = 3;
 
+
     if (getWristAngle() > Constants.WristConstants.WristSetpoints.unblock && getWristAngle() < 350) {
       elBool = true;
-    } else if (getWristAngle() > 25) {
-      if (getElevatorPosition() < 20) {
-        if (elevatorCurrentTarget > 20) { 
-          elTarget = 20;
+    } else if (getWristAngle() < Constants.WristConstants.WristSetpoints.unblock && getElevatorPosition() > 90) {
+      if (elevatorCurrentTarget < 90) { 
+        elTarget = 90;
+      }
+    } else if (getWristAngle() > 22) {
+      if (getElevatorPosition() < 22) {
+        if (elevatorCurrentTarget > 22) { 
+          elTarget = 22;
         } 
       } 
     } else {
@@ -285,11 +292,15 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     
-    if (getElevatorPosition() < 5) {
+    if (getElevatorPosition() > 90) {
+      if (wristCurrentTarget < 50) {
+        wristTarget = 50;
+      }
+    } else if (getElevatorPosition() < 5) {
       wristBool = true;
     } else if (getElevatorPosition() < 20) {
-      if (wristCurrentTarget < 25) {
-        wristTarget = 25;
+      if (wristCurrentTarget < 22) {
+        wristTarget = 22;
       }
     } else {
       if (wristCurrentTarget < Constants.WristConstants.WristSetpoints.unblock) {
@@ -297,7 +308,12 @@ public class ElevatorSubsystem extends SubsystemBase {
       }
     }
 
-    if (getWristAngle() < wristCurrentTarget - 0.5) {
+    
+    if (changedLevel) {
+      if (Math.abs(getWristPosition() - 107) < 1) changedLevel = false;
+      wristTarget = 107;
+      wristBool = false;
+
       elBool = false;
       elTarget = getElevatorPosition();
     }
@@ -536,6 +552,11 @@ public class ElevatorSubsystem extends SubsystemBase {
   public void setSetpointCommand(Setpoint setpoint) {  // see wrist subsystem counterpart
     //return this.runOnce(
         //() -> {
+          if (currentLevel != setpoint || currentLevel == null) {
+            changedLevel = true;
+          }
+          currentLevel = setpoint;
+
           setWristManuallyMoving(false);
           setElevatorManuallyMoving(false);
           switch (setpoint) {
@@ -616,14 +637,11 @@ public class ElevatorSubsystem extends SubsystemBase {
 
    /** Zero the elevator encoder when the limit switch is pressed. */
    private void zeroElevatorOnLimitSwitch() {
-    if (!wasResetByLimit && !elevatorLimitSwitch.get()) {
+    if (getElevatorPosition() < 0 && !elevatorLimitSwitch.get()) {
       // Zero the encoder only when the limit switch is switches from "unpressed" to "pressed" to
       // prevent constant zeroing while pressed
       new PrintCommand("RESETTING ELEVATOR");
       zeroElevator();      
-      wasResetByLimit = true;
-    } else if (elevatorLimitSwitch.get()) {
-      wasResetByLimit = false;
     }
   }
 
@@ -742,9 +760,9 @@ public class ElevatorSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Wrist current position", getWristPosition());
     SmartDashboard.putBoolean("Wrist blocking status", wristInTheWay());
     SmartDashboard.putNumber("Wrist current 'angle'", getWristAngle());
-    // SmartDashboard.putBoolean("limit switch", leftElevator.getReverseLimitSwitch().isPressed());
 
-    SmartDashboard.putBoolean("limit switch", elevatorLimitSwitch.get());
+    SmartDashboard.putBoolean("limit switch", !elevatorLimitSwitch.get());
+    SmartDashboard.putBoolean("Changed Level", changedLevel);
 
     
 
@@ -779,7 +797,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     m_armSim.setInput(armMotorSim.getAppliedOutput() * RobotController.getBatteryVoltage());
 
     // Update sim limit switch
-    elevatorLimitSwitchSim.setPressed(m_elevatorSim.getPositionMeters() == 0);
+    // elevatorLimitSwitchSim.setPressed(m_elevatorSim.getPositionMeters() == 0);
 
     // Next, we update it. The standard loop time is 20ms.
     m_elevatorSim.update(0.020);

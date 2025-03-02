@@ -195,7 +195,9 @@ public class RobotContainer {
       // m_driverController.axisGreaterThan(2, 0.5).whileTrue(new RunWristCommand(wrist, Constants.WristConstants.WristPowerLevels.kUp));
 
       m_driverController.axisGreaterThan(3, 0.4).whileTrue(new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kOut, vision));
+      // Right Trigger - 3 ^^^^
       m_driverController.axisGreaterThan(2, 0.4).whileTrue(new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kIn, vision));
+      // Left Trigger - 2 ^^^^
 
       // m_driverController.rightBumper().whileTrue(Commands.runOnce(() -> elevatorSystem.setWristManuallyMoving(true)));
       // m_driverController.leftBumper() .whileTrue(Commands.runOnce(() -> elevatorSystem.setElevatorManuallyMoving(true)));
@@ -243,13 +245,14 @@ public class RobotContainer {
   }
 
   private void configureNamedCommands() {
-    NamedCommands.registerCommand("Intake score", new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kIn, vision).withTimeout(0.5));
-    NamedCommands.registerCommand("Intake in", new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kIn, vision).withTimeout(3));
+    NamedCommands.registerCommand("Intake score", new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kOut, vision).withTimeout(0.5));
+    NamedCommands.registerCommand("Intake in", new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kOut, vision).withTimeout(3));
+    NamedCommands.registerCommand("Intake score 3", new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kIn, vision).withTimeout(0.5));
     NamedCommands.registerCommand("Elevator L1", Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel1)));
     NamedCommands.registerCommand("Elevator L2", Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel2)));
     NamedCommands.registerCommand("Elevator L3", Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel3)));
     NamedCommands.registerCommand("Elevator L4", Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel4)));
-    NamedCommands.registerCommand("lvl4 pt2", Commands.runOnce(() -> elevatorSystem.wristMoveToSetpoint(67)));
+
     NamedCommands.registerCommand("drive to score pose I", driveBase.driveToPose(new Pose2d(new Translation2d(4.937, 4.871), Rotation2d.fromDegrees(-116))));
     
   }

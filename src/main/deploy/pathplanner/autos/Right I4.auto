@@ -26,13 +26,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 10.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "lvl4 pt2"
+            "waitTime": 1.0
           }
         },
         {
@@ -45,6 +39,24 @@
           "type": "named",
           "data": {
             "name": "Intake score"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Backup I"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Elevator L1"
           }
         }
       ]

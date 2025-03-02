@@ -80,15 +80,15 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   public boolean getTV() {
-    return LimelightHelpers.getTV("limelight-one");
+    return LimelightHelpers.getTV("limelight-left");
   }
 
   public double getTX() {
-    return LimelightHelpers.getTX("limelight-one");
+    return LimelightHelpers.getTX("limelight-left");
   }
 
   public void updatePoseEstimator(SwerveDrive swerve) {
-    PoseEstimate  poseEst = getEstimatedGlobalPose("limelight-one");
+    PoseEstimate  poseEst = getEstimatedGlobalPose("limelight-left");
       if (poseEst != null) {
         swerve.addVisionMeasurement(poseEst.pose, poseEst.timestampSeconds);
       }
@@ -147,7 +147,7 @@ public class VisionSubsystem extends SubsystemBase {
 
     // This method will be called once per scheduler run
 
-    NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-one");
+    NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-left");
     NetworkTableEntry tx = table.getEntry("tx");
     NetworkTableEntry ty = table.getEntry("ty");
     NetworkTableEntry ta = table.getEntry("ta");

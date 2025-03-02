@@ -96,8 +96,8 @@ public final class Constants {
     public static final class ElevatorSetpoints {
       public static final int kFeederStation = 0;
       public static final int kLevel1 = 0;
-      public static final int kLevel2 = 21; // 0 -> 50
-      public static final int kLevel3 = 65;
+      public static final int kLevel2 = 20; // 0 -> 50
+      public static final int kLevel3 = 82;
       public static final int kLevel4 = 94; // 92
       public static final int kProcessor = 0; 
       public static final int kAlgae1 = 1; // Between 2 and 3
@@ -132,11 +132,11 @@ public final class Constants {
 
     public static final class WristSetpoints {
       public static final double unblock = Limits.kWristSafetyThreshold;
-      public static final int kFeederStation = 3;
-      public static final int kLevel1 = 3;
-      public static final int kLevel2 = 50; 
-      public static final int kLevel3 = 67; // 95 -> 50; //bc can't go back, motion graph must be 1:1, need moveToSetpointBetter()
-      public static final int kLevel4 = 100; // 67; 
+      public static final int kFeederStation = 4;
+      public static final int kLevel1 = 4;
+      public static final int kLevel2 = 25; 
+      public static final int kLevel3 = 183; // 95 -> 50; //bc can't go back, motion graph must be 1:1, need moveToSetpointBetter()
+      public static final int kLevel4 = 67; // 67; 
       public static final int kProcessor = 165; 
       public static final int kAlgae1 = 165; 
       public static final int kAlgae2 = 165; 
@@ -196,7 +196,7 @@ public final class Constants {
 
 
     public static final double kWristMinAngle = WristConstants.wristOffset + 1; // degrees
-    public static final double kWristMaxAngle = 230; // degrees  110 untested; was 94
+    public static final double kWristMaxAngle = 200; // degrees  110 untested; was 94
 
     public static final double MAX_SPEED = Units.feetToMeters(7);
     public static final double MEDIUM_SPEED = Units.feetToMeters(2);  // theoretical: 14.63 Ft/s
