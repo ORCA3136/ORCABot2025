@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
+
 // import java.MOA.ai.sentience;
 // import java.MOA.ai.consciousness;
 
@@ -25,6 +27,7 @@ public class Robot extends TimedRobot {
 
   private final RobotContainer m_robotContainer;
 
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -34,6 +37,7 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
     CanBridge.runTCP();
+    CameraServer.startAutomaticCapture();
   }
 
   /**

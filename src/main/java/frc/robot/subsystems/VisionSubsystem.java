@@ -94,6 +94,22 @@ public class VisionSubsystem extends SubsystemBase {
       }
   }
 
+  public void updatePosesEstimator(SwerveDrive swerve) {
+    double maxta = 0;
+    String camera = null;
+    String[] limelights = {"limelight-left", "limelight-right"}; // , "limelight-rear"
+    for (String limelight: limelights) {
+      if (LimelightHelpers.getTV(limelight) && LimelightHelpers.getTA(limelight) > maxta) {
+        maxta = LimelightHelpers.getTA(limelight);
+        camera = limelight;
+      }
+    }
+    if (camera != null) {
+    PoseEstimate  poseEst = getEstimatedGlobalPose(camera);
+    swerve.addVisionMeasurement(poseEst.pose, poseEst.timestampSeconds);
+    }
+  }
+
   // public Optional<EstimatedRobotPose> getEstimatedGlobalPose(VisionSubsystem camera) {
   //   Optional<EstimatedRobotPose> poseEst = camera.getEstimatedGlobalPose();
   //   return poseEst;
@@ -123,7 +139,7 @@ public class VisionSubsystem extends SubsystemBase {
         poseEsts[num] = poseEst;
       }
       else {
-        poseEsts[num] = new PoseEstimate();
+        poseEsts[num] = null;
       }
       num++;
     }

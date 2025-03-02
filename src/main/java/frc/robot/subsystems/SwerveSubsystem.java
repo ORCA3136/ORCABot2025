@@ -388,16 +388,17 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
     NetworkTableInstance.getDefault().getTable("Odometry").getEntry("MT2 Rotation").setNumber(getHeading().getDegrees());
     NetworkTableInstance.getDefault().getTable("Swerve").getEntry("Speed").setNumber(whatSpeed());
 
-    vision.updatePoseEstimator(swerveDrive);
+    vision.updatePosesEstimator(swerveDrive);
     swerveDrive.updateOdometry(); // Might be redundant
 
 
 
-    // String[] limelights = {"limelight-left"/*, "limelight-right", "limelight-three"*/};
+    // String[] limelights = {"limelight-left", "limelight-right", "limelight-rear"};
     // PoseEstimate[] poses = vision.getEstimatedGlobalPose(limelights);
+    
 
     // LimelightHelpers.SetRobotOrientation("limelight-left",getHeading().getDegrees(),0,0,0,0,0);
-    LimelightHelpers.SetRobotOrientation("limelight-left",swerveDrive.getPose().getRotation().getDegrees(),0,0,0,0,0);
+    // LimelightHelpers.SetRobotOrientation("limelight-left",swerveDrive.getPose().getRotation().getDegrees(),0,0,0,0,0);
     // LimelightHelpers.SetRobotOrientation("limelight-three",getHeading().getDegrees(),0,0,0,0,0);
 
     

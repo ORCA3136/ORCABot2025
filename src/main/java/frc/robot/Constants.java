@@ -4,6 +4,14 @@
 
 package frc.robot;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.ejml.sparse.csc.linsol.qr.LinearSolverQrLeftLooking_DSCC;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+
 // import com.fasterxml.jackson.databind.node.DoubleNode;
 
 import edu.wpi.first.math.geometry.Translation2d;
@@ -20,6 +28,12 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
   public static final boolean devMode = false;
+
+  public static enum Reef {
+    left,
+    right,
+    forward;
+  }
 
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
@@ -98,7 +112,7 @@ public final class Constants {
       public static final int kLevel1 = 0;
       public static final int kLevel2 = 20; // 0 -> 50
       public static final int kLevel3 = 82;
-      public static final int kLevel4 = 94; // 92
+      public static final int kLevel4 = 95; // 92
       public static final int kProcessor = 0; 
       public static final int kAlgae1 = 1; // Between 2 and 3
       public static final int kAlgae2 = 1; // Between 3 and 4
@@ -140,6 +154,7 @@ public final class Constants {
       public static final int kProcessor = 165; 
       public static final int kAlgae1 = 165; 
       public static final int kAlgae2 = 165; 
+      public static final int kClimb = 13;
     }
 
     public static final class WristPowerLevels {
@@ -169,7 +184,7 @@ public final class Constants {
     public static final class IntakePowerLevels {
       public static final double kOut = -0.9;
       public static final double kFeed = -0.4;
-      public static final double kIn = 0.4;
+      public static final double kIn = 0.9;
     }
   }
 
@@ -179,9 +194,9 @@ public final class Constants {
     public static final double kClimberInSpeed = -1;
     public static final double kClimberOutSpeed = 1;
 
-    public static final double kClimberInPos = 35;
-    public static final double kClimberOutPos = -180;
-    public static final double kFunnelOutPos = 12;
+    public static final double kClimberInPos = -70;
+    public static final double kClimberOutPos = 195;
+    public static final double kFunnelOutPos = -40;
   }
 
   public static final class Limits {
@@ -203,6 +218,22 @@ public final class Constants {
     public static final double PATHPLANNER_MAX_SPEED = Units.feetToMeters(5);
   }
 
+  public static final Pose2d[] REEF_POSE2DS = new Pose2d[] {
+    new Pose2d(2.875, 4.0,   new Rotation2d(Units.degreesToRadians(  0.0))),
+    new Pose2d(3.675, 2.625, new Rotation2d(Units.degreesToRadians( 60.0))),
+    new Pose2d(5.325, 2.625, new Rotation2d(Units.degreesToRadians(120.0))),
+    new Pose2d(6.1,   4.0,   new Rotation2d(Units.degreesToRadians(180.0))),
+    new Pose2d(5.325, 5.41,  new Rotation2d(Units.degreesToRadians(240.0))),
+    new Pose2d(3.675, 5.41,  new Rotation2d(Units.degreesToRadians(300.0)))
+  };
+  public static final List<Pose2d> REEF_POSE2DLIST = new ArrayList<Pose2d>(){{
+    add(new Pose2d(2.875, 4.0,   new Rotation2d(Units.degreesToRadians(  0.0))));
+    add(new Pose2d(3.675, 2.625, new Rotation2d(Units.degreesToRadians( 60.0))));
+    add(new Pose2d(5.325, 2.625, new Rotation2d(Units.degreesToRadians(120.0))));
+    add(new Pose2d(6.1,   4.0,   new Rotation2d(Units.degreesToRadians(180.0))));
+    add(new Pose2d(5.325, 5.41,  new Rotation2d(Units.degreesToRadians(240.0))));
+    add(new Pose2d(3.675, 5.41,  new Rotation2d(Units.degreesToRadians(300.0))));
+  }};
 
   public static final class PhysicalConstants {
     public static final double elevatorSupportBar = 34;

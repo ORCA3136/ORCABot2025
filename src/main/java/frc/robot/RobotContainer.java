@@ -13,6 +13,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.AprilTagFollowCommand;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.RunClimbSequenceCommand;
 import frc.robot.commands.RunClimberCommand;
 import frc.robot.commands.RunElevator;
 import frc.robot.commands.RunElevatorCommand;
@@ -207,9 +208,11 @@ public class RobotContainer {
       // m_driverController.leftBumper().onTrue(Commands.runOnce(() -> driveBase.setSpeed(Constants.Limits.MEDIUM_SPEED))).onFalse(Commands.runOnce(() -> driveBase.setSpeed(Constants.Limits.MAX_SPEED)));
       // m_driverController.leftBumper().onFalse(Commands.runOnce(() -> driveBase.setSpeed(Constants.Limits.MEDIUM_SPEED))).onTrue(Commands.runOnce(() -> driveBase.setSpeed(Constants.Limits.MAX_SPEED)));
 
-      // m_secondaryController.button(11).whileTrue(new RunClimberCommand(climber, Constants.ClimberConstants.kClimberInSpeed));
-      // m_secondaryController.button(10).whileTrue(new RunClimberCommand(climber, Constants.ClimberConstants.kClimberOutSpeed));
-      // m_secondaryController.button(9).whileTrue(new RunFunnelCommand(climber, Constants.ClimberConstants.kFunnelSpeed));
+      m_secondaryController.button(12).whileTrue(new RunClimbSequenceCommand(climber, elevatorSystem, false))
+                                             .whileFalse(new RunClimbSequenceCommand(climber, elevatorSystem, true));
+      m_secondaryController.button(11).whileTrue(new RunClimberCommand(climber, Constants.ClimberConstants.kClimberInSpeed));
+      m_secondaryController.button(10).whileTrue(new RunClimberCommand(climber, Constants.ClimberConstants.kClimberOutSpeed));
+      m_secondaryController.button(9).whileTrue(new RunFunnelCommand(climber, Constants.ClimberConstants.kFunnelSpeed));
       // m_secondaryController.button(12).whileTrue(driveBase.driveToPoseRobotRelative(new Pose2d(new Translation2d(1, 0), Rotation2d.fromDegrees(0))));
 
       m_secondaryController.button(1).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel4)));
@@ -222,15 +225,15 @@ public class RobotContainer {
       // m_secondaryController.button(6).whileTrue(Commands.runOnce(() ->elevatorSystem.setWristTarget(67)));
       // m_secondaryController.button(5).whileTrue(Commands.runOnce(() -> ledSubsystem.setLedColor(Constants.Colors.Gold)));
 
-      m_secondaryController.button(8).whileTrue(Commands.runOnce(() -> elevatorSystem.setElevatorTarget(Constants.ElevatorConstants.ElevatorSetpoints.kLevel4)));
-      m_secondaryController.button(7).whileTrue(Commands.runOnce(() -> elevatorSystem.setElevatorTarget(Constants.ElevatorConstants.ElevatorSetpoints.kLevel3)));
-      m_secondaryController.button(6).whileTrue(Commands.runOnce(() -> elevatorSystem.setElevatorTarget(Constants.ElevatorConstants.ElevatorSetpoints.kLevel2)));
-      m_secondaryController.button(5).whileTrue(Commands.runOnce(() -> elevatorSystem.setElevatorTarget(Constants.ElevatorConstants.ElevatorSetpoints.kLevel1)));
+      // m_secondaryController.button(8).whileTrue(Commands.runOnce(() -> elevatorSystem.setElevatorTarget(Constants.ElevatorConstants.ElevatorSetpoints.kLevel4)));
+      // m_secondaryController.button(7).whileTrue(Commands.runOnce(() -> elevatorSystem.setElevatorTarget(Constants.ElevatorConstants.ElevatorSetpoints.kLevel3)));
+      // m_secondaryController.button(6).whileTrue(Commands.runOnce(() -> elevatorSystem.setElevatorTarget(Constants.ElevatorConstants.ElevatorSetpoints.kLevel2)));
+      // m_secondaryController.button(5).whileTrue(Commands.runOnce(() -> elevatorSystem.setElevatorTarget(Constants.ElevatorConstants.ElevatorSetpoints.kLevel1)));
 
-      m_secondaryController.button(12).whileTrue(Commands.runOnce(() -> elevatorSystem.setWristTarget(Constants.WristConstants.WristSetpoints.kLevel4)));
-      m_secondaryController.button(11).whileTrue(Commands.runOnce(() -> elevatorSystem.setWristTarget(Constants.WristConstants.WristSetpoints.kLevel3)));
-      m_secondaryController.button(10).whileTrue(Commands.runOnce(() -> elevatorSystem.setWristTarget(Constants.WristConstants.WristSetpoints.kLevel2)));
-      m_secondaryController.button(9).whileTrue(Commands.runOnce(() -> elevatorSystem.setWristTarget(Constants.WristConstants.WristSetpoints.kLevel1)));
+      // m_secondaryController.button(12).whileTrue(Commands.runOnce(() -> elevatorSystem.setWristTarget(Constants.WristConstants.WristSetpoints.kLevel4)));
+      // m_secondaryController.button(11).whileTrue(Commands.runOnce(() -> elevatorSystem.setWristTarget(Constants.WristConstants.WristSetpoints.kLevel3)));
+      // m_secondaryController.button(10).whileTrue(Commands.runOnce(() -> elevatorSystem.setWristTarget(Constants.WristConstants.WristSetpoints.kLevel2)));
+      // m_secondaryController.button(9).whileTrue(Commands.runOnce(() -> elevatorSystem.setWristTarget(Constants.WristConstants.WristSetpoints.kLevel1)));
 
       // m_driverController.leftBumper().whileTrue(new AprilTagFollowCommand(driveBase));
 
