@@ -54,10 +54,10 @@ public class RunClimbSequenceCommand extends Command {
       m_subsystem.setFunnelPower(0);
     }
 
-    if (m_subsystem.getClimberPosition() > Constants.ClimberConstants.kClimberOutPos && isOut) {
+    if (m_subsystem.getClimberPosition() > Constants.ClimberConstants.kClimberOutPos && !isOut) {
       m_subsystem.setClimberPower(0);
     }
-    if (m_subsystem.getClimberPosition() < Constants.ClimberConstants.kClimberInPos && !isOut) {
+    if (m_subsystem.getClimberPosition() < Constants.ClimberConstants.kClimberInPos && isOut) {
       m_subsystem.setClimberPower(0);
     }
   }
@@ -75,8 +75,8 @@ public class RunClimbSequenceCommand extends Command {
   public boolean isFinished() {
     return m_subsystem.isFlipped() 
     && 
-    ((m_subsystem.getClimberPosition() > Constants.ClimberConstants.kClimberOutPos && isOut)
+    ((m_subsystem.getClimberPosition() > Constants.ClimberConstants.kClimberOutPos && !isOut)
     ||
-    (m_subsystem.getClimberPosition() < Constants.ClimberConstants.kClimberInPos && !isOut));
+    (m_subsystem.getClimberPosition() < Constants.ClimberConstants.kClimberInPos && isOut));
   }
 }

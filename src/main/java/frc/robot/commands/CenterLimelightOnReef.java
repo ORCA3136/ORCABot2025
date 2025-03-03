@@ -21,10 +21,10 @@ public class CenterLimelightOnReef extends Command {
   private final SwerveSubsystem m_subsystem;
   private Reef side;
   private String limelight;
-  private double tolerance = 0.5;
-  private double y = 0;
-  private double x = 0; // probably not needed
-  private double theta = 0;
+  private double tolerance = 1;
+  // private double y = 0;
+  // private double x = 0; // probably not needed
+  // private double theta = 0;
 
   /**
    * Creates a new CenterLimelightCommand.
@@ -47,7 +47,7 @@ public class CenterLimelightOnReef extends Command {
         limelight = "limelight-right";
         break;
       case forward:
-        
+        break;
     
       default:
         end(false);
@@ -58,14 +58,14 @@ public class CenterLimelightOnReef extends Command {
   @Override
   public void execute() {
     if (LimelightHelpers.getTV(limelight)) {
-      LimelightHelpers.getCameraPose_TargetSpace(limelight);
-      if (LimelightHelpers.getTX(limelight) < tolerance) {
-        y = 1;
-      } else if (LimelightHelpers.getTX(limelight) > tolerance) {
-        y = -1;
-      }
+      double[] values = LimelightHelpers.getCameraPose_TargetSpace(limelight);
+      m_subsystem.drive(new Translation2d(values[1]-0.15, values[0]), values[4]/30, false);
+    } else {
+      end(false);
     }
-    m_subsystem.drive(new Translation2d(x, y), theta, false);
+
+
+    
   }
 
   @Override
