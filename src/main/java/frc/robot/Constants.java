@@ -7,7 +7,7 @@ package frc.robot;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ejml.sparse.csc.linsol.qr.LinearSolverQrLeftLooking_DSCC;
+import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -69,26 +69,12 @@ public final class Constants {
     // Climber
     public static final int kClimberCanId = 30;
     public static final int kFunnelCanId = 31;
-
-
-    // // Elevator 
-    // public static final int kLeftElevatorCanId = 12;
-    // public static final int kRightElevatorCanId = 13;
-
-    // // Wrist
-    // public static final int kWristCanId = 14;
-
-    // // Intake
-    // //public static final int kIntakeCanId = 31;
-    // public static final int kIntakeCanId = 15;
-
-
-    public static final boolean kGyroReversed = false;
-
   }
 
   public static final class DriveConstants {
 
+    // Not used
+    public static final boolean kGyroReversed = false;
 
     // Chassis configuration
     // Distance between centers of right and left wheels on robot
@@ -113,9 +99,13 @@ public final class Constants {
       public static final int kLevel2 = 20; // 0 -> 50
       public static final int kLevel3 = 82;
       public static final int kLevel4 = 95; // 92
-      public static final int kProcessor = 0; 
-      public static final int kAlgae1 = 1; // Between 2 and 3
-      public static final int kAlgae2 = 1; // Between 3 and 4
+
+
+      // Need to measure before implementation
+      // Values of 0 here will crunch the wrist
+      // public static final int kProcessor = 0; 
+      // public static final int kAlgae1 = 1; // Between L2 and L3
+      // public static final int kAlgae2 = 1; // Between L3 and L4
     }
     public static final class ElevatorPowerLevels {
       public static final double kDown = -0.2;
@@ -149,8 +139,8 @@ public final class Constants {
       public static final int kFeederStation = 4;
       public static final int kLevel1 = 4;
       public static final int kLevel2 = 25; 
-      public static final int kLevel3 = 183; // 95 -> 50; //bc can't go back, motion graph must be 1:1, need moveToSetpointBetter()
-      public static final int kLevel4 = 67; // 67; 
+      public static final int kLevel3 = 183;
+      public static final int kLevel4 = 67;
       public static final int kProcessor = 165; 
       public static final int kAlgae1 = 165; 
       public static final int kAlgae2 = 165; 
@@ -158,8 +148,8 @@ public final class Constants {
     }
 
     public static final class WristPowerLevels {
-      public static final double kUp = 0.2;    // ditto
-      public static final double kDown = -0.2; // from -0.2
+      public static final double kOut = 0.2;
+      public static final double kIn = -0.2;
     }
 
     public static final class WristPIDConstants
@@ -218,22 +208,20 @@ public final class Constants {
     public static final double PATHPLANNER_MAX_SPEED = Units.feetToMeters(5);
   }
 
-  public static final Pose2d[] REEF_POSE2DS = new Pose2d[] {
-    new Pose2d(2.875, 4.0,   new Rotation2d(Units.degreesToRadians(  0.0))),
-    new Pose2d(3.675, 2.625, new Rotation2d(Units.degreesToRadians( 60.0))),
-    new Pose2d(5.325, 2.625, new Rotation2d(Units.degreesToRadians(120.0))),
-    new Pose2d(6.1,   4.0,   new Rotation2d(Units.degreesToRadians(180.0))),
-    new Pose2d(5.325, 5.41,  new Rotation2d(Units.degreesToRadians(240.0))),
-    new Pose2d(3.675, 5.41,  new Rotation2d(Units.degreesToRadians(300.0)))
-  };
-  public static final List<Pose2d> REEF_POSE2DLIST = new ArrayList<Pose2d>(){{
-    add(new Pose2d(2.875, 4.0,   new Rotation2d(Units.degreesToRadians(  0.0))));
-    add(new Pose2d(3.675, 2.625, new Rotation2d(Units.degreesToRadians( 60.0))));
-    add(new Pose2d(5.325, 2.625, new Rotation2d(Units.degreesToRadians(120.0))));
-    add(new Pose2d(6.1,   4.0,   new Rotation2d(Units.degreesToRadians(180.0))));
-    add(new Pose2d(5.325, 5.41,  new Rotation2d(Units.degreesToRadians(240.0))));
-    add(new Pose2d(3.675, 5.41,  new Rotation2d(Units.degreesToRadians(300.0))));
-  }};
+  public static final class PathPlannerConstants {
+
+    public static final PathConstraints slowConstraints = new PathConstraints(
+        Units.feetToMeters(3.5), 4.0,             
+        Units.degreesToRadians(100), Units.degreesToRadians(720));
+
+    public static final PathConstraints defaultConstraints = new PathConstraints(
+        Units.feetToMeters(8), 4.0,
+        Units.degreesToRadians(200), Units.degreesToRadians(720));
+
+    public static final PathConstraints fastConstraints = new PathConstraints(
+      Units.feetToMeters(14), 4.0,
+        Units.degreesToRadians(360), Units.degreesToRadians(720));
+  }
 
   public static final class PhysicalConstants {
     public static final double elevatorSupportBar = 34;
@@ -268,7 +256,21 @@ public final class Constants {
     public static final double kIntakeBarAngleRads = Units.degreesToRadians(-60);
   }
 
+  public static final class FieldPoses {
 
+    public static final double[] fieldSize = {17.55, 8.05};
+    // Wall thickness is 0.051
+    public static final double[] centerOfReef = {4.487, 4.025};
+
+    public static final List<Pose2d> REEF_POSES = new ArrayList<Pose2d>(){{
+      add(new Pose2d(2.89, 4.025,   new Rotation2d(Units.degreesToRadians(  0.0))));
+      add(new Pose2d(3.689, 2.642, new Rotation2d(Units.degreesToRadians( 60.0))));
+      add(new Pose2d(5.285, 2.642, new Rotation2d(Units.degreesToRadians(120.0))));
+      add(new Pose2d(6.087,   4.025,   new Rotation2d(Units.degreesToRadians(180.0))));
+      add(new Pose2d(5.285, 5.408,  new Rotation2d(Units.degreesToRadians(240.0))));
+      add(new Pose2d(3.689, 5.408,  new Rotation2d(Units.degreesToRadians(300.0))));
+    }};
+  }
  
   public static final class Colors{
     //These are all the led optios, if you want more you will have to go to a REV website called "LED BLINKIN DRIVER"
@@ -304,5 +306,4 @@ public final class Constants {
     public static final double Dark_Gray = 0.97;
     public static final double Black = 0.99;
   }
- 
 }

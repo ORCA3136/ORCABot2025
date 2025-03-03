@@ -7,28 +7,15 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
-import frc.robot.RobotContainer;
 import frc.robot.Constants;
-import frc.robot.Constants.DriveConstants;
 import frc.robot.LimelightHelpers.PoseEstimate;
 import swervelib.SwerveDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.units.Measure;
-
-import java.util.Optional;
 
 import au.grapplerobotics.LaserCan;
 import au.grapplerobotics.interfaces.LaserCanInterface.Measurement;
@@ -109,11 +96,6 @@ public class VisionSubsystem extends SubsystemBase {
     swerve.addVisionMeasurement(poseEst.pose, poseEst.timestampSeconds);
     }
   }
-
-  // public Optional<EstimatedRobotPose> getEstimatedGlobalPose(VisionSubsystem camera) {
-  //   Optional<EstimatedRobotPose> poseEst = camera.getEstimatedGlobalPose();
-  //   return poseEst;
-  // }
     
   public PoseEstimate getEstimatedGlobalPose(String limelight) {
     if (LimelightHelpers.getTV(limelight)) {
@@ -149,19 +131,14 @@ public class VisionSubsystem extends SubsystemBase {
     
   @Override
   public void periodic() {
-
-    // output1 = DIO_1.get();
-    // sensorValues[1] = output1;
+    // This method will be called once per scheduler run
 
     measurement = lidar.getMeasurement();
     if (measurement != null) {
       SmartDashboard.putNumber("Lidar distance", measurement.distance_mm);
       SmartDashboard.putNumber("Lidar status", measurement.status);
     }
-
-      
-
-    // This method will be called once per scheduler run
+    
 
     NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-left");
     NetworkTableEntry tx = table.getEntry("tx");
@@ -178,26 +155,10 @@ public class VisionSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("LimelightY", y);
     SmartDashboard.putNumber("LimelightArea", area);
     SmartDashboard.putNumber("Limelight'X'", getTX());
-
-
-
   }
-
-
-
 
   @Override
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
   }
-
-  // public boolean getIntakeSensor(int sensorNum) {
-
-  //   if (sensorNum > 0 && sensorNum < sensorValues.length) 
-  //     return sensorValues[sensorNum];
-
-  //   return false;
-  // }
-
-
 }

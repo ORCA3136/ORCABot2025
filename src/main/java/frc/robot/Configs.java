@@ -69,12 +69,6 @@ public final class Configs {
     }
   }
 
-  public static final class SwerveDriveConfigs {
-    
-  }
-
-  
-
   public static final class IntakeConfigs {
     public static final SparkFlexConfig intakeMotorConfig = new SparkFlexConfig();
 

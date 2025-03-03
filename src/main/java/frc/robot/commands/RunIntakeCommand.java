@@ -6,7 +6,6 @@ package frc.robot.commands;
 
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
-import au.grapplerobotics.LaserCan;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /** An example command that uses an example subsystem. */

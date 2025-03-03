@@ -22,42 +22,25 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 
 import edu.wpi.first.wpilibj.DriverStation;
-// import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-// import edu.wpi.first.wpilibj.XboxController;
 import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 import swervelib.SwerveDrive;
 import swervelib.math.SwerveMath;
 import edu.wpi.first.math.MathUtil;
-// import edu.wpi.first.math.MathUtil;
-// import edu.wpi.first.math.estimator.PoseEstimator;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
-// import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.util.sendable.SendableBuilder;
 import frc.robot.Constants;
-import frc.robot.Constants.DriveConstants;
 import frc.robot.LimelightHelpers;
-import frc.robot.LimelightHelpers.PoseEstimate;
 
 import static edu.wpi.first.units.Units.Meter;
 
-
-
-
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-// import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 public class SwerveSubsystem extends SubsystemBase {
   
@@ -67,8 +50,6 @@ public class SwerveSubsystem extends SubsystemBase {
   
   private final Pigeon2 pigeon2 = new Pigeon2(9, "rio"); // Pigeon is on roboRIO CAN Bus with device ID 9
 
-  private double speed = Constants.Limits.MAX_SPEED;
-
 
 
   public SwerveSubsystem(File directory, VisionSubsystem vision) {
@@ -77,7 +58,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     try
     {
-      swerveDrive = new SwerveParser(directory).createSwerveDrive(whatSpeed(),
+      swerveDrive = new SwerveParser(directory).createSwerveDrive(Constants.Limits.MAX_SPEED,
                                                                   new Pose2d(new Translation2d(Meter.of(0),
                                                                                                Meter.of(0)),
                                                                              Rotation2d.fromDegrees(0)));
@@ -101,10 +82,6 @@ public class SwerveSubsystem extends SubsystemBase {
 
     setupPathPlanner();
   }
-
-
-
-
 
 
 
@@ -135,8 +112,6 @@ public class SwerveSubsystem extends SubsystemBase {
       });
     }
 
-    // public addVision(Vis)
-
     /**
    * The primary method for controlling the drivebase.  Takes a {@link Translation2d} and a rotation rate, and
    * calculates and commands module states accordingly.  Can use either open-loop or closed-loop velocity control for
@@ -159,45 +134,6 @@ public class SwerveSubsystem extends SubsystemBase {
                       false); // Open loop is disabled since it shouldn't be used most of the time.
   }
 
-   /**
-   * Get the chassis speeds based on controller input of 2 joysticks. One for speeds in which direction. The other for
-   * the angle of the robot.
-   *
-   * @param xInput   X joystick input for the robot to move in the X direction.
-   * @param yInput   Y joystick input for the robot to move in the Y direction.
-   * @param headingX X joystick which controls the angle of the robot.
-   * @param headingY Y joystick which controls the angle of the robot.
-   * @return {@link ChassisSpeeds} which can be sent to the Swerve Drive.
-   */
-  public ChassisSpeeds getTargetSpeeds(double xInput, double yInput, double headingX, double headingY)
-  {
-    Translation2d scaledInputs = SwerveMath.cubeTranslation(new Translation2d(xInput, yInput));
-    return swerveDrive.swerveController.getTargetSpeeds(scaledInputs.getX(),
-                                                        scaledInputs.getY(),
-                                                        headingX,
-                                                        headingY,
-                                                        getHeading().getRadians(),
-                                                        whatSpeed());
-  }
-
-  /**
-   * Aim the robot at the target returned by PhotonVision.
-   *
-   * @return A {@link Command} which will run the alignment.
-   */
-  public Command aimAtTarget(VisionSubsystem camera)
-  {
-    return run(() -> {
-      if (camera.getTV())
-      {
-          drive(getTargetSpeeds(0,
-                                0,
-                                Rotation2d.fromDegrees(camera.getTX()),
-                                2)); // Not sure if this will work, more math may be required.
-      }
-    });
-  }
-
   /**
    * Get the chassis speeds based on controller input of 1 joystick and one angle. Control the robot at an offset of
    * 90deg.
@@ -215,7 +151,7 @@ public class SwerveSubsystem extends SubsystemBase {
                                                         scaledInputs.getY(),
                                                         angle.getRadians(),
                                                         getHeading().getRadians(),
-                                                        whatSpeed());
+                                                        Constants.Limits.MAX_SPEED);
   }
 
   public ChassisSpeeds getTargetSpeeds(double xInput, double yInput, Rotation2d angle, double maxSpeed)
@@ -267,20 +203,6 @@ public class SwerveSubsystem extends SubsystemBase {
                                                                       swerveDrive.getMaximumChassisVelocity()));
     });
   }
-
-  // public Command drive(double Y, double x, double rot) {
-  //   return 
-  // }
-
-  public double whatSpeed() {
-    return speed;
-  }
-
-  public void setSpeed(double sped) {
-    speed = sped;
-  }
-
-
 
 
 
@@ -386,7 +308,6 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
     NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Robot Velocity x").setNumber(swerveDrive.getRobotVelocity().vxMetersPerSecond);
     NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Robot Velocity y").setNumber(swerveDrive.getRobotVelocity().vyMetersPerSecond);
     NetworkTableInstance.getDefault().getTable("Odometry").getEntry("MT2 Rotation").setNumber(getHeading().getDegrees());
-    NetworkTableInstance.getDefault().getTable("Swerve").getEntry("Speed").setNumber(whatSpeed());
 
     vision.updatePosesEstimator(swerveDrive);
     swerveDrive.updateOdometry(); // Might be redundant
@@ -478,37 +399,37 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
    * Use PathPlanner Path finding to go to a point on the field.
    *
    * @param pose Target {@link Pose2d} to go to.
+   * @param constraints Maximum linear and rotational speeds and accelerations.
+   * @param endSpeed Final velocity at goal.
    * @return PathFinding command
    */
-  public Command driveToPose(Pose2d pose)
+  public Command driveToPose(Pose2d pose, PathConstraints constraints, double endSpeed)
   {
-    // Create the constraints to use while pathfinding
-    PathConstraints constraints = new PathConstraints(
-        1.0, 4.0,
-        Units.degreesToRadians(100), Units.degreesToRadians(720));
-
     // Since AutoBuilder is configured, we can use it to build pathfinding commands
     return AutoBuilder.pathfindToPose(
         pose,
         constraints,
-        edu.wpi.first.units.Units.MetersPerSecond.of(0) // Goal end velocity in meters/sec
-                                     );
+        endSpeed);
   }
 
-  public Command driveToPoseRobotRelative(Pose2d pose)
+  /**
+   * Use PathPlanner Path finding to go to a point on the field.
+   *
+   * @param pose Target {@link Pose2d} to go to in relation to robot pose.
+   * @param constraints Maximum linear and rotational speeds and accelerations.
+   * @param endSpeed Final velocity at goal.
+   * @return PathFinding command
+   */
+  public Command driveToPoseRobotRelative(Pose2d pose, PathConstraints constraints, double endSpeed)
   {
     Pose2d robot2d = getPose();
-// Create the constraints to use while pathfinding
-    PathConstraints constraints = new PathConstraints(
-        1, 3.0,
-        Units.degreesToRadians(100), Units.degreesToRadians(720));
 
     // Since AutoBuilder is configured, we can use it to build pathfinding commands
     return AutoBuilder.pathfindToPose(
         new Pose2d(pose.getX()+robot2d.getX(), pose.getY()+robot2d.getY(), 
             new Rotation2d(pose.getRotation().getRadians()+robot2d.getRotation().getRadians())),
         constraints,
-        edu.wpi.first.units.Units.MetersPerSecond.of(0) // Goal end velocity in meters/sec
+        endSpeed // Goal end velocity in meters/sec
                                      );
   }
 

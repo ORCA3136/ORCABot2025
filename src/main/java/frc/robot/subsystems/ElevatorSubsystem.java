@@ -4,11 +4,8 @@
 
 package frc.robot.subsystems;
 
-import java.util.TreeMap;
-
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.sim.SparkLimitSwitchSim;
 import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -18,14 +15,11 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.ElevatorFeedforward;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
@@ -33,14 +27,11 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Configs;
 import frc.robot.Constants;
-import frc.robot.Constants.ElevatorConstants;
-import frc.robot.Constants.ElevatorConstants.ElevatorPIDConstants;
 import frc.robot.Constants.ElevatorConstants.ElevatorSetpoints;
 import frc.robot.Constants.SimulationRobotConstants;
 
@@ -52,23 +43,19 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   SparkMax wristMotor = new SparkMax(Constants.SparkConstants.kWristCanId, MotorType.kBrushless);
 
-  private double elevatorPowerLevel = 0;
-  private double wristPowerLevel = 0;
-
-
   public enum Setpoint {
     kFeederStation,
+    kProcessor,
     kLevel1,
     kLevel2,
     kLevel3,
     kLevel4,
-    kUnblock;
+    kUnblock,
+    kTopAlgae,
+    kBottomAlgae;
   }
 
   private Setpoint currentLevel;
-
-  private boolean wristBlocking;
-  private boolean elevatorBlocking;
 
   // Initialize elevator SPARK. We will use MAXMotion position control for the elevator, so we also
   // need to initialize the closed loop controller and encoder.
@@ -83,26 +70,6 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   private AbsoluteEncoder wristEncoder = wristMotor.getAbsoluteEncoder();
 
- // Closed Loop Controller + Feedback
-  private final ProfiledPIDController m_elevatorController  = new ProfiledPIDController(ElevatorPIDConstants.kElevatorKp,
-                                                                                ElevatorPIDConstants.kElevatorKi,
-                                                                                ElevatorPIDConstants.kElevatorKd,
-                                                                                new Constraints(ElevatorPIDConstants.kMaxVelocity,
-                                                                                ElevatorPIDConstants.kMaxAcceleration));
-
-  private final ProfiledPIDController m_controller  = new ProfiledPIDController(ElevatorPIDConstants.kElevatorKp,
-                                                                                ElevatorPIDConstants.kElevatorKi,
-                                                                                ElevatorPIDConstants.kElevatorKd,
-                                                                                new Constraints(ElevatorPIDConstants.kMaxVelocity,
-                                                                                ElevatorPIDConstants.kMaxAcceleration));
-
-  private final ElevatorFeedforward   m_feedforward =
-      new ElevatorFeedforward(
-        ElevatorPIDConstants.kElevatorkS,
-        ElevatorPIDConstants.kElevatorkG,
-        ElevatorPIDConstants.kElevatorkV,
-        ElevatorPIDConstants.kElevatorkA);
-
   // Member variables for subsystem state management
   private boolean wasResetByButton = false;
   private double elevatorCurrentTarget = Constants.ElevatorConstants.ElevatorSetpoints.kFeederStation;
@@ -116,9 +83,8 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   private final DigitalInput elevatorLimitSwitch;
 
-  //some stuff for simulation
-  // Simulation setup and variables
 
+  // Simulation setup and variables
   //TODO - WE NEED TO ADJUST THIS TO SUPPORT 2 MOTORS
 
   private DCMotor elevatorMotorModel = DCMotor.getNEO(2);
@@ -137,7 +103,6 @@ public class ElevatorSubsystem extends SubsystemBase {
           0.0,
           0.0);
 
-  
   private DCMotor armMotorModel = DCMotor.getNEO(1);
   private SparkMaxSim armMotorSim;
   private final SingleJointedArmSim m_armSim =
@@ -173,13 +138,9 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   /** Creates a new ExampleSubsystem. */
   public ElevatorSubsystem() {
-    // Zero elevator encoders on initialization
-    // leftElevatorEncoder.setPosition(0);
-    // rightElevatorEncoder.setPosition(0);
-    // <l/r>ElevatorEncoder.setPosition(0);
 
     zeroElevator();
-    Configs.ElevatorConfigs.rightElevatorConfig // ================================ changed lots ====================================
+    Configs.ElevatorConfigs.rightElevatorConfig 
          .follow(leftElevator, true);
     
     leftElevator.configure(Configs.ElevatorConfigs.leftElevatorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
@@ -195,7 +156,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     // elevatorLimitSwitchSim = new SparkLimitSwitchSim(leftElevator, false);
     armMotorSim = new SparkMaxSim(wristMotor, armMotorModel);
 
-    elevatorLimitSwitch = new DigitalInput(0); //might want to consider moving this to the spark to prevent some stuff
+    elevatorLimitSwitch = new DigitalInput(0);
 
   }
   
@@ -288,72 +249,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     NetworkTableInstance.getDefault().getTable("Elevator").getEntry("Temp Wrist Target").setNumber(wristTarget);
 
   }
-  // not currently in use, old zigzaggy movement -- wrist too slow
-  private void moveToSetpoint() {
-    boolean elBool = false;
-    double elTarget = 3;
 
-    boolean wristBool = false;
-    double wristTarget = 3;
-
-    if (getWristAngle() > Constants.WristConstants.WristSetpoints.unblock && getWristAngle() < 350) {
-      elBool = true;
-    } else if (getWristAngle() > 25) {
-      if (getElevatorPosition() < 20) {
-        if (elevatorCurrentTarget > 20) { 
-          elTarget = 20;
-        } 
-      } 
-    } else {
-      if (elevatorCurrentTarget > 5) {
-        elTarget = 5;
-      }
-    }
-
-    
-    if (getElevatorPosition() < 5) {
-      wristBool = true;
-    } else if (getElevatorPosition() < 20) { // 17 -18
-      if (wristCurrentTarget < 25) {
-        wristTarget = 25;
-      }
-    } else {
-      if (wristCurrentTarget < Constants.WristConstants.WristSetpoints.unblock) {
-        wristTarget = Constants.WristConstants.WristSetpoints.unblock;
-      }
-    }
-
-
-    if (!isElevatorManuallyMoving()) {
-      if (elBool) {
-        elevatorMoveToSetpoint();
-      } else {
-        if (elTarget != 3) {
-          elevatorMoveToSetpoint(elTarget);
-        }
-        else {
-          elevatorMoveToSetpoint();
-        }
-      }
-    }
-
-    if (!isWristManuallyMoving()) {
-      if (wristBool) {
-        wristMoveToSetpoint();
-      } else {
-        if (wristTarget != 3) {
-          wristMoveToSetpoint(wristTarget);
-        }
-        else {
-          wristMoveToSetpoint();
-        }
-      }
-    }
-
-    NetworkTableInstance.getDefault().getTable("Elevator").getEntry("Temp Elevator Target").setNumber(elTarget);
-    NetworkTableInstance.getDefault().getTable("Elevator").getEntry("Temp Wrist Target").setNumber(wristTarget);
-
-  }
   // not currently in use 
   private void moveToSetpointBetter() {
     boolean elBool = false;
@@ -519,13 +415,11 @@ public class ElevatorSubsystem extends SubsystemBase {
   public void setElevatorPower(double power) {
     leftElevator.set(power);
     setElevatorManuallyMoving(true);
-    elevatorPowerLevel = power;
   }
   
   public void setWristPower(double power) {
     wristMotor.set(power);
     setWristManuallyMoving(true);
-    wristPowerLevel = power;
   }
 
   public double getWristCurrentTarget() {
@@ -535,10 +429,6 @@ public class ElevatorSubsystem extends SubsystemBase {
   public double getElevatorCurrentTarget() {
     return elevatorCurrentTarget;
   }
-
-  // private Angle convertSensorUnitsToAngle(Angle measurement) {
-  //   return Rotations.of(measurement.in(Rotations)/268); // make a constant -> WristReduction (AKA gear ratio)
-  // }
 
   public double getWristAngle() {
     return getWristPosition();
@@ -618,22 +508,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     return wristEncoder.getPosition(); // 
   }
 
-  // private void setWristBlocking(boolean bool) {
-  //   wristBlocking = bool;
-  // }
-
-  // private void setElevatorBlocking(boolean bool) {
-  //   elevatorBlocking = bool;
-  // }
-
-  public boolean elevatorInTheWay() {  // ported from separate subsystem times, need to redefine
-    return elevatorBlocking;
-  }
-
-  public boolean wristInTheWay() {
-    return wristBlocking;
-  }
-
    /** Zero the elevator encoder when the limit switch is pressed. */
    private void zeroElevatorOnLimitSwitch() {
     if (getElevatorPosition() < 0 && !elevatorLimitSwitch.get()) {
@@ -647,71 +521,6 @@ public class ElevatorSubsystem extends SubsystemBase {
   public void zeroElevator() {
     elevatorEncoder.setPosition(0);
   }
-
-  public double getBottomWristX() {
-    return 10*Math.cos(getBottomWristAngle());
-  }
-
-  public double getBottomWristAngle() {
-    return getWristAngle() - 42;
-  }
-
-  public double getHandAngle() {
-    return getWristAngle() + 43;
-  }
-
-  public double getHandX() {
-    return 16.5 * Math.cos(getHandAngle());
-  }
-
-  public double getElevatorPower() {
-    return elevatorPowerLevel;
-  }
-
-  public double getWristPower() {
-    return wristPowerLevel;
-  }
-
-  /*public boolean elevatorCanMove() {
-    if (wrist.isWristInTheWay()) {
-      return false;
-    }
-    return true;
-  }
-
-  public void makeElevatorMovable() {
-    if (!elevatorCanMove()) {
-      wrist.setSetpointCommand(WristSubsystem.Setpoint.unblock);
-    }
-  }  */
-
-  ////-------SOME STUFF FOR PID CONTROL--------//////
-   /**
-   * Run control loop to reach and maintain goal.
-   *
-   * @param goal the position to maintain in meters.
-   */
-  public void reachGoal(double goal)
-  {
-    double voltsOut = MathUtil.clamp(
-        m_controller.calculate(goal) +
-        m_feedforward.calculateWithVelocities(elevatorEncoder.getVelocity(),
-                                              m_controller.getSetpoint().velocity),
-        -12,
-        12); // 7 is the max voltage to send out.
-    leftElevator.setVoltage(voltsOut);
-  }
-
-  /**
-   * Set the goal of the elevator
-   *
-   * @param goal Goal in meters
-   * @return {@link edu.wpi.first.wpilibj2.command.Command}
-   */
-    public Command setGoal(double goal)
-    {
-      return run(() -> reachGoal(goal));
-    }
 
   /**
    * Stop the control loop and motor output.
@@ -753,11 +562,9 @@ public class ElevatorSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Elevator current target", elevatorCurrentTarget);
     SmartDashboard.putNumber("Elevator current position", getElevatorPosition());
     SmartDashboard.putBoolean("Elevator manually moving", wristManuallyMoving);
-    SmartDashboard.putBoolean("Elevator blocking status", elevatorInTheWay());
 
     SmartDashboard.putNumber("Wrist current target", wristCurrentTarget);
     SmartDashboard.putNumber("Wrist current position", getWristPosition());
-    SmartDashboard.putBoolean("Wrist blocking status", wristInTheWay());
     SmartDashboard.putNumber("Wrist current 'angle'", getWristAngle());
 
     SmartDashboard.putBoolean("limit switch", !elevatorLimitSwitch.get());
@@ -765,57 +572,61 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     
 
-     // Update mechanism2d
-    m_elevatorMech2d.setLength(
-      SimulationRobotConstants.kPixelsPerMeter * SimulationRobotConstants.kMinElevatorHeightMeters
-          + SimulationRobotConstants.kPixelsPerMeter
-              * (elevatorEncoder.getPosition() / SimulationRobotConstants.kElevatorGearing)
-              * (SimulationRobotConstants.kElevatorDrumRadius * 2.0 * Math.PI));
+    if (RobotBase.isSimulation())
+    {
+      // Update mechanism2d
+      m_elevatorMech2d.setLength(
+        SimulationRobotConstants.kPixelsPerMeter * SimulationRobotConstants.kMinElevatorHeightMeters
+            + SimulationRobotConstants.kPixelsPerMeter
+                * (elevatorEncoder.getPosition() / SimulationRobotConstants.kElevatorGearing)
+                * (SimulationRobotConstants.kElevatorDrumRadius * 2.0 * Math.PI));
 
-    m_armMech2d.setAngle(
-        180
-            - ( // mirror the angles so they display in the correct direction
-            Units.radiansToDegrees(SimulationRobotConstants.kMinAngleRads)
-                + Units.rotationsToDegrees(
-                    wristEncoder.getPosition() / SimulationRobotConstants.kArmReduction))
-            - 90 // subtract 90 degrees to account for the elevator
+      m_armMech2d.setAngle(
+          180
+              - ( // mirror the angles so they display in the correct direction
+              Units.radiansToDegrees(SimulationRobotConstants.kMinAngleRads)
+                  + Units.rotationsToDegrees(
+                      wristEncoder.getPosition() / SimulationRobotConstants.kArmReduction))
+              - 90 // subtract 90 degrees to account for the elevator
         );
-    
-    // This method will be called once per scheduler run
+    }
   }
 
    /** Get the current drawn by each simulation physics model */
-   public double getSimulationCurrentDraw() {
+  public double getSimulationCurrentDraw() {
     return m_elevatorSim.getCurrentDrawAmps();
   }
 
- public void simulationPeriodic() {
-    // In this method, we update our simulation of what our elevator is doing
-    // First, we set our "inputs" (voltages)
-    m_elevatorSim.setInput(elevatorMotorSim.getAppliedOutput() * RobotController.getBatteryVoltage());
-    m_armSim.setInput(armMotorSim.getAppliedOutput() * RobotController.getBatteryVoltage());
+  public void simulationPeriodic() {
+  if (RobotBase.isSimulation()) 
+    {
+      // In this method, we update our simulation of what our elevator is doing
+      // First, we set our "inputs" (voltages)
+      m_elevatorSim.setInput(elevatorMotorSim.getAppliedOutput() * RobotController.getBatteryVoltage());
+      m_armSim.setInput(armMotorSim.getAppliedOutput() * RobotController.getBatteryVoltage());
 
-    // Update sim limit switch
-    // elevatorLimitSwitchSim.setPressed(m_elevatorSim.getPositionMeters() == 0);
+      // Update sim limit switch
+      // elevatorLimitSwitchSim.setPressed(m_elevatorSim.getPositionMeters() == 0);
 
-    // Next, we update it. The standard loop time is 20ms.
-    m_elevatorSim.update(0.020);
-    m_armSim.update(0.020);
+      // Next, we update it. The standard loop time is 20ms.
+      m_elevatorSim.update(0.020);
+      m_armSim.update(0.020);
 
-    // Iterate the elevator and arm SPARK simulations
-    elevatorMotorSim.iterate(
-        ((m_elevatorSim.getVelocityMetersPerSecond()
-                    / (SimulationRobotConstants.kElevatorDrumRadius * 2.0 * Math.PI))
-                * SimulationRobotConstants.kElevatorGearing)
-            * 60.0,
-        RobotController.getBatteryVoltage(),
-        0.02);
-    armMotorSim.iterate(
-        Units.radiansPerSecondToRotationsPerMinute(
-            m_armSim.getVelocityRadPerSec() * SimulationRobotConstants.kArmReduction),
-        RobotController.getBatteryVoltage(),
-        0.02);
-    
-    // SimBattery is updated in Robot.java
+      // Iterate the elevator and arm SPARK simulations
+      elevatorMotorSim.iterate(
+          ((m_elevatorSim.getVelocityMetersPerSecond()
+                      / (SimulationRobotConstants.kElevatorDrumRadius * 2.0 * Math.PI))
+                  * SimulationRobotConstants.kElevatorGearing)
+              * 60.0,
+          RobotController.getBatteryVoltage(),
+          0.02);
+      armMotorSim.iterate(
+          Units.radiansPerSecondToRotationsPerMinute(
+              m_armSim.getVelocityRadPerSec() * SimulationRobotConstants.kArmReduction),
+          RobotController.getBatteryVoltage(),
+          0.02);
+      
+      // SimBattery is updated in Robot.java
+    }
   }
 }

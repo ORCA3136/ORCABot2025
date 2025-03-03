@@ -30,71 +30,21 @@ public class RunElevatorCommand extends Command {
   public RunElevatorCommand(ElevatorSubsystem elevatorSubsystem, double power) {
     this.elevatorSubsystem = elevatorSubsystem;
     powerSetPoint = power;
-    // Use addRequirements() here to declare subsystem dependencies.
+    
     addRequirements(elevatorSubsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if (elevatorSubsystem.wristInTheWay()) {
-      /// =================================================================================================================
-      /// elevatorSubsystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kUnblock); ///  EXTREMELY DANGEROUS BEFORE TUNING
-      /// =================================================================================================================
-    } else {
-      elevatorSubsystem.setElevatorPower(powerSetPoint);
-    }
+    elevatorSubsystem.setElevatorPower(powerSetPoint);
+    elevatorSubsystem.setElevatorManuallyMoving(true);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (elevatorSubsystem.wristInTheWay()) {
-
-      if (elevatorSubsystem.getWristCurrentTarget() != Constants.WristConstants.WristSetpoints.unblock) {
-        //elevatorSubsystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kUnblock);
-      } else if (elevatorSubsystem.isWristManuallyMoving()) {
-        elevatorSubsystem.setWristManuallyMoving(false);
-      }
-
-    } else if (!elevatorSubsystem.isWristManuallyMoving()) {
-    elevatorSubsystem.setElevatorPower(powerSetPoint);
-    }
-
-
-
-
-    // //clear wrist if it is in the way and not already clearing in time
-    // double eTarget;
-    // double wTarget;
-    // if (elevatorSubsystem.isManuallyMoving()) {
-    //   eTarget = 90000 * elevatorSubsystem.getElevatorPower();
-    //   wTarget = 90000 * elevatorSubsystem.getWristPower();
-    // } else {
-    //   eTarget = elevatorSubsystem.getElevatorCurrentTarget();
-    //   wTarget = elevatorSubsystem.getWristCurrentTarget();
-    // }
-
-    // if ( (elevatorSubsystem.getElevatorPosition() < 7 && 7 < eTarget) || (elevatorSubsystem.getElevatorPosition() > 7 && 7 > eTarget) ) {
-    //     if (elevatorSubsystem.getBottomWristX() > 9.75 || elevatorSubsystem.getHandX() > 9.75) {
-    //       if (wTarget > Constants.WristConstants.WristSetpoints.unblock ) {
-    //         // wait at the right pos
-    //         elevatorSubsystem.setElevatorPower(0);
-            
-    //       } else {
-    //       //clear wrist, go if timing is right
-    //       elevatorSubsystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kUnblock);
-    //       System.out.println("case1");
-    //       }
-    //     } else if (elevatorSubsystem.getWristPower() < 0 && wTarget < Constants.WristConstants.WristSetpoints.unblock) {
-    //       //also clear wrist, but go
-    //       elevatorSubsystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kUnblock);
-    //       System.out.println("case2");
-    //     }
-    // } else {
-    //   //don't touch wrist (except to protect the other bar)
-    //   elevatorSubsystem.setElevatorPower(powerSetPoint);
-    //     }
+    
   }
 
   // Called once the command ends or is interrupted.

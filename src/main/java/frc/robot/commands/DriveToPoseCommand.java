@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import frc.robot.Constants;
 import frc.robot.subsystems.SwerveSubsystem;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -32,7 +33,7 @@ public class DriveToPoseCommand extends Command {
   @Override
   public void initialize() {
     if (midpose.length == 0) {
-      swerve.driveToPose(targetpose);
+      swerve.driveToPose(targetpose, Constants.PathPlannerConstants.slowConstraints, 0);
     }
     
   }

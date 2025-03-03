@@ -4,15 +4,12 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.AddressableLEDBufferView;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.Colors;
-import frc.robot.LimelightHelpers;
 
 public class LEDSubsystem extends SubsystemBase {
   //Creates a new subsystem for the LEDs
@@ -20,8 +17,6 @@ public class LEDSubsystem extends SubsystemBase {
   Spark blinkin;
 
   boolean discoOn = false;
-
-  private AddressableLED m_led;
 
   public LEDSubsystem() {
 

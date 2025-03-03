@@ -29,9 +29,7 @@ public class PathPlannerCentering extends Command {
     addRequirements(subsystem);
   }
 
-  public Pose2d nearestPose2d(Pose2d currentPose2d) {
-    return currentPose2d.nearest(Constants.REEF_POSE2DLIST);
-  }
+  // nearestReefSide = m_Drive.getPose().nearest(Constants.FieldPoses.REEF_POSES);
 
   @Override
   public void initialize() {
