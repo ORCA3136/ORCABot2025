@@ -23,32 +23,6 @@ public class LEDSubsystem extends SubsystemBase {
     blinkin = new Spark(0);
   }
   
-  //These Adressable LED buffers are for seperateing individual strings of LEDs into multiple sections
-  //This should be the 5 meter (12 Volt) strip of LEDs
-  AddressableLEDBuffer m_buffer_12Volt = new AddressableLEDBuffer(300);
-
-  // This is the view for the section of the strip on the left side of the robot.
-  // This section spans LEDs from index 0 through index 249, inclusive.
-  AddressableLEDBufferView m_1st_12V_section = m_buffer_12Volt.createView(0, 149);
-
-  // This is the section of the strip on the right side of the robot.
-  // This section spans LEDs from index 250 through index 499, inclusive.
-  // The "reversed()" 2 lines down was on the example but probably isn't useful
-  AddressableLEDBufferView m_2nd_12V_section = m_buffer_12Volt.createView(150, 299);
-  //.reversed()
-
-  //This should control the 1 meter (5 Volt) strip of LEDs
-  AddressableLEDBuffer m_buffer_5Volt = new AddressableLEDBuffer(60);
-
-  //This is the 1st section of the 1 meter strip (currently out of 3)
-  AddressableLEDBufferView m_1st_5V_section = m_buffer_5Volt.createView(0,19);
-
-  //this is the 2nd out of 3
-  AddressableLEDBufferView m_2nd_5V_section = m_buffer_5Volt.createView(20,39);
-
-  //This is the 3rd out of 3
-  AddressableLEDBufferView m_3rd_5V_section = m_buffer_5Volt.createView(40,59);
-
   public void setLedColor(double color) {
     
     blinkin.set(color);
