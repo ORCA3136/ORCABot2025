@@ -18,6 +18,7 @@ import frc.robot.commands.RunElevatorCommand;
 import frc.robot.commands.RunFunnelCommand;
 import frc.robot.commands.RunIntakeCommand;
 import frc.robot.commands.RunIntakeRoutine;
+import frc.robot.commands.RunVomitCommand;
 import frc.robot.commands.RunWristCommand;
 import frc.robot.commands.ZeroElevatorCommand;
 import frc.robot.subsystems.ClimberSubsystem;
@@ -99,7 +100,7 @@ public class RobotContainer {
                                             .scaleTranslation(0.8)
                                             .allianceRelativeControl(true);
 
-    SwerveInputStream driveAngularVelocitySlow = driveAngularVelocity.copy().scaleTranslation(0.6);
+    SwerveInputStream driveAngularVelocitySlow = driveAngularVelocity.copy().scaleTranslation(Constants.Limits.MEDIUM_SPEED_FACTOR);
 
   
     SwerveInputStream driveDirectAngle = driveAngularVelocity.copy()
@@ -178,15 +179,14 @@ public class RobotContainer {
       m_driverController.leftBumper().onTrue(driveFieldOrientedAngularVelocitySlow);
 
 
-
       m_secondaryController.button(1).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel4)));
       m_secondaryController.button(2).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel3)));
       m_secondaryController.button(3).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel2)));
       m_secondaryController.button(4).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel1)));
-      // m_secondaryController.button(5)
-      // m_secondaryController.button(6)
-      // m_secondaryController.button(7)
-      // m_secondaryController.button(8)
+      m_secondaryController.button(5).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kProcessor)));
+      m_secondaryController.button(6).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kBottomAlgae)));
+      m_secondaryController.button(7).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kTopAlgae)));
+      m_secondaryController.button(8).whileTrue(new RunVomitCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kVomit));
       m_secondaryController.button(9).whileTrue(new RunFunnelCommand(climber, Constants.ClimberConstants.kFunnelSpeed));
       m_secondaryController.button(10).whileTrue(new RunClimberCommand(climber, Constants.ClimberConstants.kClimberOutSpeed));
       m_secondaryController.button(11).whileTrue(new RunClimberCommand(climber, Constants.ClimberConstants.kClimberInSpeed));

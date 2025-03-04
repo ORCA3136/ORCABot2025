@@ -4,51 +4,48 @@
 
 package frc.robot.commands;
 
-import frc.robot.Constants;
-import frc.robot.subsystems.ClimberSubsystem;
-
-// import com.revrobotics.RelativeEncoder;
-
+import frc.robot.subsystems.IntakeSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /** An example command that uses an example subsystem. */
-public class RunFunnelCommand extends Command {
-  private final ClimberSubsystem climberSubsystem;
+public class RunVomitCommand extends Command {
+  private final IntakeSubsystem intakeSubsystem;
   private final double powerSetPoint;
-  // private final RelativeEncoder angle = new RelativeEncoder(Constants.SparkConstants.kFunnelCanId);
+  //private LaserCan lidarObect;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public RunFunnelCommand(ClimberSubsystem climberSubsystem, double power) {
-    this.climberSubsystem = climberSubsystem;
+  public RunVomitCommand(IntakeSubsystem intakeSubsystem, double power) {
+    this.intakeSubsystem = intakeSubsystem;
     powerSetPoint = power;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(climberSubsystem);
+    addRequirements(intakeSubsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-  climberSubsystem.setFunnelPower(powerSetPoint);
+    intakeSubsystem.setIntakePower(powerSetPoint);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+  }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-  climberSubsystem.setFunnelPower(0);
+    intakeSubsystem.setIntakePower(0);
     // isFinished();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return climberSubsystem.isFlipped();
+    return false;
   }
 }

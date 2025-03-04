@@ -469,6 +469,18 @@ public class ElevatorSubsystem extends SubsystemBase {
               elevatorCurrentTarget = ElevatorSetpoints.kLevel4;
               wristCurrentTarget = Constants.WristConstants.WristSetpoints.kLevel4;
               break;
+            case kBottomAlgae:
+              elevatorCurrentTarget = Constants.ElevatorConstants.ElevatorSetpoints.kBottomAlgae;
+              wristCurrentTarget = Constants.WristConstants.WristSetpoints.kAlgae1;
+              break;
+            case kTopAlgae:
+              elevatorCurrentTarget = Constants.ElevatorConstants.ElevatorSetpoints.kTopAlgae;
+              wristCurrentTarget = Constants.WristConstants.WristSetpoints.kAlgae2;
+              break;
+            case kProcessor:
+              elevatorCurrentTarget = Constants.ElevatorConstants.ElevatorSetpoints.kProcessor;
+              wristCurrentTarget = Constants.WristConstants.WristSetpoints.kProcessor;
+              break;
             case kUnblock:
               wristCurrentTarget = Constants.WristConstants.WristSetpoints.unblock;
               break;
