@@ -53,8 +53,6 @@ public class SwerveSubsystem extends SubsystemBase {
   
   private final Pigeon2 pigeon2 = new Pigeon2(9, "rio"); // Pigeon is on roboRIO CAN Bus with device ID 9
 
-  private boolean cancelCentering = false;
-
   public SwerveSubsystem(File directory, VisionSubsystem vision) {
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
     this.vision = vision;
@@ -470,6 +468,7 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
   private boolean shouldCancel = false;
   public void setShouldCancel(boolean bool) {
     shouldCancel = bool;
+    System.out.println("Should Cancel: " + shouldCancel);
   }
   public boolean getShouldCancel() {
     return shouldCancel;
@@ -481,15 +480,15 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
     currentCenteringCommand.schedule();
   }
   public void cancelReefCentering() {
-    setCancelCentering(true);    
-    new SequentialCommandGroup(Commands.waitSeconds(0.1), Commands.runOnce(() -> setCancelCentering(false))).schedule();
+    setShouldCancel(true);    
+    new SequentialCommandGroup(Commands.waitSeconds(0.1), Commands.runOnce(() -> setShouldCancel(false))).schedule();
   }
 
   public Command driveToPoseCentering() {
     return AutoBuilder.pathfindToPose(
         getCenteringPose(),
         PathPlannerConstants.testingConstraints,
-        0).until(() -> getCancelCentering());
+        0).until(() -> getShouldCancel());
     // Maybe try onlyWhile or until
   }
 
@@ -512,14 +511,6 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
         constraints,
         endSpeed // Goal end velocity in meters/sec
                                      );
-  }
-
-  public void setCancelCentering(boolean bool) {
-    cancelCentering = bool;
-  }
-
-  public boolean getCancelCentering() {
-    return cancelCentering;
   }
 
   @Override
