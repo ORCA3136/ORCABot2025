@@ -12,6 +12,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.Reef;
 import frc.robot.commands.CenterLimelightOnReef;
+import frc.robot.commands.PathPlannerReefCentering;
 import frc.robot.commands.RunClimbSequenceCommand;
 import frc.robot.commands.RunClimberCommand;
 import frc.robot.commands.RunElevatorCommand;
@@ -165,10 +166,15 @@ public class RobotContainer {
       m_driverController.b().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kOut));
       m_driverController.x().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kIn));
 
+      m_driverController.povDown().whileTrue(new PathPlannerReefCentering(driveBase, elevatorSystem, PathPlannerReefCentering.Side.Back));
+      m_driverController.povUp().whileTrue(new PathPlannerReefCentering(driveBase, elevatorSystem, PathPlannerReefCentering.Side.Middle));
+      m_driverController.povLeft().whileTrue(new PathPlannerReefCentering(driveBase, elevatorSystem, PathPlannerReefCentering.Side.Left));
+      m_driverController.povRight().whileTrue(new PathPlannerReefCentering(driveBase, elevatorSystem, PathPlannerReefCentering.Side.Right));
+
       // m_driverController.povDown().whileTrue();
       // m_driverController.povUp().whileTrue();
-      m_driverController.povLeft().whileTrue(new CenterLimelightOnReef(driveBase, Reef.left));
-      m_driverController.povRight().whileTrue(new CenterLimelightOnReef(driveBase, Reef.right));
+      // m_driverController.povLeft().whileTrue(new CenterLimelightOnReef(driveBase, Reef.left));
+      // m_driverController.povRight().whileTrue(new CenterLimelightOnReef(driveBase, Reef.right));
 
       m_driverController.axisGreaterThan(3, 0.4).whileTrue(new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kOut, vision));
       // Right Trigger - 3 ^^^^
