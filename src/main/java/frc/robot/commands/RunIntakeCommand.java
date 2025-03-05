@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -12,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class RunIntakeCommand extends Command {
   private final IntakeSubsystem intakeSubsystem;
   private final double powerSetPoint;
+  private final LEDSubsystem led;
   //private LaserCan lidarObect;
   private VisionSubsystem lidar;
   private boolean hasCoral;
@@ -22,20 +24,22 @@ public class RunIntakeCommand extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public RunIntakeCommand(IntakeSubsystem intakeSubsystem, double power, VisionSubsystem vision) {
+  public RunIntakeCommand(IntakeSubsystem intakeSubsystem, double power, VisionSubsystem vision, LEDSubsystem ledSubsystem) {
     this.intakeSubsystem = intakeSubsystem;
     powerSetPoint = power;
     lidar = vision;
+    led = ledSubsystem;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(intakeSubsystem, vision);
+    addRequirements(intakeSubsystem, vision,led);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     intakeSubsystem.setIntakePower(powerSetPoint);
-    hasCoral = lidar.getCoralInIntake() < 150;
+    hasCoral = lidar.getCoralInIntake() < 150; //What is this doing?
     hasSwitched = !hasCoral;
+    led.ChangeLedColor(6);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

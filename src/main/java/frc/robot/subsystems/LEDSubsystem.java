@@ -77,7 +77,7 @@ public class LEDSubsystem extends SubsystemBase {
 
   public void setInitialColor() {
     
-    setLedColor(Constants.Colors.Blue);
+    setLedColor(Constants.Colors.White);
 
     // private String teamColor = input()
     // if (teamColor == Blue) {
@@ -104,6 +104,9 @@ public class LEDSubsystem extends SubsystemBase {
         break;
       case 5: 
         discoOn = true;
+      case 6: //No coral / No coral in safe position
+        blinkin.set(Colors.White);
+        break;
       default:
         setInitialColor();
         break;

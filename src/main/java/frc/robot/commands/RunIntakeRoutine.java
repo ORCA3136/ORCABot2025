@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import au.grapplerobotics.LaserCan;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -16,6 +17,7 @@ public class RunIntakeRoutine extends Command {
   private final double powerSetPoint;
   //private LaserCan lidarObect;
   private VisionSubsystem lidar;
+  private LEDSubsystem led;
   private boolean hasCoral;
   private boolean hasSwitched;
   private int recursionDepth = 1;
@@ -25,16 +27,17 @@ public class RunIntakeRoutine extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public RunIntakeRoutine(IntakeSubsystem intakeSubsystem, double power, VisionSubsystem vision) {
+  public RunIntakeRoutine(IntakeSubsystem intakeSubsystem, double power, VisionSubsystem vision, LEDSubsystem ledSubsystem) {
     this.intakeSubsystem = intakeSubsystem;
     powerSetPoint = power;
     lidar = vision;
+    led = ledSubsystem;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(intakeSubsystem, vision);
   }
 
-  public RunIntakeRoutine(IntakeSubsystem intakeSubsystem, double power, VisionSubsystem vision, int r) {
-    this(intakeSubsystem, power, vision);
+  public RunIntakeRoutine(IntakeSubsystem intakeSubsystem, double power, VisionSubsystem vision,LEDSubsystem ledSubsystem, int r) {
+    this(intakeSubsystem, power, vision,ledSubsystem);
     recursionDepth = r;
   }
 
@@ -65,7 +68,7 @@ public class RunIntakeRoutine extends Command {
   public void end(boolean interrupted) {
     intakeSubsystem.setIntakePower(0);
     if (!interrupted && recursionDepth < 3) {
-      new RunIntakeRoutine(intakeSubsystem, powerSetPoint/-3, lidar, recursionDepth+1).schedule();
+      new RunIntakeRoutine(intakeSubsystem, powerSetPoint/-3, lidar, led,recursionDepth+1).schedule();
     }
     
     // isFinished();
@@ -76,6 +79,7 @@ public class RunIntakeRoutine extends Command {
   public boolean isFinished() {
     if (hasCoral == hasSwitched || (recursionDepth == 1 && hasCoral)) { //
       // Stop the input only when the lidar sensor switches to true
+      led.ChangeLedColor(3);
       return true;
     }
     return false;
