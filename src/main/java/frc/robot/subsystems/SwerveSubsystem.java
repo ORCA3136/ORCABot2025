@@ -41,6 +41,8 @@ import frc.robot.Constants.PathPlannerConstants;
 import static edu.wpi.first.units.Units.Meter;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class SwerveSubsystem extends SubsystemBase {
@@ -480,7 +482,7 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
   }
   public void cancelReefCentering() {
     setCancelCentering(true);    
-    setCancelCentering(false);
+    new SequentialCommandGroup(Commands.waitSeconds(0.1), Commands.runOnce(() -> setCancelCentering(false))).schedule();
   }
 
   public Command driveToPoseCentering() {
