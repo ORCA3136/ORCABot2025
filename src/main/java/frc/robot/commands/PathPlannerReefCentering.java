@@ -96,7 +96,7 @@ public class PathPlannerReefCentering extends Command {
 
     scoringPosition = new Pose2d(x, y, new Rotation2d(Math.toRadians(rot)));
     m_drive.setCancelCentering(false);
-    m_drive.driveToPose(scoringPosition, PathPlannerConstants.testingConstraints, 0).onlyWhile(() -> m_drive.getCancelCentering()).schedule();
+    m_drive.driveToPose(scoringPosition, PathPlannerConstants.testingConstraints, 0).until(() -> m_drive.getCancelCentering()).schedule();
   }
 
   @Override
