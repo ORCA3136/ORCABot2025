@@ -429,6 +429,21 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
    *
    * @param pose Target {@link Pose2d} to go to.
    * @param constraints Maximum linear and rotational speeds and accelerations.
+   * @return PathFinding command
+   */
+  public Command driveToPose(Pose2d pose, PathConstraints constraints)
+  {
+    // Since AutoBuilder is configured, we can use it to build pathfinding commands
+    return AutoBuilder.pathfindToPose(
+        pose,
+        constraints);
+  }
+
+  /**
+   * Use PathPlanner Path finding to go to a point on the field.
+   *
+   * @param pose Target {@link Pose2d} to go to.
+   * @param constraints Maximum linear and rotational speeds and accelerations.
    * @param endSpeed Final velocity at goal.
    * @return PathFinding command
    */

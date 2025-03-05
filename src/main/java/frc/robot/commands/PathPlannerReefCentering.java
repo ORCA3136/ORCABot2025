@@ -18,7 +18,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 
-/** A command that centers the robot with the reef. */
+/* A command that centers the robot with the reef. */
 public class PathPlannerReefCentering extends Command {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final SwerveSubsystem m_drive;
@@ -29,7 +29,6 @@ public class PathPlannerReefCentering extends Command {
   private Pose2d scoringPosition;
   private Setpoint setpoint;
   private boolean atHeight;
-  private Command currentPathCommand;
 
   public enum Side {
     Left,
@@ -46,7 +45,7 @@ public class PathPlannerReefCentering extends Command {
     addRequirements(drive, elevator);
   }
 
-  private Command calculatePath() {
+  private void calculatePath() {
     atHeight = m_elevator.atHeight();
     setpoint = m_elevator.getSetpoint();
 
@@ -79,35 +78,27 @@ public class PathPlannerReefCentering extends Command {
             break;
         }
 
-      switch (lineUp) {
-        case Left:
-          x -= FieldPoses.leftOffset * Math.sin(rot);
-          y += FieldPoses.leftOffset * Math.cos(rot);
-          break;
-        case Right:
-          x += FieldPoses.leftOffset * Math.sin(rot);
-          y -= FieldPoses.leftOffset * Math.cos(rot);
-          break;
-        case Back:
-          rot += 180;
-          break;
-      }
+    switch (lineUp) {
+      case Left:
+        x -= FieldPoses.leftOffset * Math.sin(rot);
+        y += FieldPoses.leftOffset * Math.cos(rot);
+        break;
+      case Right:
+        x += FieldPoses.leftOffset * Math.sin(rot);
+        y -= FieldPoses.leftOffset * Math.cos(rot);
+        break;
+      case Back:
+        rot += 180;
+        break;
+    }
 
     scoringPosition = new Pose2d(x, y, new Rotation2d(Math.toRadians(rot)));
-    return m_drive.driveToPose(scoringPosition, PathPlannerConstants.testingConstraints, 0);
+    m_drive.driveToPose(scoringPosition, PathPlannerConstants.testingConstraints, 0).schedule();
   }
 
-  // Pseudo Code
-  //
-  // Find nearest reef side pose (red and blue)
-  // Go to the pose plus offset for right/left
-  // Wait until elevator is atHeight
-  // Move forward a distance based on setpoint
-  //
-  // Cancel command if POV down is pressed
-  // Wait until coral is scored then end?
-
-
+  public void cancelPath() {
+    m_drive.driveToPose(m_drive.getPose(), PathPlannerConstants.testingConstraints).schedule();
+  }
 
   @Override
   public void initialize() {
@@ -119,22 +110,19 @@ public class PathPlannerReefCentering extends Command {
     atHeight = m_elevator.atHeight();
     setpoint = m_elevator.getSetpoint();
 
-    currentPathCommand = calculatePath();
-    currentPathCommand.schedule();
+    calculatePath();
   }
 
   @Override
   public void execute() {
     if (setpoint != m_elevator.getSetpoint() || atHeight != m_elevator.atHeight()) {
-      currentPathCommand.cancel();
       calculatePath();
-      currentPathCommand.schedule();
     }
   }
 
   @Override
   public void end(boolean interrupted) {
-    currentPathCommand.cancel();
+    cancelPath();
   }
 
   @Override
