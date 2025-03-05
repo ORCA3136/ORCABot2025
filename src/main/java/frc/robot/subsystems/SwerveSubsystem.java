@@ -467,6 +467,17 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
     return centeringPose;
   }
 
+  Command currentCenteringCommand = null;
+
+  public void scheduleReefCentering() {
+    currentCenteringCommand = driveToPoseCentering();
+    currentCenteringCommand.schedule();
+  }
+
+  public void cancelReefCentering() {
+    currentCenteringCommand.cancel();
+  }
+
   public Command driveToPoseCentering() {
         
     return AutoBuilder.pathfindToPose(

@@ -14,6 +14,7 @@ import frc.robot.Constants.Reef;
 import frc.robot.commands.CenterLimelightOnReef;
 import frc.robot.commands.DriveToPoseCommand;
 import frc.robot.commands.PathPlannerReefCentering;
+import frc.robot.commands.ReefCenteringAux;
 import frc.robot.commands.RunClimbSequenceCommand;
 import frc.robot.commands.RunClimberCommand;
 import frc.robot.commands.RunElevatorCommand;
@@ -167,7 +168,7 @@ public class RobotContainer {
       m_driverController.b().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kOut));
       m_driverController.x().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kIn));
 
-      m_driverController.povDown().whileTrue(driveBase.driveToPoseCentering());
+      m_driverController.povDown().whileTrue(new ReefCenteringAux(driveBase));
       m_driverController.povUp().whileTrue(new PathPlannerReefCentering(driveBase, elevatorSystem, PathPlannerReefCentering.Side.Middle));
       m_driverController.povLeft().whileTrue(new PathPlannerReefCentering(driveBase, elevatorSystem, PathPlannerReefCentering.Side.Left));
       m_driverController.povRight().whileTrue(new PathPlannerReefCentering(driveBase, elevatorSystem, PathPlannerReefCentering.Side.Right));
