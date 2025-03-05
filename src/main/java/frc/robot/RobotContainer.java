@@ -161,13 +161,13 @@ public class RobotContainer {
       m_driverController.start().onTrue(Commands.runOnce(driveBase::zeroGyro));
       m_driverController.back().whileTrue(new ZeroElevatorCommand(elevatorSystem));
 
-      // m_driverController.y().whileTrue(new RunElevatorCommand(elevatorSystem, Constants.ElevatorConstants.ElevatorPowerLevels.kUp));
+      m_driverController.y().whileTrue(new RunElevatorCommand(elevatorSystem, Constants.ElevatorConstants.ElevatorPowerLevels.kUp));
       m_driverController.a().whileTrue(new RunElevatorCommand(elevatorSystem, Constants.ElevatorConstants.ElevatorPowerLevels.kDown));
       m_driverController.b().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kOut));
       m_driverController.x().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kIn));
 
       m_driverController.povDown().whileTrue(new PathPlannerReefCentering(driveBase, elevatorSystem, PathPlannerReefCentering.Side.Back));
-      m_driverController.y().whileTrue(new PathPlannerReefCentering(driveBase, elevatorSystem, PathPlannerReefCentering.Side.Middle));
+      m_driverController.povUp().whileTrue(new PathPlannerReefCentering(driveBase, elevatorSystem, PathPlannerReefCentering.Side.Middle));
       m_driverController.povLeft().whileTrue(new PathPlannerReefCentering(driveBase, elevatorSystem, PathPlannerReefCentering.Side.Left));
       m_driverController.povRight().whileTrue(new PathPlannerReefCentering(driveBase, elevatorSystem, PathPlannerReefCentering.Side.Right));
 
