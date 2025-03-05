@@ -20,7 +20,6 @@ public class ReefCenteringAux extends Command {
    * @param subsystem The subsystem used by this command.
    */
   public ReefCenteringAux(SwerveSubsystem drive) {
-    drive.setCancelCentering(false);
     this.drive = drive;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(drive);

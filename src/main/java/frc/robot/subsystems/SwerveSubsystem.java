@@ -475,12 +475,12 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
 
   Command currentCenteringCommand = null;
   public void scheduleReefCentering() {
-    setCancelCentering(false);
     currentCenteringCommand = driveToPoseCentering();
     currentCenteringCommand.schedule();
   }
   public void cancelReefCentering() {
-    setCancelCentering(true);
+    setCancelCentering(true);    
+    setCancelCentering(false);
   }
 
   public Command driveToPoseCentering() {
