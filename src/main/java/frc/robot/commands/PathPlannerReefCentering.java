@@ -10,6 +10,7 @@ import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.Setpoint;
 import frc.robot.subsystems.SwerveSubsystem;
 
+import com.pathplanner.lib.events.TriggerEvent;
 import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.MathUtil;
@@ -17,6 +18,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 /* A command that centers the robot with the reef. */
 public class PathPlannerReefCentering extends Command {
@@ -93,11 +95,7 @@ public class PathPlannerReefCentering extends Command {
     }
 
     scoringPosition = new Pose2d(x, y, new Rotation2d(Math.toRadians(rot)));
-    m_drive.driveToPose(scoringPosition, PathPlannerConstants.testingConstraints, 0).schedule();
-  }
-
-  public void cancelPath() {
-    m_drive.driveToPose(m_drive.getPose(), PathPlannerConstants.testingConstraints).schedule();
+    m_drive.driveToPose(scoringPosition, PathPlannerConstants.testingConstraints, 0).withTimeout(0.5).schedule();
   }
 
   @Override
@@ -121,9 +119,7 @@ public class PathPlannerReefCentering extends Command {
   }
 
   @Override
-  public void end(boolean interrupted) {
-    cancelPath();
-  }
+  public void end(boolean interrupted) {}
 
   @Override
   public boolean isFinished() {
