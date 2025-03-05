@@ -6,6 +6,8 @@ package frc.robot.commands;
 
 import frc.robot.subsystems.SwerveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 /** An example command that uses an example subsystem. */
 public class ReefCenteringAux extends Command {
@@ -18,6 +20,7 @@ public class ReefCenteringAux extends Command {
    * @param subsystem The subsystem used by this command.
    */
   public ReefCenteringAux(SwerveSubsystem drive) {
+    drive.setCancelCentering(false);
     this.drive = drive;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(drive);

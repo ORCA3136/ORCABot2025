@@ -458,32 +458,37 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
   }
 
   private Pose2d centeringPose = new Pose2d();
-
   public void setCenteringPose(Pose2d pose) {
     centeringPose = pose;
   }
-
   public Pose2d getCenteringPose() {
     return centeringPose;
   }
 
-  Command currentCenteringCommand = null;
+  private boolean shouldCancel = false;
+  public void setShouldCancel(boolean bool) {
+    shouldCancel = bool;
+  }
+  public boolean getShouldCancel() {
+    return shouldCancel;
+  }
 
+  Command currentCenteringCommand = null;
   public void scheduleReefCentering() {
+    setCancelCentering(false);
     currentCenteringCommand = driveToPoseCentering();
     currentCenteringCommand.schedule();
   }
-
   public void cancelReefCentering() {
-    currentCenteringCommand.cancel();
+    setCancelCentering(true);
   }
 
   public Command driveToPoseCentering() {
-        
     return AutoBuilder.pathfindToPose(
         getCenteringPose(),
         PathPlannerConstants.testingConstraints,
-        0);
+        0).until(() -> getCancelCentering());
+    // Maybe try onlyWhile or until
   }
 
   /**
