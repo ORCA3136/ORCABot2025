@@ -50,7 +50,7 @@ public class SwerveSubsystem extends SubsystemBase {
   
   private final Pigeon2 pigeon2 = new Pigeon2(9, "rio"); // Pigeon is on roboRIO CAN Bus with device ID 9
 
-
+  private boolean cancelCentering = false;
 
   public SwerveSubsystem(File directory, VisionSubsystem vision) {
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
@@ -475,6 +475,14 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
         constraints,
         endSpeed // Goal end velocity in meters/sec
                                      );
+  }
+
+  public void setCancelCentering(boolean bool) {
+    cancelCentering = bool;
+  }
+
+  public boolean getCancelCentering() {
+    return cancelCentering;
   }
 
   @Override
