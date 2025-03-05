@@ -43,8 +43,6 @@ public class RunClimbSequenceCommand extends Command {
       m_subsystem.setClimberPower(Constants.ClimberConstants.kClimberOutSpeed);
     }
     
-
-    
   }
 
   // Called every time the scheduler runs while the command is scheduled.

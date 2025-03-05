@@ -93,19 +93,18 @@ public final class Constants {
   public static final class ElevatorConstants {
 
 
-    public static final class ElevatorSetpoints {
+    public static final class ElevatorSetpoints { // native units; our range is [0 96], so a percent
       public static final int kFeederStation = 0;
       public static final int kLevel1 = 0;
       public static final int kLevel2 = 20; // 0 -> 50
       public static final int kLevel3 = 82;
       public static final int kLevel4 = 95; // 92
 
+      public static final int kBottomAlgae = 33; // Between L2 and L3
+      public static final int kTopAlgae = 63; // Between L3 and L4
+      public static final int kProcessor = 6; 
 
-      // Need to measure before implementation
-      // Values of 0 here will crunch the wrist
-      // public static final int kProcessor = 0; 
-      // public static final int kAlgae1 = 1; // Between L2 and L3
-      // public static final int kAlgae2 = 1; // Between L3 and L4
+      
     }
     public static final class ElevatorPowerLevels {
       public static final double kDown = -0.2;
@@ -134,16 +133,16 @@ public final class Constants {
 
     public static final double wristOffset = 2.5;
 
-    public static final class WristSetpoints {
+    public static final class WristSetpoints { // degrees
       public static final double unblock = Limits.kWristSafetyThreshold;
       public static final int kFeederStation = 4;
       public static final int kLevel1 = 4;
       public static final int kLevel2 = 25; 
       public static final int kLevel3 = 183;
       public static final int kLevel4 = 67;
-      public static final int kProcessor = 165; 
-      public static final int kAlgae1 = 165; 
-      public static final int kAlgae2 = 165; 
+      public static final int kProcessor = 183; 
+      public static final int kAlgae1 = 170; 
+      public static final int kAlgae2 = 170; 
       public static final int kClimb = 13;
     }
 
@@ -155,7 +154,7 @@ public final class Constants {
     public static final class WristPIDConstants
     {
       //FOR THE PROFILED MOTION
-      public static final double kWristKp = 0.005;
+      public static final double kWristKp = 0.005; // might need to lower; oscilates without weight sometimes, rerolls when jiggeled
       public static final double kWristKi = 0;
       public static final double kWristKd = 0;
       public static final double kMaxVelocity = 120;
@@ -175,6 +174,7 @@ public final class Constants {
       public static final double kOut = -0.9;
       public static final double kFeed = -0.4;
       public static final double kIn = 0.9;
+      public static final double kVomit = 0.85;
     }
   }
 
@@ -184,7 +184,7 @@ public final class Constants {
     public static final double kClimberInSpeed = -1;
     public static final double kClimberOutSpeed = 1;
 
-    public static final double kClimberInPos = -70;
+    public static final double kClimberInPos = -65;
     public static final double kClimberOutPos = 195;
     public static final double kFunnelOutPos = -40;
   }
@@ -203,8 +203,8 @@ public final class Constants {
     public static final double kWristMinAngle = WristConstants.wristOffset + 1; // degrees
     public static final double kWristMaxAngle = 200; // degrees  110 untested; was 94
 
-    public static final double MAX_SPEED = Units.feetToMeters(7);
-    public static final double MEDIUM_SPEED = Units.feetToMeters(2);  // theoretical: 14.63 Ft/s
+    public static final double MAX_SPEED = Units.feetToMeters(7); // theoretical: 14.63 Ft/s
+    public static final double MEDIUM_SPEED_FACTOR = 0.6; // 60%
     public static final double PATHPLANNER_MAX_SPEED = Units.feetToMeters(5);
   }
 
