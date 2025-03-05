@@ -36,6 +36,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
+import frc.robot.Constants.PathPlannerConstants;
 
 import static edu.wpi.first.units.Units.Meter;
 
@@ -454,6 +455,23 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
         pose,
         constraints,
         endSpeed);
+  }
+
+  private Pose2d centeringPose = null;
+
+  public void setCenteringPose(Pose2d pose) {
+    centeringPose = pose;
+  }
+
+  public Command driveToPoseCentering()
+  {
+    if (centeringPose == null) 
+      return null;
+        
+    return AutoBuilder.pathfindToPose(
+        centeringPose,
+        PathPlannerConstants.testingConstraints,
+        0);
   }
 
   /**

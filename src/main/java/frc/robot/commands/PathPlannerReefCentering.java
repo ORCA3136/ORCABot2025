@@ -99,6 +99,7 @@ public class PathPlannerReefCentering extends Command {
     }
 
     scoringPosition = new Pose2d(x, y, new Rotation2d(Math.toRadians(rot)));
+    m_drive.setCenteringPose(scoringPosition);
     return m_drive.driveToPose(scoringPosition, PathPlannerConstants.testingConstraints, 0.02);
   }
 
@@ -113,7 +114,7 @@ public class PathPlannerReefCentering extends Command {
     setpoint = m_elevator.getSetpoint();
 
     currentPathCommand = calculatePath();
-    currentPathCommand.schedule();
+    // currentPathCommand.schedule();
 
     System.out.println("In Initialize: " + currentPathCommand.isScheduled());
   }
