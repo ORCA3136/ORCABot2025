@@ -99,8 +99,7 @@ public class PathPlannerReefCentering extends Command {
     }
 
     scoringPosition = new Pose2d(x, y, new Rotation2d(Math.toRadians(rot)));
-    return m_drive.driveCommand(0.1, 0.0, 0.0);
-    // m_drive.driveToPose(scoringPosition, PathPlannerConstants.testingConstraints, 0.02);
+    return m_drive.driveToPose(scoringPosition, PathPlannerConstants.testingConstraints, 0.02);
   }
 
   @Override
@@ -121,13 +120,17 @@ public class PathPlannerReefCentering extends Command {
 
   @Override
   public void execute() {
+    if (setpoint != m_elevator.getSetpoint() || atHeight != m_elevator.atHeight()) {
+      currentPathCommand.cancel();   // Doesn't work
+      calculatePath();
+      currentPathCommand.schedule();
+    }
     System.out.println("In Execute: " + currentPathCommand.isScheduled());
   }
 
   @Override
   public void end(boolean interrupted) {
-    System.out.println("In Beginning of End: " + currentPathCommand.isScheduled());
-    currentPathCommand.cancel();
+    currentPathCommand.cancel();     // Doesn't work
     System.out.println("In End of End: " + currentPathCommand.isScheduled());
   }
 
