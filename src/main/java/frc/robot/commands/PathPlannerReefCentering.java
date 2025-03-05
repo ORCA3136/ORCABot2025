@@ -55,28 +55,29 @@ public class PathPlannerReefCentering extends Command {
     double rot = nearestReefSide.getRotation().getDegrees();
 
     if (atHeight)
-      switch (setpoint) {
-        case kLevel2:
-          x += FieldPoses.L2ScoringOffset * Math.cos(rot);
-          y += FieldPoses.L2ScoringOffset * Math.sin(rot);
-          break;
-        case kLevel3:
-          x += FieldPoses.L3ScoringOffset * Math.cos(rot);
-          y += FieldPoses.L3ScoringOffset * Math.sin(rot);
-          break;
-        case kLevel4:
-          x += FieldPoses.L4ScoringOffset * Math.cos(rot);
-          y += FieldPoses.L4ScoringOffset * Math.sin(rot);
-          break;
-        case kTopAlgae:
-          x += FieldPoses.algaeScoringOffset * Math.cos(rot);
-          y += FieldPoses.algaeScoringOffset * Math.sin(rot);
-          break;
-        case kBottomAlgae:
-          x += FieldPoses.algaeScoringOffset * Math.cos(rot);
-          y += FieldPoses.algaeScoringOffset * Math.sin(rot);
-          break;
-      }
+      if (setpoint != null)
+        switch (setpoint) {
+          case kLevel2:
+            x += FieldPoses.L2ScoringOffset * Math.cos(rot);
+            y += FieldPoses.L2ScoringOffset * Math.sin(rot);
+            break;
+          case kLevel3:
+            x += FieldPoses.L3ScoringOffset * Math.cos(rot);
+            y += FieldPoses.L3ScoringOffset * Math.sin(rot);
+            break;
+          case kLevel4:
+            x += FieldPoses.L4ScoringOffset * Math.cos(rot);
+            y += FieldPoses.L4ScoringOffset * Math.sin(rot);
+            break;
+          case kTopAlgae:
+            x += FieldPoses.algaeScoringOffset * Math.cos(rot);
+            y += FieldPoses.algaeScoringOffset * Math.sin(rot);
+            break;
+          case kBottomAlgae:
+            x += FieldPoses.algaeScoringOffset * Math.cos(rot);
+            y += FieldPoses.algaeScoringOffset * Math.sin(rot);
+            break;
+        }
 
       switch (lineUp) {
         case Left:
