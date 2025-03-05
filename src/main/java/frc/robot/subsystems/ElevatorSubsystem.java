@@ -475,6 +475,10 @@ public class ElevatorSubsystem extends SubsystemBase {
           }
   }
 
+  public Setpoint getSetpoint() {
+    return currentLevel;
+  }
+
   public void setWristTarget(double target) {
     wristCurrentTarget = target;
     setWristManuallyMoving(false);
@@ -544,7 +548,9 @@ public class ElevatorSubsystem extends SubsystemBase {
                                              tolerance));
   }
 
-
+  public boolean atHeight() {
+    return MathUtil.isNear(elevatorCurrentTarget, getElevatorPosition(), 0.5);
+  }
 
 
   @Override

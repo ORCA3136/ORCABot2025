@@ -210,6 +210,10 @@ public final class Constants {
 
   public static final class PathPlannerConstants {
 
+    public static final PathConstraints testingConstraints = new PathConstraints(
+        Units.feetToMeters(1.5), 2.0,             
+        Units.degreesToRadians(50), Units.degreesToRadians(300));
+
     public static final PathConstraints slowConstraints = new PathConstraints(
         Units.feetToMeters(3.5), 4.0,             
         Units.degreesToRadians(100), Units.degreesToRadians(720));
@@ -262,17 +266,33 @@ public final class Constants {
     // Wall thickness is 0.051
     public static final double[] centerOfReef = {4.487, 4.025};
 
-    public static final List<Pose2d> REEF_POSES = new ArrayList<Pose2d>(){{
-      add(new Pose2d(2.89, 4.025,   new Rotation2d(Units.degreesToRadians(  0.0))));
-      add(new Pose2d(3.689, 2.642, new Rotation2d(Units.degreesToRadians( 60.0))));
+    public static final List<Pose2d> blueReefPoses = new ArrayList<Pose2d>(){{
+      add(new Pose2d(2.890, 4.025, new Rotation2d(Units.degreesToRadians(0.0))));
+      add(new Pose2d(3.689, 2.642, new Rotation2d(Units.degreesToRadians(60.0))));
       add(new Pose2d(5.285, 2.642, new Rotation2d(Units.degreesToRadians(120.0))));
-      add(new Pose2d(6.087,   4.025,   new Rotation2d(Units.degreesToRadians(180.0))));
-      add(new Pose2d(5.285, 5.408,  new Rotation2d(Units.degreesToRadians(240.0))));
-      add(new Pose2d(3.689, 5.408,  new Rotation2d(Units.degreesToRadians(300.0))));
+      add(new Pose2d(6.087, 4.025, new Rotation2d(Units.degreesToRadians(180.0))));
+      add(new Pose2d(5.285, 5.408, new Rotation2d(Units.degreesToRadians(240.0))));
+      add(new Pose2d(3.689, 5.408, new Rotation2d(Units.degreesToRadians(300.0))));
     }};
+
+    public static final List<Pose2d> redReefPoses = new ArrayList<Pose2d>(){{
+      add(new Pose2d(11.466, 4.025, new Rotation2d(Units.degreesToRadians(0.0))));
+      add(new Pose2d(12.265, 2.642, new Rotation2d(Units.degreesToRadians(60.0))));
+      add(new Pose2d(13.861, 2.642, new Rotation2d(Units.degreesToRadians(120.0))));
+      add(new Pose2d(14.663, 4.025, new Rotation2d(Units.degreesToRadians(180.0))));
+      add(new Pose2d(13.861, 5.408, new Rotation2d(Units.degreesToRadians(240.0))));
+      add(new Pose2d(12.265, 5.408, new Rotation2d(Units.degreesToRadians(300.0))));
+    }};
+
+    public static final double leftOffset = 0.165;
+    public static final double L2ScoringOffset = 0.285;
+    public static final double L3ScoringOffset = 0.05;
+    public static final double L4ScoringOffset = 0.27;
+    public static final double algaeScoringOffset = 0.23;
+
   }
  
-  public static final class Colors{
+  public static final class Colors {
     //These are all the led optios, if you want more you will have to go to a REV website called "LED BLINKIN DRIVER"
 
     //Patterns:

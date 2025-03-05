@@ -410,10 +410,18 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
     } catch (Exception e)
     {
       // Handle exception as needed
-      System.out.println("Error above line 457");
       e.printStackTrace();
     }
     PathfindingCommand.warmupCommand().schedule();
+  }
+
+  public boolean isRedSide() {
+    var alliance = DriverStation.getAlliance();
+      if (alliance.isPresent())
+      {
+        return alliance.get() == DriverStation.Alliance.Red;
+      }
+      return false;
   }
 
   /**
