@@ -10,6 +10,7 @@ import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.Setpoint;
 import frc.robot.subsystems.SwerveSubsystem;
 
+import com.pathplanner.lib.events.EventScheduler;
 import com.pathplanner.lib.events.TriggerEvent;
 import com.pathplanner.lib.path.PathConstraints;
 
@@ -98,7 +99,7 @@ public class PathPlannerReefCentering extends Command {
     }
 
     scoringPosition = new Pose2d(x, y, new Rotation2d(Math.toRadians(rot)));
-    return m_drive.driveToPose(scoringPosition, PathPlannerConstants.testingConstraints, 0.02).until(() -> m_drive.getCancelCentering());
+    return m_drive.driveToPose(scoringPosition, PathPlannerConstants.testingConstraints, 0.02);
   }
 
   @Override
@@ -116,16 +117,11 @@ public class PathPlannerReefCentering extends Command {
   }
 
   @Override
-  public void execute() {
-    if (setpoint != m_elevator.getSetpoint() || atHeight != m_elevator.atHeight()) {
-      calculatePath();
-    }
-  }
+  public void execute() {}
 
   @Override
   public void end(boolean interrupted) {
-    m_drive.setCancelCentering(true);
-    new SequentialCommandGroup(Commands.waitSeconds(0.05), Commands.runOnce(() -> m_drive.setCancelCentering(false), null));
+    CommandScheduler.getInstance().cancel(currentPathCommand);
   }
 
   @Override
