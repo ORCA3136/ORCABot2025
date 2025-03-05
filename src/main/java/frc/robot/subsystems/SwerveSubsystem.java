@@ -457,19 +457,20 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
         endSpeed);
   }
 
-  private Pose2d centeringPose = null;
+  private Pose2d centeringPose = new Pose2d();
 
   public void setCenteringPose(Pose2d pose) {
     centeringPose = pose;
   }
 
-  public Command driveToPoseCentering()
-  {
-    if (centeringPose == null) 
-      return null;
+  public Pose2d getCenteringPose() {
+    return centeringPose;
+  }
+
+  public Command driveToPoseCentering() {
         
     return AutoBuilder.pathfindToPose(
-        centeringPose,
+        getCenteringPose(),
         PathPlannerConstants.testingConstraints,
         0);
   }
