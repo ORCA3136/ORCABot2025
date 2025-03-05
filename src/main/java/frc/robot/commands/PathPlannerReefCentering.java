@@ -95,7 +95,6 @@ public class PathPlannerReefCentering extends Command {
     }
 
     scoringPosition = new Pose2d(x, y, new Rotation2d(Math.toRadians(rot)));
-    m_drive.setCancelCentering(false);
     m_drive.driveToPose(scoringPosition, PathPlannerConstants.testingConstraints, 0).until(() -> m_drive.getCancelCentering()).schedule();
   }
 
@@ -106,6 +105,7 @@ public class PathPlannerReefCentering extends Command {
     else 
       nearestReefSide = m_drive.getPose().nearest(FieldPoses.blueReefPoses);
 
+    m_drive.setCancelCentering(false);
     atHeight = m_elevator.atHeight();
     setpoint = m_elevator.getSetpoint();
 
@@ -121,7 +121,7 @@ public class PathPlannerReefCentering extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    m_drive.setCancelCentering(true);
+    // m_drive.setCancelCentering(true);
   }
 
   @Override
