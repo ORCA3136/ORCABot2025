@@ -182,7 +182,7 @@ public class RobotContainer {
       // Left Trigger - 2 ^^^^
 
       m_driverController.rightBumper().whileTrue(new RunIntakeRoutine(intake, Constants.IntakeConstants.IntakePowerLevels.kFeed, vision));
-      m_driverController.leftBumper().onTrue(driveFieldOrientedAngularVelocitySlow);
+      m_driverController.leftBumper().whileTrue(driveFieldOrientedAngularVelocitySlow);
 
 
       m_secondaryController.button(1).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel4)));
