@@ -58,10 +58,10 @@ public class RunIntakeCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if (hasCoral == hasSwitched) {
-      // Stop the input only when the lidar sensor switches
-      return true;
-    }
+    // if (hasCoral == hasSwitched) {
+    //   // Stop the input only when the lidar sensor switches
+    //   return true;
+    // }
     return false;
   }
 }
