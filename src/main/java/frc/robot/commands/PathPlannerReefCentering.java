@@ -19,6 +19,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 /* A command that centers the robot with the reef. */
 public class PathPlannerReefCentering extends Command {
@@ -31,6 +33,7 @@ public class PathPlannerReefCentering extends Command {
   private Pose2d scoringPosition;
   private Setpoint setpoint;
   private boolean atHeight;
+  private Command currentPathCommand;
 
   public enum Side {
     Left,
@@ -47,7 +50,7 @@ public class PathPlannerReefCentering extends Command {
     addRequirements(drive, elevator);
   }
 
-  private void calculatePath() {
+  private Command calculatePath() {
     atHeight = m_elevator.atHeight();
     setpoint = m_elevator.getSetpoint();
 
@@ -95,7 +98,7 @@ public class PathPlannerReefCentering extends Command {
     }
 
     scoringPosition = new Pose2d(x, y, new Rotation2d(Math.toRadians(rot)));
-    m_drive.driveToPose(scoringPosition, PathPlannerConstants.testingConstraints, 0.02).until(() -> m_drive.getCancelCentering()).schedule();
+    return m_drive.driveToPose(scoringPosition, PathPlannerConstants.testingConstraints, 0.02).until(() -> m_drive.getCancelCentering());
   }
 
   @Override
@@ -105,11 +108,11 @@ public class PathPlannerReefCentering extends Command {
     else 
       nearestReefSide = m_drive.getPose().nearest(FieldPoses.blueReefPoses);
 
-    m_drive.setCancelCentering(false);
     atHeight = m_elevator.atHeight();
     setpoint = m_elevator.getSetpoint();
 
-    calculatePath();
+    currentPathCommand = calculatePath();
+    currentPathCommand.schedule();
   }
 
   @Override
@@ -122,6 +125,7 @@ public class PathPlannerReefCentering extends Command {
   @Override
   public void end(boolean interrupted) {
     m_drive.setCancelCentering(true);
+    new SequentialCommandGroup(Commands.waitSeconds(0.05), Commands.runOnce(() -> m_drive.setCancelCentering(false), null));
   }
 
   @Override
