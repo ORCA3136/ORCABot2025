@@ -168,7 +168,8 @@ public class RobotContainer {
       m_driverController.b().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kOut));
       m_driverController.x().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kIn));
 
-      m_driverController.povDown().whileTrue(new ReefCenteringAux(driveBase));
+      // m_driverController.povDown().whileTrue(new ReefCenteringAux(driveBase));
+      m_driverController.povDown().whileTrue(new PathPlannerReefCentering(driveBase, elevatorSystem, PathPlannerReefCentering.Side.Back));
       m_driverController.povUp().whileTrue(new PathPlannerReefCentering(driveBase, elevatorSystem, PathPlannerReefCentering.Side.Middle));
       m_driverController.povLeft().whileTrue(new PathPlannerReefCentering(driveBase, elevatorSystem, PathPlannerReefCentering.Side.Left));
       m_driverController.povRight().whileTrue(new PathPlannerReefCentering(driveBase, elevatorSystem, PathPlannerReefCentering.Side.Right));

@@ -114,7 +114,7 @@ public class PathPlannerReefCentering extends Command {
     setpoint = m_elevator.getSetpoint();
 
     currentPathCommand = calculatePath();
-    // currentPathCommand.schedule();
+    currentPathCommand.schedule();
 
     System.out.println("In Initialize: " + currentPathCommand.isScheduled());
   }
