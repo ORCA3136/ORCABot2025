@@ -13,10 +13,14 @@ import frc.robot.Constants;
 import frc.robot.LimelightHelpers.PoseEstimate;
 import swervelib.SwerveDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-
+import edu.wpi.first.units.AngularVelocityUnit;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.MutableMeasure;
+import edu.wpi.first.units.measure.AngularVelocity;
 import au.grapplerobotics.LaserCan;
 import au.grapplerobotics.interfaces.LaserCanInterface.Measurement;
 
@@ -81,6 +85,7 @@ public class VisionSubsystem extends SubsystemBase {
       }
   }
 
+  /**THIS IS THE METHOD THAT IS BEING CALLED BY PERIODIC IN OUR SWERVE DRIVE */
   public void updatePosesEstimator(SwerveDrive swerve) {
     double maxta = 0;
     String camera = null;
@@ -94,6 +99,38 @@ public class VisionSubsystem extends SubsystemBase {
     if (camera != null) {
     PoseEstimate  poseEst = getEstimatedGlobalPose(camera);
     swerve.addVisionMeasurement(poseEst.pose, poseEst.timestampSeconds);
+    }
+  }
+
+
+  /**
+   * Building this out for hopefully a quick test. to try mega tag 2
+   * @param swerve
+   */
+  public void updatePosesEstimatorMT2(SwerveDrive swerve) {
+
+    double maxta = 0;
+    PoseEstimate mt2 = new PoseEstimate();
+    String[] limelights = {"limelight-left", "limelight-right"}; // , "limelight-rear"
+    for (String limelight: limelights) {
+      LimelightHelpers.SetRobotOrientation("limelight", swerve.getPose().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+      LimelightHelpers.PoseEstimate megaTag2Pose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight);
+      
+      if(megaTag2Pose.tagCount > 0)
+      {
+        //we have a tag!
+        //if the TA is larger than the other camera
+        if(LimelightHelpers.getTA(limelight) > maxta)
+        {
+          maxta = LimelightHelpers.getTA(limelight);
+          mt2  = megaTag2Pose;
+        }
+
+      }
+
+    }
+    if (mt2 != null) {
+      swerve.addVisionMeasurement(mt2.pose, mt2.timestampSeconds);
     }
   }
     
