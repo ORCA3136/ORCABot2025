@@ -119,7 +119,7 @@ public class VisionSubsystem extends SubsystemBase {
     PoseEstimate mt2 = new PoseEstimate();
     String[] limelights = {"limelight-left", "limelight-right"}; // , "limelight-rear"
     for (String limelight: limelights) {
-      LimelightHelpers.SetRobotOrientation("limelight", swerve.getPose().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+      LimelightHelpers.SetRobotOrientation(limelight, swerve.getPose().getRotation().getDegrees(), 0, 0, 0, 0, 0);
       LimelightHelpers.PoseEstimate megaTag2Pose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight);
       
       if(megaTag2Pose.tagCount > 0)
