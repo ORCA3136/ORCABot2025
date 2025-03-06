@@ -39,6 +39,8 @@ public class VisionSubsystem extends SubsystemBase {
   double tangentSpeed;
   double normalSpeed;
 
+  boolean hasTarget = false;
+
   boolean red;
   
 
@@ -87,7 +89,7 @@ public class VisionSubsystem extends SubsystemBase {
 
   /**THIS IS THE METHOD THAT IS BEING CALLED BY PERIODIC IN OUR SWERVE DRIVE */
   public void updatePosesEstimator(SwerveDrive swerve) {
-    double maxta = 0;
+    double maxta = 0.5;
     String camera = null;
     String[] limelights = {"limelight-left", "limelight-right"}; // , "limelight-rear"
     for (String limelight: limelights) {
@@ -97,8 +99,12 @@ public class VisionSubsystem extends SubsystemBase {
       }
     }
     if (camera != null) {
-    PoseEstimate  poseEst = getEstimatedGlobalPose(camera);
-    swerve.addVisionMeasurement(poseEst.pose, poseEst.timestampSeconds);
+      PoseEstimate  poseEst = getEstimatedGlobalPose(camera);
+      swerve.addVisionMeasurement(poseEst.pose, poseEst.timestampSeconds);
+      hasTarget = true;
+    } else {
+      hasTarget = false;
+      SmartDashboard.putBoolean("limelightTV", false);
     }
   }
 
@@ -136,6 +142,7 @@ public class VisionSubsystem extends SubsystemBase {
     
   public PoseEstimate getEstimatedGlobalPose(String limelight) {
     if (LimelightHelpers.getTV(limelight)) {
+      hasTarget = true;
       PoseEstimate poseEst = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelight);
      
       SmartDashboard.putBoolean("limelightTV", LimelightHelpers.getTV(limelight));
@@ -169,6 +176,7 @@ public class VisionSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    
 
     measurement = lidar.getMeasurement();
     if (measurement != null) {
