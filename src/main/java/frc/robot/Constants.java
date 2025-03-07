@@ -184,7 +184,7 @@ public final class Constants {
     public static final double kClimberInSpeed = -1;
     public static final double kClimberOutSpeed = 1;
 
-    public static final double kClimberInPos = -5;
+    public static final double kClimberInPos = -65;
     public static final double kClimberOutPos = 195;
     public static final double kFunnelOutPos = -40;
   }
