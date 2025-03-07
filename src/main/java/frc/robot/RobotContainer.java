@@ -45,6 +45,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -199,7 +200,8 @@ public class RobotContainer {
       // Left Trigger - 2 ^^^^
 
       m_driverController.rightBumper().whileTrue(new RunIntakeRoutine(intake, Constants.IntakeConstants.IntakePowerLevels.kFeed, vision,ledSubsystem));
-      m_driverController.leftBumper().whileTrue(new RunVomitCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kVomit));
+      m_driverController.leftBumper().whileTrue(new RunIntakeCommand(intake, 0.7, vision, ledSubsystem).withTimeout(1)
+                                       .andThen(new RunIntakeCommand(intake, 0.3, vision, ledSubsystem)));
 
 
       m_secondaryController.button(1).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel4)));
