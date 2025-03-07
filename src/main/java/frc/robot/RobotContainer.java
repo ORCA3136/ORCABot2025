@@ -216,7 +216,7 @@ public class RobotContainer {
       m_secondaryController.button(9).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kBottomAlgae)));
       m_secondaryController.button(10).whileTrue(new RunClimberCommand(climber, Constants.ClimberConstants.kClimberInSpeed));
       m_secondaryController.button(11).whileTrue(new RunClimberCommand(climber, Constants.ClimberConstants.kClimberOutSpeed));
-      m_secondaryController.button(12).and(m_secondaryController.button(8)).whileTrue(new RunClimbSequenceCommand(climber, elevatorSystem, false));
+      m_secondaryController.button(12).and(m_secondaryController.button(8)).whileTrue(new RunClimbSequenceCommand(climber, elevatorSystem, true));
     }
   }
 
