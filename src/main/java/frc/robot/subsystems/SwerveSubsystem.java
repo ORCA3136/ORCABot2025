@@ -333,8 +333,8 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
     NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Robot Velocity y").setNumber(swerveDrive.getRobotVelocity().vyMetersPerSecond);
     NetworkTableInstance.getDefault().getTable("Odometry").getEntry("MT2 Rotation").setNumber(getHeading().getDegrees());
 
-    // vision.updatePosesEstimator(sweprveDrive);
-    vision.updatePosesEstimatorMT2(swerveDrive);
+    vision.updatePosesEstimator(swerveDrive);
+    // vision.updatePosesEstimatorMT2(swerveDrive);
     swerveDrive.updateOdometry(); // Might be redundant
 
 

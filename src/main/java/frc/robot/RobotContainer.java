@@ -164,6 +164,8 @@ public class RobotContainer {
       m_driverController.start().onTrue(Commands.runOnce(driveBase::zeroGyro));
       m_driverController.back().whileTrue(new ZeroElevatorCommand(elevatorSystem));
 
+      m_driverController.rightStick().whileTrue(driveFieldOrientedAngularVelocitySlow);
+
       m_driverController.y().whileTrue(new RunElevatorCommand(elevatorSystem, Constants.ElevatorConstants.ElevatorPowerLevels.kUp));
       m_driverController.a().whileTrue(new RunElevatorCommand(elevatorSystem, Constants.ElevatorConstants.ElevatorPowerLevels.kDown));
       m_driverController.b().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kOut));
@@ -185,7 +187,7 @@ public class RobotContainer {
       // Left Trigger - 2 ^^^^
 
       m_driverController.rightBumper().whileTrue(new RunIntakeRoutine(intake, Constants.IntakeConstants.IntakePowerLevels.kFeed, vision,ledSubsystem));
-      m_driverController.leftBumper().whileTrue(driveFieldOrientedAngularVelocitySlow);
+      m_driverController.leftBumper().whileTrue(new RunVomitCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kVomit));
 
 
       m_secondaryController.button(1).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel4)));
@@ -195,7 +197,7 @@ public class RobotContainer {
       m_secondaryController.button(5).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kProcessor)));
       m_secondaryController.button(6).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kBottomAlgae)));
       m_secondaryController.button(7).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kTopAlgae)));
-      m_secondaryController.button(8).whileTrue(new RunVomitCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kVomit));
+      // m_secondaryController.button(8).whileTrue();
       // m_secondaryController.button(8).whileTrue(Commands.runOnce(() -> driveBase.driveToDistanceCommand(0.3, 0.3)));
       m_secondaryController.button(9).whileTrue(new RunFunnelCommand(climber, Constants.ClimberConstants.kFunnelSpeed));
       m_secondaryController.button(10).whileTrue(new RunClimberCommand(climber, Constants.ClimberConstants.kClimberOutSpeed));
