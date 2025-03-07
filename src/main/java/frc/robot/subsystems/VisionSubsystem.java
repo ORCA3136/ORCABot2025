@@ -13,6 +13,8 @@ import frc.robot.Constants;
 import frc.robot.LimelightHelpers.PoseEstimate;
 import swervelib.SwerveDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -21,6 +23,7 @@ import edu.wpi.first.units.AngularVelocityUnit;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.MutableMeasure;
 import edu.wpi.first.units.measure.AngularVelocity;
+
 import au.grapplerobotics.LaserCan;
 import au.grapplerobotics.interfaces.LaserCanInterface.Measurement;
 
@@ -101,6 +104,7 @@ public class VisionSubsystem extends SubsystemBase {
     if (camera != null) {
       PoseEstimate poseEst = getEstimatedGlobalPose(camera);
       swerve.addVisionMeasurement(poseEst.pose, poseEst.timestampSeconds);
+      SmartDashboard.putBoolean("limelightTV", true);
       hasTarget = true;
     } else {
       hasTarget = false;
@@ -116,6 +120,7 @@ public class VisionSubsystem extends SubsystemBase {
   public void updatePosesEstimatorMT2(SwerveDrive swerve) {
 
     double maxta = 0;
+    String camera = null;
     PoseEstimate mt2 = new PoseEstimate();
     String[] limelights = {"limelight-left", "limelight-right"}; // , "limelight-rear"
     for (String limelight: limelights) {
@@ -130,13 +135,18 @@ public class VisionSubsystem extends SubsystemBase {
         {
           maxta = LimelightHelpers.getTA(limelight);
           mt2  = megaTag2Pose;
+          camera = limelight;
         }
 
       }
 
     }
-    if (mt2 != null) {
+    if (camera != null) {
       swerve.addVisionMeasurement(mt2.pose, mt2.timestampSeconds);
+      SmartDashboard.putBoolean("limelightTV", true);
+    }
+    else {
+      SmartDashboard.putBoolean("limelightTV", false);
     }
   }
     
@@ -182,6 +192,14 @@ public class VisionSubsystem extends SubsystemBase {
     if (measurement != null) {
       SmartDashboard.putNumber("Lidar distance", measurement.distance_mm);
       SmartDashboard.putNumber("Lidar status", measurement.status);
+      if (Math.abs(measurement.distance_mm) < 150) {
+        NetworkTableInstance.getDefault().getTable("Lidar").getEntry("Has Target").setBoolean(true);
+      } else {
+        NetworkTableInstance.getDefault().getTable("Lidar").getEntry("Has Target").setBoolean(false);
+      }
+
+    } else {
+      NetworkTableInstance.getDefault().getTable("Lidar").getEntry("Has Target").setBoolean(false);
     }
     
 
