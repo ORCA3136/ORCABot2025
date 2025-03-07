@@ -102,7 +102,7 @@ public class ReefCentering {
 
     Pose2d scoringPosition = new Pose2d(x, y, new Rotation2d(rot));
     // m_drive.setCenteringPose(scoringPosition);
-    // return m_drive.driveToPose(scoringPosition, PathPlannerConstants.testingConstraints, 0.02);
+    // return m_drive.driveToPose(scoringPosition, PathPlannerConstants.slowConstraints, 0.02);
     return scoringPosition;
   }
 
@@ -131,7 +131,7 @@ public class ReefCentering {
 
     PathPlannerPath path = new PathPlannerPath(
         waypoints, 
-        Constants.PathPlannerConstants.testingConstraints,
+        Constants.PathPlannerConstants.slowConstraints,
         new IdealStartingState(m_drive.getVelocityMagnitude(), m_drive.getHeading()), 
         new GoalEndState(0.0, waypoint.getRotation())
     );
@@ -164,7 +164,7 @@ public class ReefCentering {
       Command pathCommand = getPathFromWaypoint(scoringPosition);
 
       return pathCommand;
-      // return m_drive.driveToPose(scoringPosition, Constants.PathPlannerConstants.testingConstraints, 0);
+      // return m_drive.driveToPose(scoringPosition, Constants.PathPlannerConstants.slowConstraints, 0);
 
     }, Set.of(m_drive));
   }

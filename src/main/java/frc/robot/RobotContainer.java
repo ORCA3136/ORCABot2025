@@ -19,6 +19,7 @@ import frc.robot.commands.RunElevatorCommand;
 import frc.robot.commands.RunFunnelCommand;
 import frc.robot.commands.RunIntakeCommand;
 import frc.robot.commands.RunIntakeRoutine;
+import frc.robot.commands.RunIntakeScoreCommand;
 import frc.robot.commands.RunVomitCommand;
 import frc.robot.commands.RunWristCommand;
 import frc.robot.commands.ZeroElevatorCommand;
@@ -194,7 +195,7 @@ public class RobotContainer {
 
       m_driverController.axisGreaterThan(3, 0.4).whileTrue(new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kOut, vision,ledSubsystem));
       // Right Trigger - 3 ^^^^
-      m_driverController.axisGreaterThan(2, 0.4).whileTrue(new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kIn, vision, ledSubsystem));
+      m_driverController.axisGreaterThan(2, 0.4).whileTrue(new RunIntakeScoreCommand(intake, elevatorSystem, ledSubsystem));
       // Left Trigger - 2 ^^^^
 
       m_driverController.rightBumper().whileTrue(new RunIntakeRoutine(intake, Constants.IntakeConstants.IntakePowerLevels.kFeed, vision,ledSubsystem));
