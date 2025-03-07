@@ -174,7 +174,7 @@ public final class Constants {
       public static final double kOut = -0.9;
       public static final double kFeed = -0.4;
       public static final double kIn = 0.9;
-      public static final double kVomit = 0.85;
+      public static final double kVomit = 0.95;
     }
   }
 
