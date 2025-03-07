@@ -46,9 +46,7 @@ public class RunClimberCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (climberSubsystem.getClimberPosition() > 150 // Constants.ClimberConstants.kClimberOutPos
-     && powerSetPoint > 0)
-     || (climberSubsystem.getClimberPosition() < -40 // Constants.ClimberConstants.kClimberInPos
-      && powerSetPoint < 0);
+    return (climberSubsystem.getClimberPosition() > Constants.ClimberConstants.kClimberOutPos && powerSetPoint > 0)
+     || (climberSubsystem.getClimberPosition() < Constants.ClimberConstants.kClimberInPos && powerSetPoint < 0);
   }
 }
