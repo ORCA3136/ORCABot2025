@@ -14,7 +14,6 @@ import frc.robot.Constants.Reef;
 import frc.robot.commands.CenterLimelightOnReef;
 import frc.robot.commands.DriveToPoseCommand;
 import frc.robot.commands.PathPlannerReefCentering;
-import frc.robot.commands.ReefCenteringAux;
 import frc.robot.commands.RunClimbSequenceCommand;
 import frc.robot.commands.RunClimberCommand;
 import frc.robot.commands.RunElevatorCommand;

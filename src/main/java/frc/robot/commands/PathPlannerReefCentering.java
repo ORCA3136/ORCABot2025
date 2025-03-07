@@ -100,7 +100,7 @@ public class PathPlannerReefCentering extends Command {
     }
 
     Pose2d scoringPosition = new Pose2d(x, y, new Rotation2d(Math.toRadians(rot)));
-    m_drive.setCenteringPose(scoringPosition);
+    // m_drive.setCenteringPose(scoringPosition);
     return m_drive.driveToPose(scoringPosition, PathPlannerConstants.testingConstraints, 0.02);
   }
 

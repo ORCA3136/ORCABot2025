@@ -4,10 +4,20 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
+import java.util.List;
 import java.util.Set;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.IdealStartingState;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.Waypoint;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -49,7 +59,7 @@ public class ReefCentering {
   private Pose2d calculatePath(Side side) {
     double x = nearestReefSide.getX();
     double y = nearestReefSide.getY();
-    double rot = nearestReefSide.getRotation().getDegrees();
+    double rot = nearestReefSide.getRotation().getRadians();
 
     if (elevatorAtHeight)
       if (elevatorSetpoint != null)
@@ -86,12 +96,12 @@ public class ReefCentering {
         y -= FieldPoses.leftOffset * Math.cos(rot);
         break;
       case Back:
-        rot += 180;
+        rot += Math.toRadians(180);
         break;
     }
 
-    Pose2d scoringPosition = new Pose2d(x, y, new Rotation2d(Math.toRadians(rot)));
-    m_drive.setCenteringPose(scoringPosition);
+    Pose2d scoringPosition = new Pose2d(x, y, new Rotation2d(rot));
+    // m_drive.setCenteringPose(scoringPosition);
     // return m_drive.driveToPose(scoringPosition, PathPlannerConstants.testingConstraints, 0.02);
     return scoringPosition;
   }
@@ -108,15 +118,53 @@ public class ReefCentering {
     return false;
   }
 
+  private Command getPathFromWaypoint(Pose2d waypoint) {
+
+    List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
+        new Pose2d(m_drive.getPose().getTranslation(), getPathVelocityHeading(m_drive.getFieldVelocity(), waypoint)),
+        waypoint
+    );
+
+    if (waypoints.get(0).anchor().getDistance(waypoints.get(1).anchor()) < 0.01) {
+        return Commands.print("Auto alignment too close to desired position to continue");
+    }
+
+    PathPlannerPath path = new PathPlannerPath(
+        waypoints, 
+        Constants.PathPlannerConstants.testingConstraints,
+        new IdealStartingState(m_drive.getVelocityMagnitude(), m_drive.getHeading()), 
+        new GoalEndState(0.0, waypoint.getRotation())
+    );
+
+    path.preventFlipping = true;
+
+    return AutoBuilder.followPath(path);
+  }
+
+  /**
+   * 
+   * @param cs field relative chassis speeds
+   * @return
+   */
+  private Rotation2d getPathVelocityHeading(ChassisSpeeds cs, Pose2d target){
+    if (m_drive.getVelocityMagnitude().in(MetersPerSecond) < 0.25) {
+        var diff = target.minus(m_drive.getPose()).getTranslation();
+        return (diff.getNorm() < 0.01) ? target.getRotation() : diff.getAngle();//.rotateBy(Rotation2d.k180deg);
+    }
+    return new Rotation2d(cs.vxMetersPerSecond, cs.vyMetersPerSecond);
+  }
+
   public Command createPathCommand(Side side) {
     return Commands.defer(() -> {
       nearestReefSide = calculateNearestSide();
       elevatorAtHeight = m_elevator.atHeight();
       elevatorSetpoint = m_elevator.getSetpoint();
 
-      Pose2d targetPose = calculatePath(side);
+      Pose2d scoringPosition = calculatePath(side);
+      Command pathCommand = getPathFromWaypoint(scoringPosition);
 
-      return m_drive.driveToPose(targetPose, Constants.PathPlannerConstants.testingConstraints, 0);
+      return pathCommand;
+      // return m_drive.driveToPose(scoringPosition, Constants.PathPlannerConstants.testingConstraints, 0);
 
     }, Set.of(m_drive));
   }

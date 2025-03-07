@@ -99,7 +99,7 @@ public class VisionSubsystem extends SubsystemBase {
       }
     }
     if (camera != null) {
-      PoseEstimate  poseEst = getEstimatedGlobalPose(camera);
+      PoseEstimate poseEst = getEstimatedGlobalPose(camera);
       swerve.addVisionMeasurement(poseEst.pose, poseEst.timestampSeconds);
       hasTarget = true;
     } else {

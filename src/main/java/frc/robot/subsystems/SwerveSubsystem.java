@@ -33,7 +33,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.units.measure.LinearVelocity;
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
 import frc.robot.Constants.PathPlannerConstants;
@@ -458,41 +460,6 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
         endSpeed);
   }
 
-  private Pose2d centeringPose = new Pose2d();
-  public void setCenteringPose(Pose2d pose) {
-    centeringPose = pose;
-  }
-  public Pose2d getCenteringPose() {
-    return centeringPose;
-  }
-
-  private boolean shouldCancel = false;
-  public void setShouldCancel(boolean bool) {
-    shouldCancel = bool;
-    System.out.println("Should Cancel: " + shouldCancel);
-  }
-  public boolean getShouldCancel() {
-    return shouldCancel;
-  }
-
-  Command currentCenteringCommand = null;
-  public void scheduleReefCentering() {
-    currentCenteringCommand = driveToPoseCentering();
-    currentCenteringCommand.schedule();
-  }
-  public void cancelReefCentering() {
-    setShouldCancel(true);    
-    new SequentialCommandGroup(Commands.waitSeconds(0.1), Commands.runOnce(() -> setShouldCancel(false))).schedule();
-  }
-
-  public Command driveToPoseCentering() {
-    return AutoBuilder.pathfindToPose(
-        getCenteringPose(),
-        PathPlannerConstants.testingConstraints,
-        0).until(() -> getShouldCancel());
-    // Maybe try onlyWhile or until
-  }
-
   /**
    * Use PathPlanner Path finding to go to a point on the field.
    *
@@ -512,6 +479,15 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
         constraints,
         endSpeed // Goal end velocity in meters/sec
                                      );
+  }
+
+  public ChassisSpeeds getFieldVelocity() {
+    return swerveDrive.getFieldVelocity();
+  }
+
+  public LinearVelocity getVelocityMagnitude() {
+    ChassisSpeeds cs = getFieldVelocity();
+    return MetersPerSecond.of(new Translation2d(cs.vxMetersPerSecond, cs.vyMetersPerSecond).getNorm());
   }
 
   @Override
