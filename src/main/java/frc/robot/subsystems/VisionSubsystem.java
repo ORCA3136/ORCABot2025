@@ -89,7 +89,7 @@ public class VisionSubsystem extends SubsystemBase {
 
   /**THIS IS THE METHOD THAT IS BEING CALLED BY PERIODIC IN OUR SWERVE DRIVE */
   public void updatePosesEstimator(SwerveDrive swerve) {
-    double maxta = 0.5;
+    double maxta = 0.4;
     String camera = null;
     String[] limelights = {"limelight-left", "limelight-right"}; // , "limelight-rear"
     for (String limelight: limelights) {
