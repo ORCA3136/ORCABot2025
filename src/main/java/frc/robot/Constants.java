@@ -100,7 +100,7 @@ public final class Constants {
       public static final int kLevel3 = 82;
       public static final int kLevel4 = 95; // 92
 
-      public static final int kBottomAlgae = 33; // Between L2 and L3
+      public static final int kBottomAlgae = 34; // Between L2 and L3
       public static final int kTopAlgae = 63; // Between L3 and L4
       public static final int kProcessor = 6; 
 
@@ -288,7 +288,8 @@ public final class Constants {
     public static final double L2ScoringOffset = 0.285;
     public static final double L3ScoringOffset = 0.15;
     public static final double L4ScoringOffset = 0.27;
-    public static final double algaeScoringOffset = 0.23;
+    public static final double topAlgaeScoringOffset = 0.23;
+    public static final double bottomAlgaeScoringOffset = 0.25;
 
   }
  

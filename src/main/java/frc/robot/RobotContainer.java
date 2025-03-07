@@ -13,7 +13,6 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.Reef;
 import frc.robot.commands.CenterLimelightOnReef;
 import frc.robot.commands.DriveToPoseCommand;
-import frc.robot.commands.PathPlannerReefCentering;
 import frc.robot.commands.RunClimbSequenceCommand;
 import frc.robot.commands.RunClimberCommand;
 import frc.robot.commands.RunElevatorCommand;
@@ -31,6 +30,7 @@ import frc.robot.subsystems.ReefCentering;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import swervelib.SwerveInputStream;
+import edu.wpi.first.hal.simulation.DriverStationDataJNI;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -112,9 +112,17 @@ public class RobotContainer {
                                                             .withControllerHeadingAxis(m_driverController::getRightX, 
                                                             m_driverController::getRightY).headingWhile(false);
                                                           //withControllerHeadingAxis(m_driverController::getRightX, m_driverController::getRightX  <- change this to Y for special mode
+
+    SwerveInputStream driveRobotOriented = driveAngularVelocity.copy().robotRelative(true)
+                                                             .allianceRelativeControl(false);
+    SwerveInputStream driveRobotOrientedReefSpeed = driveRobotOriented.copy().scaleTranslation(0.2);
+
     Command driveFieldOrientedDirectAngle = driveBase.driveFieldOriented(driveDirectAngle);
     Command driveFieldOrientedAngularVelocity = driveBase.driveFieldOriented(driveAngularVelocity);
     Command driveFieldOrientedAngularVelocitySlow = driveBase.driveFieldOriented(driveAngularVelocitySlow);
+    Command driveRobotOrientedAngularVelocitySuperSlow = driveBase.driveFieldOriented(driveAngularVelocitySlow);
+
+    
 
     SwerveInputStream driveAngularVelocitySim = SwerveInputStream.of(driveBase.getSwerveDrive(),
                                                 () -> m_driverController.getLeftY(),
@@ -165,6 +173,7 @@ public class RobotContainer {
       m_driverController.start().onTrue(Commands.runOnce(driveBase::zeroGyro));
       m_driverController.back().whileTrue(new ZeroElevatorCommand(elevatorSystem));
 
+      m_driverController.leftStick().whileTrue(driveRobotOrientedAngularVelocitySuperSlow);
       m_driverController.rightStick().whileTrue(driveFieldOrientedAngularVelocitySlow);
 
       m_driverController.y().whileTrue(new RunElevatorCommand(elevatorSystem, Constants.ElevatorConstants.ElevatorPowerLevels.kUp));
