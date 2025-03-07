@@ -138,7 +138,7 @@ public final class Constants {
       public static final int kFeederStation = 4;
       public static final int kLevel1 = 4;
       public static final int kLevel2 = 28; 
-      public static final int kLevel3 = 183;
+      public static final int kLevel3 = 180;
       public static final int kLevel4 = 67;
       public static final int kProcessor = 183; 
       public static final int kAlgae1 = 170; 
@@ -286,7 +286,7 @@ public final class Constants {
 
     public static final double leftOffset = 0.165;
     public static final double L2ScoringOffset = 0.285;
-    public static final double L3ScoringOffset = 0.05;
+    public static final double L3ScoringOffset = 0.15;
     public static final double L4ScoringOffset = 0.27;
     public static final double algaeScoringOffset = 0.23;
 
