@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Left Side I"
+                  "pathName": "Left Side J"
                 }
               },
               {
@@ -32,7 +32,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "I after elevator"
+            "pathName": "J after elevator"
           }
         },
         {
@@ -50,7 +50,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Backup I"
+            "pathName": "Backup J"
           }
         },
         {

@@ -55,7 +55,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     kBottomAlgae;
   }
 
-  private Setpoint currentLevel;
+  private Setpoint currentLevel = ElevatorSubsystem.Setpoint.kLevel1;
 
   // Initialize elevator SPARK. We will use MAXMotion position control for the elevator, so we also
   // need to initialize the closed loop controller and encoder.

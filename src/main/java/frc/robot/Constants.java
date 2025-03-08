@@ -147,8 +147,8 @@ public final class Constants {
     }
 
     public static final class WristPowerLevels {
-      public static final double kOut = 0.2;
-      public static final double kIn = -0.2;
+      public static final double kOut = 0.4;
+      public static final double kIn = -0.4;
     }
 
     public static final class WristPIDConstants
