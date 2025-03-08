@@ -56,7 +56,7 @@ public class SwerveSubsystem extends SubsystemBase {
   private final Pigeon2 pigeon2 = new Pigeon2(9, "rio"); // Pigeon is on roboRIO CAN Bus with device ID 9
 
   public SwerveSubsystem(File directory, VisionSubsystem vision) {
-    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
+    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.LOW;
     this.vision = vision;
 
     try

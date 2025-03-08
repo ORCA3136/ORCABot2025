@@ -84,6 +84,8 @@ public class ReefCentering {
             x += FieldPoses.bottomAlgaeScoringOffset * Math.cos(rot);
             y += FieldPoses.bottomAlgaeScoringOffset * Math.sin(rot);
             break;
+          default:
+            break;
         }
 
     switch (side) {
@@ -97,6 +99,8 @@ public class ReefCentering {
         break;
       case Back:
         rot += Math.toRadians(180);
+        break;
+      default:
         break;
     }
 

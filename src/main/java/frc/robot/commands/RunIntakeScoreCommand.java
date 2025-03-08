@@ -56,6 +56,14 @@ public class RunIntakeScoreCommand extends Command {
       case kProcessor:
         intakeSubsystem.setIntakePower(Constants.IntakeConstants.IntakePowerLevels.kOut);
         break;
+      case kTopAlgae:
+        intakeSubsystem.setIntakePower(Constants.IntakeConstants.IntakePowerLevels.kIn);
+        break;
+      case kBottomAlgae:
+        intakeSubsystem.setIntakePower(Constants.IntakeConstants.IntakePowerLevels.kIn);
+        break;
+      default:
+        break;
     }
    
     led.ChangeLedColor(6);

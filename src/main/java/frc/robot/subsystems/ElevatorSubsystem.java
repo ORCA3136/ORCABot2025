@@ -206,7 +206,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     
     if (changedLevel) {
-      if (Math.abs(getWristPosition() - 107) < 1) changedLevel = false;
+      if (Math.abs(getWristPosition() - 107) < 2) changedLevel = false;
       wristTarget = 107;
       wristBool = false;
 
@@ -484,6 +484,8 @@ public class ElevatorSubsystem extends SubsystemBase {
             case kUnblock:
               wristCurrentTarget = Constants.WristConstants.WristSetpoints.unblock;
               break;
+            default:
+              break;
           }
   }
 
@@ -573,6 +575,7 @@ public class ElevatorSubsystem extends SubsystemBase {
       moveToSetpointPID();
     }
 
+    NetworkTableInstance.getDefault().getTable("Wrist").getEntry("Wrist at feeder").setBoolean(Math.abs(getWristPosition() - 4) < 2);
     NetworkTableInstance.getDefault().getTable("Elevator").getEntry("Elevator current target").setNumber(elevatorCurrentTarget);
     NetworkTableInstance.getDefault().getTable("Elevator").getEntry("Elevator left output").setNumber(leftElevator.getAppliedOutput());
     NetworkTableInstance.getDefault().getTable("Elevator").getEntry("Elevator right output").setNumber(rightElevator.getAppliedOutput());

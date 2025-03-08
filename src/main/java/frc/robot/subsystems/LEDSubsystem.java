@@ -69,7 +69,8 @@ public class LEDSubsystem extends SubsystemBase {
         break;
       case 11: randomColor =  Colors.Black;
         break;
-    
+      default:
+        break;
     }
 
     setLedColor(randomColor);
