@@ -239,10 +239,13 @@ public void driveFieldOriented(ChassisSpeeds velocity){
   swerveDrive.driveFieldOriented(velocity);
 }
 
-public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
+public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity, ElevatorSubsystem elevator)
 {
   return run(()->{
-    swerveDrive.driveFieldOriented(velocity.get());
+    ChassisSpeeds speeds = velocity.get();
+    if (elevator.getElevatorPosition() > 87) speeds = velocity.get().times(0.65);
+    else if (elevator.getElevatorPosition() > 75) speeds = velocity.get().times(0.85);
+    swerveDrive.driveFieldOriented(speeds);
   });
 }
   /**
