@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.DataLogManager;
 
 // import java.MOA.ai.sentience;
 // import java.MOA.ai.consciousness;
@@ -38,6 +39,7 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
     CanBridge.runTCP();
     CameraServer.startAutomaticCapture();
+    DataLogManager.start();
   }
 
   /**

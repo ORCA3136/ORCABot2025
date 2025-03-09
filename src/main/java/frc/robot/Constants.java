@@ -184,8 +184,8 @@ public final class Constants {
     public static final double kClimberInSpeed = -1;
     public static final double kClimberOutSpeed = 1;
 
-    public static final double kClimberInPos = -65;
-    public static final double kClimberOutPos = 195;
+    public static final double kClimberInPos = -67;
+    public static final double kClimberOutPos = 197;
     public static final double kFunnelOutPos = -40;
   }
 
@@ -286,7 +286,7 @@ public final class Constants {
 
     public static final double leftOffset = 0.165;
     public static final double L2ScoringOffset = 0.285;
-    public static final double L3ScoringOffset = 0.15;
+    public static final double L3ScoringOffset = 0.155;
     public static final double L4ScoringOffset = 0.27;
     public static final double topAlgaeScoringOffset = 0.23;
     public static final double bottomAlgaeScoringOffset = 0.25;
