@@ -169,7 +169,7 @@ public class RobotContainer {
     else
     {
 
-      driveBase.setDefaultCommand(driveFieldOrientedAngularVelocity);
+      driveBase.setDefaultCommand(driveBase.driveFieldOrientedElevatorSpeed(driveAngularVelocity, elevatorSystem));
 
 
 

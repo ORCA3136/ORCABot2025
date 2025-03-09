@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 import java.io.File;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -26,6 +27,7 @@ import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 import swervelib.SwerveDrive;
+import swervelib.SwerveInputStream;
 import swervelib.math.SwerveMath;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -245,6 +247,20 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
     swerveDrive.driveFieldOriented(velocity.get());
   });
 }
+
+public Command driveFieldOrientedElevatorSpeed(SwerveInputStream drive, ElevatorSubsystem elevatorSubsystem) {
+  return Commands.defer(() -> {
+    if (elevatorSubsystem.getElevatorPosition() > 87) {
+      return driveFieldOriented(drive.copy().scaleTranslation(0.65));
+    } 
+    else if (elevatorSubsystem.getElevatorPosition() > 75) {
+      return driveFieldOriented(drive.copy().scaleTranslation(0.85));
+    } 
+    return driveFieldOriented(drive);
+  }, Set.of(this));
+}
+
+
   /**
    * Gets the current pose (position and rotation) of the robot, as reported by odometry.
    *
