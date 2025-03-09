@@ -248,15 +248,15 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
   });
 }
 
-public Command driveFieldOrientedElevatorSpeed(SwerveInputStream drive, ElevatorSubsystem elevatorSubsystem) {
+public Command driveFieldOrientedElevatorSpeed(SwerveInputStream speeds, ElevatorSubsystem elevatorSubsystem) {
   return Commands.defer(() -> {
     if (elevatorSubsystem.getElevatorPosition() > 87) {
-      return driveFieldOriented(drive.copy().scaleTranslation(0.65));
+      return driveFieldOriented(speeds.copy().scaleTranslation(0.65));
     } 
     else if (elevatorSubsystem.getElevatorPosition() > 75) {
-      return driveFieldOriented(drive.copy().scaleTranslation(0.85));
+      return driveFieldOriented(speeds.copy().scaleTranslation(0.85));
     } 
-    return driveFieldOriented(drive);
+    return driveFieldOriented(speeds);
   }, Set.of(this));
 }
 
