@@ -119,11 +119,11 @@ public class RobotContainer {
                                                              .allianceRelativeControl(false);
     SwerveInputStream driveRobotOrientedReefSpeed = driveRobotOriented.copy().scaleTranslation(0.2);
 
-    Command driveFieldOrientedDirectAngle = driveBase.driveFieldOriented(driveDirectAngle, elevatorSystem);
-    Command driveFieldOrientedAngularVelocity = driveBase.driveFieldOriented(driveAngularVelocity, elevatorSystem);
-    Command driveFieldOrientedAngularVelocitySlow = driveBase.driveFieldOriented(driveAngularVelocitySlow, elevatorSystem);
+    Command driveFieldOrientedDirectAngle = driveBase.driveFieldOrientedElevatorSpeed(driveDirectAngle, elevatorSystem);
+    Command driveFieldOrientedAngularVelocity = driveBase.driveFieldOrientedElevatorSpeed(driveAngularVelocity, elevatorSystem);
+    Command driveFieldOrientedAngularVelocitySlow = driveBase.driveFieldOrientedElevatorSpeed(driveAngularVelocitySlow, elevatorSystem);
     
-    Command driveRobotOrientedAngularVelocitySuperSlow = driveBase.driveFieldOriented(driveRobotOrientedReefSpeed, elevatorSystem);
+    Command driveRobotOrientedAngularVelocitySuperSlow = driveBase.driveFieldOrientedElevatorSpeed(driveRobotOrientedReefSpeed, elevatorSystem);
 
     
 
@@ -145,7 +145,7 @@ public class RobotContainer {
                                                                                                         (Math.PI * 2))
                                                                       .headingWhile(true);
 
-    Command driveFieldOrientedDirectAngleSim = driveBase.driveFieldOriented(driveDirectAngleSim, elevatorSystem);
+    Command driveFieldOrientedDirectAngleSim = driveBase.driveFieldOrientedElevatorSpeed(driveDirectAngleSim, elevatorSystem);
 
 
   /**
