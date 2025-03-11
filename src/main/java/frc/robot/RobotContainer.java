@@ -13,6 +13,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.Reef;
 import frc.robot.commands.CenterLimelightOnReef;
 import frc.robot.commands.DriveToPoseCommand;
+import frc.robot.commands.NotRecursiveRoutine;
 import frc.robot.commands.RunClimbSequenceCommand;
 import frc.robot.commands.RunClimberCommand;
 import frc.robot.commands.RunElevatorCommand;
@@ -200,6 +201,7 @@ public class RobotContainer {
       // Left Trigger - 2 ^^^^
 
       m_driverController.rightBumper().whileTrue(new RunIntakeRoutine(intake, Constants.IntakeConstants.IntakePowerLevels.kFeed, vision,ledSubsystem));
+      
       m_driverController.leftBumper().whileTrue(new RunIntakeCommand(intake, 0.7, vision, ledSubsystem).withTimeout(1)
                                        .andThen(new RunIntakeCommand(intake, 0.3, vision, ledSubsystem)));
 
@@ -222,7 +224,7 @@ public class RobotContainer {
 
   private void configureNamedCommands() {
     NamedCommands.registerCommand("Intake score", new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kOut, vision,ledSubsystem).withTimeout(0.75));
-    NamedCommands.registerCommand("Intake in", new RunIntakeRoutine(intake, Constants.IntakeConstants.IntakePowerLevels.kOut, vision,ledSubsystem));
+    NamedCommands.registerCommand("Intake in", new NotRecursiveRoutine(intake, Constants.IntakeConstants.IntakePowerLevels.kOut, vision,ledSubsystem));
     NamedCommands.registerCommand("Intake score 3", new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kIn, vision,ledSubsystem).withTimeout(0.5));
     NamedCommands.registerCommand("Elevator L1", Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel1)));
     NamedCommands.registerCommand("Elevator L2", Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel2)));

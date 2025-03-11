@@ -21,7 +21,7 @@ public class NotRecursiveRoutine extends Command {
   private LEDSubsystem led;
   private boolean hasCoral;
   private boolean hasSwitched;
-  private int recursionDepth = 1;
+  private int recursionDepth = 0;
 
   /**
    * Creates a new intake routine.
@@ -52,24 +52,25 @@ public class NotRecursiveRoutine extends Command {
   public void execute() {
     hasCoral = lidar.getCoralInIntake() < 150;
 
-    if (recursionDepth < 3 && hasCoral == hasSwitched) {
-      powerSetPoint *= -2.5;
+    if (lidar.getStatus() == 0 && hasCoral == hasSwitched) {
+      powerSetPoint /= -2.5;
       recursionDepth ++;
+      hasSwitched = !hasCoral;
       intakeSubsystem.setIntakePower(powerSetPoint);
     }
-    
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     intakeSubsystem.setIntakePower(0);
+    recursionDepth = 0;
     
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return recursionDepth == 3;
+    return (recursionDepth == 3);
   }
 }

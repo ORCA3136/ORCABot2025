@@ -15,7 +15,10 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ElevatorFeedforward;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -65,6 +68,12 @@ public class ElevatorSubsystem extends SubsystemBase {
   private SparkClosedLoopController wristClosedLoopController =
       wristMotor.getClosedLoopController();
 
+  // private final TrapezoidProfile.Constraints m_constraints =
+  //     new TrapezoidProfile.Constraints(3, 2);  // (kMaxVelocity, kMaxAcceleration)
+  // private final ProfiledPIDController m_controller =
+  //     new ProfiledPIDController(0.001, 0, 0, m_constraints, 0.02);
+  //private final ElevatorFeedforward m_feedforward = new ElevatorFeedforward(kS, kG, kV);
+
   private RelativeEncoder elevatorEncoder = leftElevator.getEncoder(); //need a relative encoder to get number of ticks
    //private RelativeEncoder elevatorEncoder = leftElevator.getEncoder(); we might want to get both left and right encoder and average the values
 
@@ -72,6 +81,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   // Member variables for subsystem state management
   private boolean wasResetByButton = false;
+  private boolean elevatorReset = false;
   private double elevatorCurrentTarget = Constants.ElevatorConstants.ElevatorSetpoints.kFeederStation;
   private double wristCurrentTarget = Constants.ElevatorConstants.ElevatorSetpoints.kFeederStation;
   
@@ -528,11 +538,14 @@ public class ElevatorSubsystem extends SubsystemBase {
 
    /** Zero the elevator encoder when the limit switch is pressed. */
    private void zeroElevatorOnLimitSwitch() {
-    if (getElevatorPosition() < 0 && !elevatorLimitSwitch.get()) {
+    if ( (getElevatorPosition() < 0 || !elevatorReset) && !elevatorLimitSwitch.get()) {
       // Zero the encoder only when the limit switch is switches from "unpressed" to "pressed" to
       // prevent constant zeroing while pressed
       new PrintCommand("RESETTING ELEVATOR");
-      zeroElevator();      
+      zeroElevator();    
+      elevatorReset = true;  
+    } else if (elevatorLimitSwitch.get()) {
+      elevatorReset = false;
     }
   }
 
