@@ -24,6 +24,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -345,9 +346,9 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
   
     private void wristMoveToSetpoint() {
-      wristPID(wristCurrentTarget);
-      // wristClosedLoopController.setReference(
-      //     wristCurrentTarget, ControlType.kPosition);
+      // wristPID(wristCurrentTarget);
+      wristClosedLoopController.setReference(
+          wristCurrentTarget, ControlType.kPosition);
     }
   
     public void elevatorMoveToSetpoint() {
@@ -356,9 +357,9 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
   
     public void wristMoveToSetpoint(double pos) {
-      wristPID(wristCurrentTarget);
-      // wristClosedLoopController.setReference(
-      //     pos, ControlType.kPosition);
+      // wristPID(wristCurrentTarget);
+      wristClosedLoopController.setReference(
+          pos, ControlType.kPosition);
     }
   
     public void elevatorMoveToSetpoint(double pos) {
@@ -469,6 +470,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     public void wristPID(double position){ //TODO test this function
       newWristPIDController.setGoal(position);
       m_wristSpeed = newWristPIDController.calculate(getWristPosition());
+      // Shuffleboard.putNumber
     if (newWristPIDController.atGoal()) {
       m_wristSpeed = 0;
     }
@@ -489,7 +491,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public void WristMove(double d){
-    leftElevator.set(-d);
+    wristMotor.set(-d); // negative is in
   }
 
   public void setWristTarget(double target) {

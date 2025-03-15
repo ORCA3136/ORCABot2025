@@ -186,7 +186,7 @@ public final class Constants {
     
     public static final class IntakePowerLevels {
       public static final double kOut = -0.9;
-      public static final double kFeed = -0.4;
+      public static final double kFeed = -0.5;
       public static final double kIn = 0.9;
       public static final double kVomit = 0.95;
     }

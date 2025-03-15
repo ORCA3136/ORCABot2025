@@ -32,8 +32,10 @@ public class VisionSubsystem extends SubsystemBase {
   //  private static DigitalInput DIO_1;
   //  private boolean output1;
   //  private boolean[] sensorValues = new boolean[2];
-  private LaserCan lidar;
-  private LaserCan.Measurement measurement;
+  private LaserCan bottomLidar;
+  private LaserCan topLidar;
+  private LaserCan.Measurement bottomMeasurement;
+  private LaserCan.Measurement topMeasurement;
 
 
 
@@ -48,15 +50,17 @@ public class VisionSubsystem extends SubsystemBase {
   
 
   LimelightHelpers limelight2;
-
-
-  /** Creates a new VisionSubsystem. */
-  public VisionSubsystem() {
-
-
-    // DIO_1 = new DigitalInput(1);
-
-    lidar = new LaserCan(22);
+    
+  
+  
+    /** Creates a new VisionSubsystem. */
+    public VisionSubsystem() {
+  
+  
+      // DIO_1 = new DigitalInput(1);
+  
+      bottomLidar = new LaserCan(22);
+      topLidar = new LaserCan(23);
 
     if (DriverStation.isFMSAttached()) {
       if (DriverStation.getAlliance().isPresent()) {
@@ -68,11 +72,27 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   public double getCoralInIntake() {
-    Measurement it = lidar.getMeasurement();
+    Measurement it = bottomLidar.getMeasurement();
     if (it != null) {
       return it.distance_mm;
     }
     return -999999999;
+  }
+
+  public double getCoralInFunnel() {
+    Measurement it = topLidar.getMeasurement();
+    if (it != null) {
+      return it.distance_mm;
+    }
+    return -999999999;
+  }
+
+  public boolean hasCoralInIntake() {
+    return getCoralInIntake() < 150;
+  }
+
+  public boolean hasCoralInFunnel() {
+    return getCoralInFunnel() < 150;
   }
 
   public boolean getTV() {
@@ -188,18 +208,34 @@ public class VisionSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
     
 
-    measurement = lidar.getMeasurement();
-    if (measurement != null) {
-      SmartDashboard.putNumber("Lidar distance", measurement.distance_mm);
-      SmartDashboard.putNumber("Lidar status", measurement.status);
-      if (Math.abs(measurement.distance_mm) < 150) {
-        NetworkTableInstance.getDefault().getTable("Lidar").getEntry("Has Target").setBoolean(true);
+    bottomMeasurement = bottomLidar.getMeasurement();
+    if (bottomMeasurement != null) {
+      SmartDashboard.putNumber("Bottom Lidar distance", bottomMeasurement.distance_mm);
+      SmartDashboard.putNumber("Bottom Lidar status", bottomMeasurement.status);
+      if (Math.abs(bottomMeasurement.distance_mm) < 150) {
+        
+        NetworkTableInstance.getDefault().getTable("Bottom Lidar").getEntry("Has Target").setBoolean(true);
       } else {
-        NetworkTableInstance.getDefault().getTable("Lidar").getEntry("Has Target").setBoolean(false);
+        NetworkTableInstance.getDefault().getTable("Bottom Lidar").getEntry("Has Target").setBoolean(false);
       }
 
     } else {
-      NetworkTableInstance.getDefault().getTable("Lidar").getEntry("Has Target").setBoolean(false);
+      NetworkTableInstance.getDefault().getTable("Bottom Lidar").getEntry("Has Target").setBoolean(false);
+    }
+
+    topMeasurement = topLidar.getMeasurement();
+    if (topMeasurement != null) {
+      SmartDashboard.putNumber("Top Lidar distance", topMeasurement.distance_mm);
+      SmartDashboard.putNumber("Top Lidar status", topMeasurement.status);
+      if (Math.abs(topMeasurement.distance_mm) < 150) {
+        
+        NetworkTableInstance.getDefault().getTable("Top Lidar").getEntry("Has Target").setBoolean(true);
+      } else {
+        NetworkTableInstance.getDefault().getTable("Top Lidar").getEntry("Has Target").setBoolean(false);
+      }
+
+    } else {
+      NetworkTableInstance.getDefault().getTable("Top Lidar").getEntry("Has Target").setBoolean(false);
     }
     
 
@@ -225,7 +261,7 @@ public class VisionSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run during simulation
   }
 
-public int getStatus() {
-    return measurement.status;
+public int getBottomStatus() {
+    return bottomMeasurement.status;
 }
 }
