@@ -36,7 +36,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Configs;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants.ElevatorSetpoints;
-import frc.robot.Constants.SimulationRobotConstants;
 
 public class ElevatorSubsystem extends SubsystemBase {
 
@@ -74,12 +73,16 @@ public class ElevatorSubsystem extends SubsystemBase {
   //     new ProfiledPIDController(0.001, 0, 0, m_constraints, 0.02);
   //private final ElevatorFeedforward m_feedforward = new ElevatorFeedforward(kS, kG, kV);
 
+  private ProfiledPIDController ourNewestPIDControllerYet = new ProfiledPIDController(Constants.ElevatorConstants.ElevatorPIDConstants.kElevatorKp, 0, Constants.ElevatorConstants.ElevatorPIDConstants.kElevatorKd, Constants.ElevatorConstants.ElevatorPIDConstants.kElevatorConstraints);
+  private ProfiledPIDController newWristPIDController = new ProfiledPIDController(Constants.WristConstants.WristPIDConstants.kWristKp, Constants.WristConstants.WristPIDConstants.kWristKi, Constants.WristConstants.WristPIDConstants.kWristKd, Constants.WristConstants.WristPIDConstants.kWristConstraints);
+
   private RelativeEncoder elevatorEncoder = leftElevator.getEncoder(); //need a relative encoder to get number of ticks
    //private RelativeEncoder elevatorEncoder = leftElevator.getEncoder(); we might want to get both left and right encoder and average the values
 
   private AbsoluteEncoder wristEncoder = wristMotor.getAbsoluteEncoder();
-
   // Member variables for subsystem state management
+  private double m_elevatorSpeed;
+  private double m_wristSpeed;
   private boolean wasResetByButton = false;
   private boolean elevatorReset = false;
   private double elevatorCurrentTarget = Constants.ElevatorConstants.ElevatorSetpoints.kFeederStation;
@@ -93,414 +96,400 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   private final DigitalInput elevatorLimitSwitch;
 
-
-  // Simulation setup and variables
-  //TODO - WE NEED TO ADJUST THIS TO SUPPORT 2 MOTORS
-
-  private DCMotor elevatorMotorModel = DCMotor.getNEO(2);
-  private SparkMaxSim elevatorMotorSim;
-  // private SparkLimitSwitchSim elevatorLimitSwitchSim;
-  private final ElevatorSim m_elevatorSim =
-      new ElevatorSim(
-          elevatorMotorModel,
-          SimulationRobotConstants.kElevatorGearing,
-          SimulationRobotConstants.kCarriageMass,
-          SimulationRobotConstants.kElevatorDrumRadius,
-          SimulationRobotConstants.kMinElevatorHeightMeters,
-          SimulationRobotConstants.kMaxElevatorHeightMeters,
-          true,
-          SimulationRobotConstants.kMinElevatorHeightMeters,
-          0.0,
-          0.0);
-
-  private DCMotor armMotorModel = DCMotor.getNEO(1);
-  private SparkMaxSim armMotorSim;
-  private final SingleJointedArmSim m_armSim =
-      new SingleJointedArmSim(
-          armMotorModel,
-          SimulationRobotConstants.kArmReduction,
-          SingleJointedArmSim.estimateMOI(
-              SimulationRobotConstants.kArmLength, SimulationRobotConstants.kArmMass),
-          SimulationRobotConstants.kArmLength,
-          SimulationRobotConstants.kMinAngleRads,
-          SimulationRobotConstants.kMaxAngleRads,
-          true,
-          SimulationRobotConstants.kMinAngleRads,
-          0.0,
-          0.0);
-
-            // Mechanism2d setup for subsystem
-  private final Mechanism2d m_mech2d = new Mechanism2d(50, 50);
-  private final MechanismRoot2d m_mech2dRoot = m_mech2d.getRoot("ElevatorArm Root", 25, 0);
-  private final MechanismLigament2d m_elevatorMech2d =
-      m_mech2dRoot.append(
-          new MechanismLigament2d(
-              "Elevator",
-              SimulationRobotConstants.kMinElevatorHeightMeters
-                  * SimulationRobotConstants.kPixelsPerMeter,
-              90));
-  private final MechanismLigament2d m_armMech2d =
-      m_elevatorMech2d.append(
-          new MechanismLigament2d(
-              "Arm",
-              SimulationRobotConstants.kArmLength * SimulationRobotConstants.kPixelsPerMeter,
-              180 - Units.radiansToDegrees(SimulationRobotConstants.kMinAngleRads) - 90));
-
-  /** Creates a new ExampleSubsystem. */
-  public ElevatorSubsystem() {
-
-    zeroElevator();
-    Configs.ElevatorConfigs.rightElevatorConfig 
-         .follow(leftElevator, true);
-    
-    leftElevator.configure(Configs.ElevatorConfigs.leftElevatorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
-    rightElevator.configure(Configs.ElevatorConfigs.rightElevatorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
-
-    wristMotor.configure(Configs.WristConfigs.wristMotorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
-    
-    // Display mechanism2d
-    SmartDashboard.putData("Elevator Subsystem", m_mech2d);
-
-    // Initialize simulation values
-    elevatorMotorSim = new SparkMaxSim(leftElevator, elevatorMotorModel);
-    // elevatorLimitSwitchSim = new SparkLimitSwitchSim(leftElevator, false);
-    armMotorSim = new SparkMaxSim(wristMotor, armMotorModel);
-
-    elevatorLimitSwitch = new DigitalInput(0);
-
-  }
   
-  // main elevator/wrist movement
-  private void moveToSetpointPID() {
-    boolean elBool = false;
-    double elTarget = 3;
-
-    boolean wristBool = false;
-    double wristTarget = 3;
-
-
-    if (getWristAngle() > Constants.WristConstants.WristSetpoints.unblock && getWristAngle() < 350) {
-      elBool = true;
-    } else if (getWristAngle() < Constants.WristConstants.WristSetpoints.unblock && getElevatorPosition() > 90) {
-      if (elevatorCurrentTarget < 90) { 
-        elTarget = 90;
-      }
-    } else if (getWristAngle() > 22) {
-      if (getElevatorPosition() < 22) {
-        if (elevatorCurrentTarget > 22) { 
-          elTarget = 22;
-        } 
-      } 
-    } else {
-      if (elevatorCurrentTarget > 5) {
-        elTarget = 5;
-      }
+    public ElevatorSubsystem() {
+  
+      zeroElevator();
+      Configs.ElevatorConfigs.rightElevatorConfig 
+           .follow(leftElevator, true);
+      
+      leftElevator.configure(Configs.ElevatorConfigs.leftElevatorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+      rightElevator.configure(Configs.ElevatorConfigs.rightElevatorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+  
+      wristMotor.configure(Configs.WristConfigs.wristMotorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+  
+  
+      elevatorLimitSwitch = new DigitalInput(0);
+  
     }
-
     
-    if (getElevatorPosition() > 90) {
-      if (wristCurrentTarget < 50) {
-        wristTarget = 50;
-      }
-    } else if (getElevatorPosition() < 5) {
-      wristBool = true;
-    } else if (getElevatorPosition() < 20) {
-      if (wristCurrentTarget < 22) {
-        wristTarget = 22;
-      }
-    } else {
-      if (wristCurrentTarget < Constants.WristConstants.WristSetpoints.unblock) {
-        wristTarget = Constants.WristConstants.WristSetpoints.unblock;
-      }
-    }
-
-    
-    if (changedLevel) {
-      if (Math.abs(getWristPosition() - 107) < 2) changedLevel = false;
-      wristTarget = 107;
-      wristBool = false;
-
-      elBool = false;
-      elTarget = getElevatorPosition();
-    }
-    else if (Math.abs(getElevatorPosition() - elevatorCurrentTarget) > 0.5) {
-      wristBool = false;
-      wristTarget = getWristPosition();
-    }
-
-
-    if (!isElevatorManuallyMoving()) {
-      if (elBool) {
-        elevatorMoveToSetpoint();
-      } else {
-        if (elTarget != 3) {
-          elevatorMoveToSetpoint(elTarget);
-        }
-        else {
-          elevatorMoveToSetpoint();
-        }
-      }
-    }
-
-    if (!isWristManuallyMoving()) {
-      if (wristBool) {
-        wristMoveToSetpoint();
-      } else {
-        if (wristTarget != 3) {
-          wristMoveToSetpoint(wristTarget);
-        }
-        else {
-          wristMoveToSetpoint();
-        }
-      }
-    }
-
-    NetworkTableInstance.getDefault().getTable("Elevator").getEntry("Temp Elevator Target").setNumber(elTarget);
-    NetworkTableInstance.getDefault().getTable("Elevator").getEntry("Temp Wrist Target").setNumber(wristTarget);
-
-  }
-
-  // not currently in use 
-  private void moveToSetpointBetter() {
-    boolean elBool = false;
-    double elTarget = 3;
-
-    boolean wristBool = false;
-    double wristTarget = 3;
-
-    int currentZone;
-    int targetZone;
-    boolean differentZones = false;
-    
-    if (getElevatorPosition() < 23) {
-      currentZone = 1;
-    } else if (getElevatorPosition() < 39) {
-      currentZone = 2;
-    } else {
-      currentZone = 3;
-    }
-
-    if (elevatorCurrentTarget < 23) {
-      targetZone = 1;
-    } else if (elevatorCurrentTarget < 39) {
-      targetZone = 2;
-    } else {
-      targetZone = 3;
-    }
-
-    if (currentZone == 1 && targetZone == 3 || currentZone == 3 && targetZone == 1) {
-      differentZones = true;
-    }
-
-    if (differentZones) {
-      elTarget = 31;
-    } else if (currentZone == 1) {
-
+    // main elevator/wrist movement
+    private void moveToSetpointPID() {
+      boolean elBool = false;
+      double elTarget = 3;
+  
+      boolean wristBool = false;
+      double wristTarget = 3;
+  
+  
       if (getWristAngle() > Constants.WristConstants.WristSetpoints.unblock && getWristAngle() < 350) {
         elBool = true;
-      } else if (getWristAngle() > 25) {
-        if (getElevatorPosition() < 20) {
-          if (elevatorCurrentTarget > 20) { // can wrist go around???
-            elTarget = 20;
-          } // is elevator just free here
+      } else if (getWristAngle() < Constants.WristConstants.WristSetpoints.unblock && getElevatorPosition() > Constants.WallConstants.kElevatorAboveTopBar) {
+        if (elevatorCurrentTarget < Constants.WallConstants.kElevatorAboveTopBar) { 
+          elTarget = Constants.WallConstants.kElevatorAboveTopBar;
+        }
+      } else if (getWristAngle() > 22) {
+        if (getElevatorPosition() < Constants.WallConstants.kElevatorBelowTopBar) {
+          if (elevatorCurrentTarget > Constants.WallConstants.kElevatorBelowTopBar) { 
+            elTarget = Constants.WallConstants.kElevatorBelowTopBar;
+          } 
         } 
-      //   else if (40 < getElevatorPosition() && getElevatorPosition() < 65) {
-      //     if (elevatorCurrentTarget < 40) {
-      //       elTarget = 40;
-      //     }
-      //     if (elevatorCurrentTarget > 65) {
-      //       elTarget = 65;
-      //     }
-      //   }
-        
-      // } else if (getWristAngle() > 15 && getElevatorPosition() > 40) {
-      //   if (elevatorCurrentTarget < 40) {
-      //     elTarget = 40;
-      //   }
-      //   if (elevatorCurrentTarget > 65) {
-      //     elTarget = 65;
-      //   }
       } else {
-        if (elevatorCurrentTarget > 5) {
-          elTarget = 5;
+        if (elevatorCurrentTarget > Constants.WallConstants.kElevatorBelowBottomBar) {
+          elTarget = Constants.WallConstants.kElevatorBelowBottomBar;
         }
       }
-    } else if (currentZone == 3) {
-      if (getWristAngle() > Constants.WristConstants.WristSetpoints.unblock && getWristAngle() < 350) {
-        elBool = true;
-      } else if (25 > getWristAngle() && getWristAngle() < Constants.WristConstants.WristSetpoints.unblock) {
-        if (getElevatorPosition() < 65 && getElevatorPosition() > 40) {
-          if (getElevatorCurrentTarget() > 65) {
-            elTarget = 65;
-          } else if (getElevatorCurrentTarget() < 40) {
-            elTarget = 40;
-          }
+  
+      
+      if (getElevatorPosition() > Constants.WallConstants.kElevatorAboveTopBar) {
+        if (wristCurrentTarget < 50) {
+          wristTarget = 50;
         }
-      }
-    }
-
-    if (differentZones) {
-      wristTarget = Constants.WristConstants.WristSetpoints.unblock + 10;
-    } else if (currentZone == 1) {
-      if (getElevatorPosition() < 5) {
+      } else if (getElevatorPosition() < Constants.WallConstants.kElevatorBelowBottomBar) {
         wristBool = true;
-      } else if (getElevatorPosition() < 20) {
-        if (wristCurrentTarget < 25) {
-          wristTarget = 25;
+      } else if (getElevatorPosition() < Constants.WallConstants.kMysteryPos) {
+        if (wristCurrentTarget < 22) {
+          wristTarget = 22;
         }
-      // } else if (getElevatorPosition() < 40) {
-      //   if (wristCurrentTarget < Constants.WristConstants.WristSetpoints.unblock) {
-      //     wristTarget = Constants.WristConstants.WristSetpoints.unblock;
-      //   }
-      // } else if (getElevatorPosition() < 65) {
-      //   if (wristCurrentTarget < 15) {
-      //     wristTarget = 15;
-      //   }
       } else {
         if (wristCurrentTarget < Constants.WristConstants.WristSetpoints.unblock) {
           wristTarget = Constants.WristConstants.WristSetpoints.unblock;
         }
       }
-    } else if (currentZone == 3) {
-      if (getElevatorPosition() < 40 || getElevatorPosition() > 65) {
-        if (wristCurrentTarget < Constants.WristConstants.WristSetpoints.unblock) {
-          wristTarget = Constants.WristConstants.WristSetpoints.unblock;
-        }
-      } else if (getElevatorPosition() < 65) {
-        if (wristCurrentTarget < 15) {
-          wristTarget = 15;
-        }
+  
+      
+      if (changedLevel) {
+        if (Math.abs(getWristPosition() - 107) < 2) changedLevel = false;
+        wristTarget = 107;
+        wristBool = false;
+  
+        elBool = false;
+        elTarget = getElevatorPosition();
       }
-    }
-
-
-    if (!isElevatorManuallyMoving()) {
-      if (elBool) {
-        elevatorMoveToSetpoint();
-      } else {
-        if (elTarget != 3) {
-          elevatorMoveToSetpoint(elTarget);
-        }
-        else {
+      else if (Math.abs(getElevatorPosition() - elevatorCurrentTarget) > 0.5) {
+        wristBool = false;
+        wristTarget = getWristPosition();
+      }
+  
+  
+      if (!isElevatorManuallyMoving()) {
+        if (elBool) {
           elevatorMoveToSetpoint();
+        } else {
+          if (elTarget != 3) {
+            elevatorMoveToSetpoint(elTarget);
+          }
+          else {
+            elevatorMoveToSetpoint();
+          }
         }
       }
-    }
-
-    if (!isWristManuallyMoving()) {
-      if (wristBool) {
-        wristMoveToSetpoint();
-      } else {
-        if (wristTarget != 3) {
-          wristMoveToSetpoint(wristTarget);
-        }
-        else {
+  
+      if (!isWristManuallyMoving()) {
+        if (wristBool) {
           wristMoveToSetpoint();
+        } else {
+          if (wristTarget != 3) {
+            wristMoveToSetpoint(wristTarget);
+          }
+          else {
+            wristMoveToSetpoint();
+          }
+        }
+      }
+  
+      NetworkTableInstance.getDefault().getTable("Elevator").getEntry("Temp Elevator Target").setNumber(elTarget);
+      NetworkTableInstance.getDefault().getTable("Elevator").getEntry("Temp Wrist Target").setNumber(wristTarget);
+  
+    }
+  
+    // not currently in use 
+    private void moveToSetpointBetter() {
+      boolean elBool = false;
+      double elTarget = 3;
+  
+      boolean wristBool = false;
+      double wristTarget = 3;
+  
+      int currentZone;
+      int targetZone;
+      boolean differentZones = false;
+      
+      if (getElevatorPosition() < 23) {
+        currentZone = 1;
+      } else if (getElevatorPosition() < 39) {
+        currentZone = 2;
+      } else {
+        currentZone = 3;
+      }
+  
+      if (elevatorCurrentTarget < 23) {
+        targetZone = 1;
+      } else if (elevatorCurrentTarget < 39) {
+        targetZone = 2;
+      } else {
+        targetZone = 3;
+      }
+  
+      if (currentZone == 1 && targetZone == 3 || currentZone == 3 && targetZone == 1) {
+        differentZones = true;
+      }
+  
+      if (differentZones) {
+        elTarget = 31;
+      } else if (currentZone == 1) {
+  
+        if (getWristAngle() > Constants.WristConstants.WristSetpoints.unblock && getWristAngle() < 350) {
+          elBool = true;
+        } else if (getWristAngle() > 25) {
+          if (getElevatorPosition() < 20) {
+            if (elevatorCurrentTarget > 20) { // can wrist go around???
+              elTarget = 20;
+            } // is elevator just free here
+          } 
+        //   else if (40 < getElevatorPosition() && getElevatorPosition() < 65) {
+        //     if (elevatorCurrentTarget < 40) {
+        //       elTarget = 40;
+        //     }
+        //     if (elevatorCurrentTarget > 65) {
+        //       elTarget = 65;
+        //     }
+        //   }
+          
+        // } else if (getWristAngle() > 15 && getElevatorPosition() > 40) {
+        //   if (elevatorCurrentTarget < 40) {
+        //     elTarget = 40;
+        //   }
+        //   if (elevatorCurrentTarget > 65) {
+        //     elTarget = 65;
+        //   }
+        } else {
+          if (elevatorCurrentTarget > 5) {
+            elTarget = 5;
+          }
+        }
+      } else if (currentZone == 3) {
+        if (getWristAngle() > Constants.WristConstants.WristSetpoints.unblock && getWristAngle() < 350) {
+          elBool = true;
+        } else if (25 > getWristAngle() && getWristAngle() < Constants.WristConstants.WristSetpoints.unblock) {
+          if (getElevatorPosition() < 65 && getElevatorPosition() > 40) {
+            if (getElevatorCurrentTarget() > 65) {
+              elTarget = 65;
+            } else if (getElevatorCurrentTarget() < 40) {
+              elTarget = 40;
+            }
+          }
+        }
+      }
+  
+      if (differentZones) {
+        wristTarget = Constants.WristConstants.WristSetpoints.unblock + 10;
+      } else if (currentZone == 1) {
+        if (getElevatorPosition() < 5) {
+          wristBool = true;
+        } else if (getElevatorPosition() < 20) {
+          if (wristCurrentTarget < 25) {
+            wristTarget = 25;
+          }
+        // } else if (getElevatorPosition() < 40) {
+        //   if (wristCurrentTarget < Constants.WristConstants.WristSetpoints.unblock) {
+        //     wristTarget = Constants.WristConstants.WristSetpoints.unblock;
+        //   }
+        // } else if (getElevatorPosition() < 65) {
+        //   if (wristCurrentTarget < 15) {
+        //     wristTarget = 15;
+        //   }
+        } else {
+          if (wristCurrentTarget < Constants.WristConstants.WristSetpoints.unblock) {
+            wristTarget = Constants.WristConstants.WristSetpoints.unblock;
+          }
+        }
+      } else if (currentZone == 3) {
+        if (getElevatorPosition() < 40 || getElevatorPosition() > 65) {
+          if (wristCurrentTarget < Constants.WristConstants.WristSetpoints.unblock) {
+            wristTarget = Constants.WristConstants.WristSetpoints.unblock;
+          }
+        } else if (getElevatorPosition() < 65) {
+          if (wristCurrentTarget < 15) {
+            wristTarget = 15;
+          }
+        }
+      }
+  
+  
+      if (!isElevatorManuallyMoving()) {
+        if (elBool) {
+          elevatorMoveToSetpoint();
+        } else {
+          if (elTarget != 3) {
+            elevatorMoveToSetpoint(elTarget);
+          }
+          else {
+            elevatorMoveToSetpoint();
+          }
+        }
+      }
+  
+      if (!isWristManuallyMoving()) {
+        if (wristBool) {
+          wristMoveToSetpoint();
+        } else {
+          if (wristTarget != 3) {
+            wristMoveToSetpoint(wristTarget);
+          }
+          else {
+            wristMoveToSetpoint();
+          }
         }
       }
     }
-  }
-
-  private void wristMoveToSetpoint() {
-    wristClosedLoopController.setReference(
-        wristCurrentTarget, ControlType.kPosition);
-  }
-
-  public void elevatorMoveToSetpoint() {
-    elevatorClosedLoopController.setReference(
-      elevatorCurrentTarget, ControlType.kPosition);
-  }
-
-  public void wristMoveToSetpoint(double pos) {
-    wristClosedLoopController.setReference(
+  
+    private void wristMoveToSetpoint() {
+      wristPID(wristCurrentTarget);
+      // wristClosedLoopController.setReference(
+      //     wristCurrentTarget, ControlType.kPosition);
+    }
+  
+    public void elevatorMoveToSetpoint() {
+      elevatorClosedLoopController.setReference(
+        elevatorCurrentTarget, ControlType.kPosition);
+    }
+  
+    public void wristMoveToSetpoint(double pos) {
+      wristPID(wristCurrentTarget);
+      // wristClosedLoopController.setReference(
+      //     pos, ControlType.kPosition);
+    }
+  
+    public void elevatorMoveToSetpoint(double pos) {
+      elevatorClosedLoopController.setReference(
         pos, ControlType.kPosition);
-  }
+    }
+  
+    /** Set the elevator motor power in the range of [-1, 1]. */
+    public void setElevatorPower(double power) {
+      leftElevator.set(power);
+      setElevatorManuallyMoving(true);
+    }
+    
+    public void setWristPower(double power) {
+      wristMotor.set(power);
+      setWristManuallyMoving(true);
+    }
+  
+    public double getWristCurrentTarget() {
+      return wristCurrentTarget;
+    }
+  
+    public double getElevatorCurrentTarget() {
+      return elevatorCurrentTarget;
+    }
+  
+    public double getWristAngle() {
+      return getWristPosition();
+    }
+  
+    /**
+     * Command to set the subsystem setpoint. This will set the arm and elevator to their predefined
+     * positions for the given setpoint.
+     */
+    public void setSetpointCommand(Setpoint setpoint) {  // see wrist subsystem counterpart
+      //return this.runOnce(
+          //() -> {
+            if (currentLevel != setpoint || currentLevel == null) {
+              changedLevel = true;
+            }
+            currentLevel = setpoint;
+  
+            setWristManuallyMoving(false);
+            setElevatorManuallyMoving(false);
+            switch (setpoint) {
+              case kFeederStation:
+                elevatorCurrentTarget = ElevatorSetpoints.kFeederStation;
+                wristCurrentTarget = Constants.WristConstants.WristSetpoints.kFeederStation;
+                break;
+              case kLevel1:
+                elevatorCurrentTarget = ElevatorSetpoints.kLevel1;
+                wristCurrentTarget = Constants.WristConstants.WristSetpoints.kLevel1;
+                break;
+              case kLevel2:
+                elevatorCurrentTarget = ElevatorSetpoints.kLevel2;
+                wristCurrentTarget = Constants.WristConstants.WristSetpoints.kLevel2;
+                break;
+              case kLevel3:
+                elevatorCurrentTarget = ElevatorSetpoints.kLevel3;
+                wristCurrentTarget = Constants.WristConstants.WristSetpoints.kLevel3;
+                break;
+              case kLevel4:
+                elevatorCurrentTarget = ElevatorSetpoints.kLevel4;
+                wristCurrentTarget = Constants.WristConstants.WristSetpoints.kLevel4;
+                break;
+              case kBottomAlgae:
+                elevatorCurrentTarget = Constants.ElevatorConstants.ElevatorSetpoints.kBottomAlgae;
+                wristCurrentTarget = Constants.WristConstants.WristSetpoints.kAlgae1;
+                break;
+              case kTopAlgae:
+                elevatorCurrentTarget = Constants.ElevatorConstants.ElevatorSetpoints.kTopAlgae;
+                wristCurrentTarget = Constants.WristConstants.WristSetpoints.kAlgae2;
+                break;
+              case kProcessor:
+                elevatorCurrentTarget = Constants.ElevatorConstants.ElevatorSetpoints.kProcessor;
+                wristCurrentTarget = Constants.WristConstants.WristSetpoints.kProcessor;
+                break;
+              case kUnblock:
+                wristCurrentTarget = Constants.WristConstants.WristSetpoints.unblock;
+                break;
+              default:
+                break;
+            }
+    }
+  
+    public Setpoint getSetpoint() {
+      return currentLevel;
+    }
+  
+    public void elevatorPID(double position){
+      ourNewestPIDControllerYet.setGoal(position);
+      m_elevatorSpeed = ourNewestPIDControllerYet.calculate(getElevatorPosition());
+      if (ourNewestPIDControllerYet.atGoal()) {
+        m_elevatorSpeed = 0;
+      }
+      
+      if (getElevatorPosition() > Constants.Limits.kElevatorMaxHeight && m_elevatorSpeed < 0) {
+        m_elevatorSpeed = 0;
+      }
+  
+      if (!elevatorLimitSwitch.get() && m_elevatorSpeed > 0) {
+          m_elevatorSpeed = 0;
+        }
+      
+      ElevatorMove(m_elevatorSpeed); 
+    }
+  
+    public void wristPID(double position){ //TODO test this function
+      newWristPIDController.setGoal(position);
+      m_wristSpeed = newWristPIDController.calculate(getWristPosition());
+    if (newWristPIDController.atGoal()) {
+      m_wristSpeed = 0;
+    }
+    
+    if (getWristPosition() > Constants.Limits.kWristMaxAngle && m_wristSpeed < 0) {
+      m_wristSpeed = 0;
+    }
 
-  public void elevatorMoveToSetpoint(double pos) {
-    elevatorClosedLoopController.setReference(
-      pos, ControlType.kPosition);
-  }
-
-  /** Set the elevator motor power in the range of [-1, 1]. */
-  public void setElevatorPower(double power) {
-    leftElevator.set(power);
-    setElevatorManuallyMoving(true);
+    if (getWristPosition() < Constants.Limits.kWristMinAngle && m_wristSpeed > 0) {
+      m_wristSpeed = 0;
+      }
+    
+    WristMove(m_wristSpeed); 
   }
   
-  public void setWristPower(double power) {
-    wristMotor.set(power);
-    setWristManuallyMoving(true);
+  public void ElevatorMove(double d){
+    leftElevator.set(-d);
   }
 
-  public double getWristCurrentTarget() {
-    return wristCurrentTarget;
-  }
-
-  public double getElevatorCurrentTarget() {
-    return elevatorCurrentTarget;
-  }
-
-  public double getWristAngle() {
-    return getWristPosition();
-  }
-
-  /**
-   * Command to set the subsystem setpoint. This will set the arm and elevator to their predefined
-   * positions for the given setpoint.
-   */
-  public void setSetpointCommand(Setpoint setpoint) {  // see wrist subsystem counterpart
-    //return this.runOnce(
-        //() -> {
-          if (currentLevel != setpoint || currentLevel == null) {
-            changedLevel = true;
-          }
-          currentLevel = setpoint;
-
-          setWristManuallyMoving(false);
-          setElevatorManuallyMoving(false);
-          switch (setpoint) {
-            case kFeederStation:
-              elevatorCurrentTarget = ElevatorSetpoints.kFeederStation;
-              wristCurrentTarget = Constants.WristConstants.WristSetpoints.kFeederStation;
-              break;
-            case kLevel1:
-              elevatorCurrentTarget = ElevatorSetpoints.kLevel1;
-              wristCurrentTarget = Constants.WristConstants.WristSetpoints.kLevel1;
-              break;
-            case kLevel2:
-              elevatorCurrentTarget = ElevatorSetpoints.kLevel2;
-              wristCurrentTarget = Constants.WristConstants.WristSetpoints.kLevel2;
-              break;
-            case kLevel3:
-              elevatorCurrentTarget = ElevatorSetpoints.kLevel3;
-              wristCurrentTarget = Constants.WristConstants.WristSetpoints.kLevel3;
-              break;
-            case kLevel4:
-              elevatorCurrentTarget = ElevatorSetpoints.kLevel4;
-              wristCurrentTarget = Constants.WristConstants.WristSetpoints.kLevel4;
-              break;
-            case kBottomAlgae:
-              elevatorCurrentTarget = Constants.ElevatorConstants.ElevatorSetpoints.kBottomAlgae;
-              wristCurrentTarget = Constants.WristConstants.WristSetpoints.kAlgae1;
-              break;
-            case kTopAlgae:
-              elevatorCurrentTarget = Constants.ElevatorConstants.ElevatorSetpoints.kTopAlgae;
-              wristCurrentTarget = Constants.WristConstants.WristSetpoints.kAlgae2;
-              break;
-            case kProcessor:
-              elevatorCurrentTarget = Constants.ElevatorConstants.ElevatorSetpoints.kProcessor;
-              wristCurrentTarget = Constants.WristConstants.WristSetpoints.kProcessor;
-              break;
-            case kUnblock:
-              wristCurrentTarget = Constants.WristConstants.WristSetpoints.unblock;
-              break;
-            default:
-              break;
-          }
-  }
-
-  public Setpoint getSetpoint() {
-    return currentLevel;
+  public void WristMove(double d){
+    leftElevator.set(-d);
   }
 
   public void setWristTarget(double target) {
@@ -579,6 +568,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     return MathUtil.isNear(elevatorCurrentTarget, getElevatorPosition(), 0.5);
   }
 
+  
 
   @Override
   public void periodic() {
@@ -606,61 +596,12 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     
 
-    if (RobotBase.isSimulation())
-    {
-      // Update mechanism2d
-      m_elevatorMech2d.setLength(
-        SimulationRobotConstants.kPixelsPerMeter * SimulationRobotConstants.kMinElevatorHeightMeters
-            + SimulationRobotConstants.kPixelsPerMeter
-                * (elevatorEncoder.getPosition() / SimulationRobotConstants.kElevatorGearing)
-                * (SimulationRobotConstants.kElevatorDrumRadius * 2.0 * Math.PI));
-
-      m_armMech2d.setAngle(
-          180
-              - ( // mirror the angles so they display in the correct direction
-              Units.radiansToDegrees(SimulationRobotConstants.kMinAngleRads)
-                  + Units.rotationsToDegrees(
-                      wristEncoder.getPosition() / SimulationRobotConstants.kArmReduction))
-              - 90 // subtract 90 degrees to account for the elevator
-        );
-    }
   }
 
-   /** Get the current drawn by each simulation physics model */
-  public double getSimulationCurrentDraw() {
-    return m_elevatorSim.getCurrentDrawAmps();
-  }
+ 
 
   public void simulationPeriodic() {
-  if (RobotBase.isSimulation()) 
-    {
-      // In this method, we update our simulation of what our elevator is doing
-      // First, we set our "inputs" (voltages)
-      m_elevatorSim.setInput(elevatorMotorSim.getAppliedOutput() * RobotController.getBatteryVoltage());
-      m_armSim.setInput(armMotorSim.getAppliedOutput() * RobotController.getBatteryVoltage());
 
-      // Update sim limit switch
-      // elevatorLimitSwitchSim.setPressed(m_elevatorSim.getPositionMeters() == 0);
-
-      // Next, we update it. The standard loop time is 20ms.
-      m_elevatorSim.update(0.020);
-      m_armSim.update(0.020);
-
-      // Iterate the elevator and arm SPARK simulations
-      elevatorMotorSim.iterate(
-          ((m_elevatorSim.getVelocityMetersPerSecond()
-                      / (SimulationRobotConstants.kElevatorDrumRadius * 2.0 * Math.PI))
-                  * SimulationRobotConstants.kElevatorGearing)
-              * 60.0,
-          RobotController.getBatteryVoltage(),
-          0.02);
-      armMotorSim.iterate(
-          Units.radiansPerSecondToRotationsPerMinute(
-              m_armSim.getVelocityRadPerSec() * SimulationRobotConstants.kArmReduction),
-          RobotController.getBatteryVoltage(),
-          0.02);
-      
-      // SimBattery is updated in Robot.java
-    }
   }
+
 }
