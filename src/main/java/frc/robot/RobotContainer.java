@@ -204,7 +204,7 @@ public class RobotContainer {
       m_driverController.axisGreaterThan(2, 0.4).whileTrue(new RunIntakeScoreCommand(intake, elevatorSystem, ledSubsystem));
       // Left Trigger - 2 ^^^^
 
-      m_driverController.rightBumper().whileTrue(new DoubleLidarRoutine(intake, Constants.IntakeConstants.IntakePowerLevels.kFeed, vision, ledSubsystem));
+      m_driverController.rightBumper().whileTrue(new DoubleLidarRoutine(intake, Constants.IntakeConstants.IntakePowerLevels.kFeed, vision, ledSubsystem, climber));
       
       m_driverController.leftBumper().whileTrue(new RunIntakeCommand(intake, 0.7, vision, ledSubsystem).withTimeout(1)
                                        .andThen(new RunIntakeCommand(intake, 0.3, vision, ledSubsystem)));
@@ -228,7 +228,7 @@ public class RobotContainer {
 
   private void configureNamedCommands() {
     NamedCommands.registerCommand("Intake score", new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kOut, vision,ledSubsystem).withTimeout(0.5));
-    NamedCommands.registerCommand("Intake in", new DoubleLidarRoutine(intake, Constants.IntakeConstants.IntakePowerLevels.kFeed, vision,ledSubsystem));
+    NamedCommands.registerCommand("Intake in", new DoubleLidarRoutine(intake, Constants.IntakeConstants.IntakePowerLevels.kFeed, vision, ledSubsystem, climber));
     NamedCommands.registerCommand("Intake score 3", new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kIn, vision,ledSubsystem).withTimeout(0.5));
     NamedCommands.registerCommand("Coral Centering", new DefaultIntakeCommand(intake, vision));
     NamedCommands.registerCommand("Elevator L1", Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel1)));
