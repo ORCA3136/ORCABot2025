@@ -44,6 +44,7 @@ public class DoubleLidarRoutine extends Command {
   public void execute() {
     if (!vision.hasCoralInFunnel()) {
       intakeSubsystem.setIntakePower(-0.1);
+      // intakeSubsystem.setIntakePower(0);
     } else if (vision.hasCoralInFunnel()) {
       intakeSubsystem.setIntakePower(powerSetPoint);
     }

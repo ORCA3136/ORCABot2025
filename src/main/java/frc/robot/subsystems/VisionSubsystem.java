@@ -39,17 +39,12 @@ public class VisionSubsystem extends SubsystemBase {
 
 
 
-  double xSpeed;
-  double ySpeed;
-  double tangentSpeed;
-  double normalSpeed;
+  boolean initialLimelightPose = false;
 
   boolean hasTarget = false;
 
   boolean red;
   
-
-  LimelightHelpers limelight2;
     
   
   
@@ -68,6 +63,8 @@ public class VisionSubsystem extends SubsystemBase {
       }
     }
 
+    LimelightHelpers.SetIMUMode("limelight-right", 0);
+    LimelightHelpers.SetIMUMode("limelight-left", 0);
 
   }
 
@@ -88,7 +85,7 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   public boolean hasCoralInIntake() {
-    return getCoralInIntake() < 150;
+    return getCoralInIntake() < 35;
   }
 
   public boolean hasCoralInFunnel() {
@@ -114,7 +111,9 @@ public class VisionSubsystem extends SubsystemBase {
   public void updatePosesEstimator(SwerveDrive swerve) {
     double maxta = 0.4;
     String camera = null;
+
     String[] limelights = {"limelight-left", "limelight-right"}; // , "limelight-rear"
+    // String[] limelights = {"limelight-right"};
     for (String limelight: limelights) {
       if (LimelightHelpers.getTV(limelight) && LimelightHelpers.getTA(limelight) > maxta) {
         maxta = LimelightHelpers.getTA(limelight);
@@ -144,20 +143,21 @@ public class VisionSubsystem extends SubsystemBase {
     PoseEstimate mt2 = new PoseEstimate();
     String[] limelights = {"limelight-left", "limelight-right"}; // , "limelight-rear"
     for (String limelight: limelights) {
-      LimelightHelpers.SetRobotOrientation(limelight, swerve.getPose().getRotation().getDegrees(), 0, 0, 0, 0, 0);
       LimelightHelpers.PoseEstimate megaTag2Pose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight);
       
-      if(megaTag2Pose.tagCount > 0)
-      {
-        //we have a tag!
-        //if the TA is larger than the other camera
-        if(LimelightHelpers.getTA(limelight) > maxta)
+      if (megaTag2Pose != null) {
+        if(megaTag2Pose.tagCount > 0)
         {
-          maxta = LimelightHelpers.getTA(limelight);
-          mt2  = megaTag2Pose;
-          camera = limelight;
-        }
+          //we have a tag!
+          //if the TA is larger than the other camera
+          if(LimelightHelpers.getTA(limelight) > maxta)
+          {
+            maxta = LimelightHelpers.getTA(limelight);
+            mt2  = megaTag2Pose;
+            camera = limelight;
+          }
 
+        }
       }
 
     }
@@ -202,11 +202,30 @@ public class VisionSubsystem extends SubsystemBase {
     return poseEsts;
      // IDK abt ths
   }
+
+  public void updateLimelightYaw(SwerveSubsystem swerve) {
+    double[] stddevs = NetworkTableInstance.getDefault().getTable("limelight-right")
+                          .getEntry("stddevs").getDoubleArray(new double[12]);
+    NetworkTableInstance.getDefault().getTable("Limelight stuff").getEntry("Stddevs").setDoubleArray(stddevs);
+    NetworkTableInstance.getDefault().getTable("Limelight stuff").getEntry("Stddevs[5]").setDouble(stddevs[5]);
+
+    if (stddevs[5] < 0.75) {
+      LimelightHelpers.SetRobotOrientation("limelight-left", 
+          LimelightHelpers.getBotPose2d_wpiBlue("limelight-right").getRotation().getDegrees(), 0, 0, 0, 0, 0);
+      LimelightHelpers.SetRobotOrientation("limelight-right", 
+          LimelightHelpers.getBotPose2d_wpiBlue("limelight-right").getRotation().getDegrees(), 0, 0, 0, 0, 0);
+    } else {
+      LimelightHelpers.SetRobotOrientation("limelight-left", 
+          swerve.getPose().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+      LimelightHelpers.SetRobotOrientation("limelight-right", 
+          swerve.getPose().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+      SmartDashboard.putBoolean("Limelight Yaw Type", false);
+    }
+  }
     
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    
 
     bottomMeasurement = bottomLidar.getMeasurement();
     if (bottomMeasurement != null) {
@@ -252,7 +271,7 @@ public class VisionSubsystem extends SubsystemBase {
     //post to smart dashboard periodically
     SmartDashboard.putNumber("LimelightX", x);
     SmartDashboard.putNumber("LimelightY", y);
-    SmartDashboard.putNumber("LimelightArea", area);
+    SmartDashboard.putNumber("LimelightArea", LimelightHelpers.getTA("limelight-right"));
     SmartDashboard.putNumber("Limelight'X'", getTX());
   }
 

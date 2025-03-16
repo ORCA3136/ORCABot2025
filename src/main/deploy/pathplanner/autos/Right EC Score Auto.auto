@@ -24,12 +24,6 @@
           }
         },
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.0
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "E after elevator"
@@ -39,12 +33,6 @@
           "type": "named",
           "data": {
             "name": "Intake score"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.0
           }
         },
         {
@@ -83,37 +71,31 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "Source to C"
+                  "name": "Elevator L4"
                 }
               },
               {
-                "type": "sequential",
+                "type": "race",
                 "data": {
                   "commands": [
                     {
-                      "type": "wait",
+                      "type": "path",
                       "data": {
-                        "waitTime": 1.0
+                        "pathName": "Source to C"
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "Elevator L4"
+                        "name": "Coral Centering"
                       }
                     }
                   ]
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.0
           }
         },
         {
@@ -126,12 +108,6 @@
           "type": "named",
           "data": {
             "name": "Intake score"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.5
           }
         },
         {

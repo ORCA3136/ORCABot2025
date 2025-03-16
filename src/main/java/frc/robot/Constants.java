@@ -141,7 +141,7 @@ public final class Constants {
       public static final int kLevel1 = 4;
       public static final int kLevel2 = 30; 
       public static final int kLevel3 = 180;
-      public static final int kLevel4 = 67;
+      public static final int kLevel4 = 58;
       public static final int kProcessor = 183; 
       public static final int kAlgae1 = 170; 
       public static final int kAlgae2 = 170; 
@@ -252,27 +252,27 @@ public final class Constants {
     public static final double[] centerOfReef = {4.487, 4.025};
 
     public static final List<Pose2d> blueReefPoses = new ArrayList<Pose2d>(){{
-      add(new Pose2d(2.890, 4.025, new Rotation2d(Units.degreesToRadians(1.00))));
-      add(new Pose2d(3.689, 2.642, new Rotation2d(Units.degreesToRadians(61.0))));
-      add(new Pose2d(5.285, 2.642, new Rotation2d(Units.degreesToRadians(121.0))));
-      add(new Pose2d(6.087, 4.025, new Rotation2d(Units.degreesToRadians(181.0))));
-      add(new Pose2d(5.285, 5.408, new Rotation2d(Units.degreesToRadians(241.0))));
-      add(new Pose2d(3.689, 5.408, new Rotation2d(Units.degreesToRadians(301.0))));
+      add(new Pose2d(2.890, 4.025, new Rotation2d(Units.degreesToRadians(-4.00))));
+      add(new Pose2d(3.689, 2.642, new Rotation2d(Units.degreesToRadians(56.0))));
+      add(new Pose2d(5.285, 2.642, new Rotation2d(Units.degreesToRadians(116.0))));
+      add(new Pose2d(6.087, 4.025, new Rotation2d(Units.degreesToRadians(176.0))));
+      add(new Pose2d(5.285, 5.408, new Rotation2d(Units.degreesToRadians(236.0))));
+      add(new Pose2d(3.689, 5.408, new Rotation2d(Units.degreesToRadians(296.0))));
     }};
 
     public static final List<Pose2d> redReefPoses = new ArrayList<Pose2d>(){{
-      add(new Pose2d(11.466, 4.025, new Rotation2d(Units.degreesToRadians(1.0))));
-      add(new Pose2d(12.265, 2.642, new Rotation2d(Units.degreesToRadians(61.0))));
-      add(new Pose2d(13.861, 2.642, new Rotation2d(Units.degreesToRadians(121.0))));
-      add(new Pose2d(14.663, 4.025, new Rotation2d(Units.degreesToRadians(181.0))));
-      add(new Pose2d(13.861, 5.408, new Rotation2d(Units.degreesToRadians(241.0))));
-      add(new Pose2d(12.265, 5.408, new Rotation2d(Units.degreesToRadians(301.0))));
+      add(new Pose2d(11.466, 4.025, new Rotation2d(Units.degreesToRadians(-4.0))));
+      add(new Pose2d(12.265, 2.642, new Rotation2d(Units.degreesToRadians(56.0))));
+      add(new Pose2d(13.861, 2.642, new Rotation2d(Units.degreesToRadians(116.0))));
+      add(new Pose2d(14.663, 4.025, new Rotation2d(Units.degreesToRadians(176.0))));
+      add(new Pose2d(13.861, 5.408, new Rotation2d(Units.degreesToRadians(236.0))));
+      add(new Pose2d(12.265, 5.408, new Rotation2d(Units.degreesToRadians(296.0))));
     }};
 
     public static final double leftOffset = 0.165;
     public static final double L2ScoringOffset = 0.285;
     public static final double L3ScoringOffset = 0.155;
-    public static final double L4ScoringOffset = 0.27;
+    public static final double L4ScoringOffset = 0.315;
     public static final double topAlgaeScoringOffset = 0.23;
     public static final double bottomAlgaeScoringOffset = 0.25;
 

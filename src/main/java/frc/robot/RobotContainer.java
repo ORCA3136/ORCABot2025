@@ -49,6 +49,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -229,14 +230,18 @@ public class RobotContainer {
     NamedCommands.registerCommand("Intake score", new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kOut, vision,ledSubsystem).withTimeout(0.5));
     NamedCommands.registerCommand("Intake in", new DoubleLidarRoutine(intake, Constants.IntakeConstants.IntakePowerLevels.kFeed, vision,ledSubsystem));
     NamedCommands.registerCommand("Intake score 3", new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kIn, vision,ledSubsystem).withTimeout(0.5));
+    NamedCommands.registerCommand("Coral Centering", new DefaultIntakeCommand(intake, vision));
     NamedCommands.registerCommand("Elevator L1", Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel1)));
     NamedCommands.registerCommand("Elevator L2", Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel2)));
     NamedCommands.registerCommand("Elevator L3", Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel3)));
     NamedCommands.registerCommand("Elevator L4", Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel4)));
 
-    NamedCommands.registerCommand("drive to score pose I", driveBase.driveToPose(
-          new Pose2d(new Translation2d(4.937, 4.871), Rotation2d.fromDegrees(-116)), Constants.PathPlannerConstants.slowConstraints, 0));
-    NamedCommands.registerCommand("not Back away", Commands.runOnce(() -> driveBase.driveToDistanceCommand(-0.3, 0.3)));
+    // NamedCommands.registerCommand("Centering Right", new SequentialCommandGroup(new WaitCommand(10).until(() -> elevatorSystem.atHeight()), reefCentering.createPathCommand(ReefCentering.Side.Right)));
+    // NamedCommands.registerCommand("Centering Left", new SequentialCommandGroup(new WaitCommand(10).until(() -> elevatorSystem.atHeight()), reefCentering.createPathCommand(ReefCentering.Side.Left)));
+
+    // NamedCommands.registerCommand("drive to score pose I", driveBase.driveToPose(
+    //       new Pose2d(new Translation2d(4.937, 4.871), Rotation2d.fromDegrees(-116)), Constants.PathPlannerConstants.slowConstraints, 0));
+    // NamedCommands.registerCommand("not Back away", Commands.runOnce(() -> driveBase.driveToDistanceCommand(-0.3, 0.3)));
   }
 
   /**

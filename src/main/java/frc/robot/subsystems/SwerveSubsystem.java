@@ -329,11 +329,14 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
     NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Position x").setNumber(swerveDrive.getPose().getX());
     NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Position y").setNumber(swerveDrive.getPose().getY());
     NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Yaw").setNumber(swerveDrive.getYaw().getDegrees());
+    NetworkTableInstance.getDefault().getTable("Odometry").getEntry("PoseYaw").setNumber(swerveDrive.getPose().getRotation().getDegrees());
     NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Robot Velocity Rotation").setNumber(swerveDrive.getRobotVelocity().omegaRadiansPerSecond);
     NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Robot Velocity x").setNumber(swerveDrive.getRobotVelocity().vxMetersPerSecond);
     NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Robot Velocity y").setNumber(swerveDrive.getRobotVelocity().vyMetersPerSecond);
     NetworkTableInstance.getDefault().getTable("Odometry").getEntry("MT2 Rotation").setNumber(getHeading().getDegrees());
 
+
+    vision.updateLimelightYaw(this);
     vision.updatePosesEstimator(swerveDrive);
     // vision.updatePosesEstimatorMT2(swerveDrive);
     swerveDrive.updateOdometry(); // Might be redundant

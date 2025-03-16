@@ -71,9 +71,22 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "race",
                 "data": {
-                  "pathName": "Source to K"
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Source to K"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Coral Centering"
+                      }
+                    }
+                  ]
                 }
               },
               {
