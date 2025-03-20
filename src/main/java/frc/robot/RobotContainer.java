@@ -47,6 +47,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -222,7 +223,7 @@ public class RobotContainer {
       m_secondaryController.button(9).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kBottomAlgae)));
       m_secondaryController.button(10).whileTrue(new RunClimberCommand(climber, Constants.ClimberConstants.kClimberInSpeed));
       m_secondaryController.button(11).whileTrue(new RunClimberCommand(climber, Constants.ClimberConstants.kClimberOutSpeed));
-      m_secondaryController.button(12).and(m_secondaryController.button(8)).whileTrue(new RunClimbSequenceCommand(climber, elevatorSystem, false));
+      m_secondaryController.axisGreaterThan(1, -0.2).whileTrue(new RunClimbSequenceCommand(climber, elevatorSystem, false));
     }
   }
 
@@ -235,6 +236,12 @@ public class RobotContainer {
     NamedCommands.registerCommand("Elevator L2", Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel2)));
     NamedCommands.registerCommand("Elevator L3", Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel3)));
     NamedCommands.registerCommand("Elevator L4", Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel4)));
+    NamedCommands.registerCommand("Elevator Bottom Algae", Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kBottomAlgae)));
+    NamedCommands.registerCommand("Elevator Processor", Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kProcessor)));
+    NamedCommands.registerCommand("Hold Algae", Commands.runOnce(() -> elevatorSystem.setElevatorPower(-0.5)).handleInterrupt(() -> elevatorSystem.setElevatorPower(0)));
+    NamedCommands.registerCommand("Release Algae", Commands.runOnce(() -> elevatorSystem.setElevatorPower(0.5)).withTimeout(1).handleInterrupt(() -> elevatorSystem.setElevatorPower(0)));
+    
+    
 
     // NamedCommands.registerCommand("Centering Right", new SequentialCommandGroup(new WaitCommand(10).until(() -> elevatorSystem.atHeight()), reefCentering.createPathCommand(ReefCentering.Side.Right)));
     // NamedCommands.registerCommand("Centering Left", new SequentialCommandGroup(new WaitCommand(10).until(() -> elevatorSystem.atHeight()), reefCentering.createPathCommand(ReefCentering.Side.Left)));
