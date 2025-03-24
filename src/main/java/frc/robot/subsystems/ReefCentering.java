@@ -104,6 +104,17 @@ public class ReefCentering {
         break;
     }
 
+    switch (elevatorSetpoint) {
+      case kLevel2:
+        rot += Math.toRadians(1);
+        break;
+      case kLevel3:
+        rot += Math.toRadians(3);
+        break;
+      default:
+        break;
+    }
+
     Pose2d scoringPosition = new Pose2d(x, y, new Rotation2d(rot));
     // m_drive.setCenteringPose(scoringPosition);
     // return m_drive.driveToPose(scoringPosition, PathPlannerConstants.slowConstraints, 0.02);

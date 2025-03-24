@@ -319,6 +319,12 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
         .until(() -> swerveDrive.getPose().getTranslation().getDistance(new Translation2d(0, 0)) >
                      distanceInMeters);
   }
+
+  public Command driveTimedCommand(double time, double speedInMetersPerSecond)
+  {
+    return run(() -> drive(new ChassisSpeeds(speedInMetersPerSecond, 0, 0)))
+        .withTimeout(time);
+  }
   
 
   @Override
@@ -337,8 +343,8 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
 
 
     vision.updateLimelightYaw(this);
-    vision.updatePosesEstimator(swerveDrive);
-    // vision.updatePosesEstimatorMT2(swerveDrive);
+    // vision.updatePosesEstimator(swerveDrive);
+    vision.updatePosesEstimatorMT2(swerveDrive);
     swerveDrive.updateOdometry(); // Might be redundant
 
 

@@ -5,12 +5,14 @@
 package frc.robot;
 
 import java.io.File;
+import java.util.Set;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.Reef;
+import frc.robot.commands.CappnCrunchCommand;
 import frc.robot.commands.CenterLimelightOnReef;
 import frc.robot.commands.DefaultIntakeCommand;
 import frc.robot.commands.DoubleLidarRoutine;
@@ -39,6 +41,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -98,10 +101,10 @@ public class RobotContainer {
     configureBindings();
     configureNamedCommands();
     
-    autoChooser = AutoBuilder.buildAutoChooser("My Default Auto"); //pick a default
+    autoChooser = AutoBuilder.buildAutoChooser("default auto"); //pick a default
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
-    
+    autoChooser.setDefaultOption("default auto", driveForwardAutoCommand);
     }
     
     SwerveInputStream driveAngularVelocity  = SwerveInputStream.of(driveBase.getSwerveDrive(),
@@ -152,6 +155,14 @@ public class RobotContainer {
 
     Command driveFieldOrientedDirectAngleSim = driveBase.driveFieldOriented(driveDirectAngleSim);
 
+
+
+    SwerveInputStream driveForwardAuto  = SwerveInputStream.of(driveBase.getSwerveDrive(),
+                                            () -> 0.15, 
+                                            () -> 0)
+                                            .allianceRelativeControl(false);
+
+    Command driveForwardAutoCommand = driveBase.driveFieldOriented(driveForwardAuto);
 
   /**
    * Use this method to define your trigger->command mappings. Triggers can be created via the
@@ -218,12 +229,12 @@ public class RobotContainer {
       m_secondaryController.button(5).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kTopAlgae)));
       m_secondaryController.button(6).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kProcessor)));
       m_secondaryController.button(7).whileTrue(new RunFunnelCommand(climber, Constants.ClimberConstants.kFunnelSpeed));
-      // m_secondaryController.button(8).whileTrue();
+      m_secondaryController.button(8).whileTrue(new CappnCrunchCommand(climber, Constants.ClimberConstants.kClimberInSpeed).withTimeout(0.05));
       // m_secondaryController.button(8).whileTrue(Commands.runOnce(() -> driveBase.driveToDistanceCommand(0.3, 0.3)));
       m_secondaryController.button(9).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kBottomAlgae)));
       m_secondaryController.button(10).whileTrue(new RunClimberCommand(climber, Constants.ClimberConstants.kClimberInSpeed));
       m_secondaryController.button(11).whileTrue(new RunClimberCommand(climber, Constants.ClimberConstants.kClimberOutSpeed));
-      m_secondaryController.axisGreaterThan(1, -0.2).whileTrue(new RunClimbSequenceCommand(climber, elevatorSystem, false));
+      m_secondaryController.axisGreaterThan(0, -0.2).whileTrue(new RunClimbSequenceCommand(climber, elevatorSystem, false));
     }
   }
 
@@ -250,6 +261,8 @@ public class RobotContainer {
     //       new Pose2d(new Translation2d(4.937, 4.871), Rotation2d.fromDegrees(-116)), Constants.PathPlannerConstants.slowConstraints, 0));
     // NamedCommands.registerCommand("not Back away", Commands.runOnce(() -> driveBase.driveToDistanceCommand(-0.3, 0.3)));
   }
+ 
+    // driveBase.drive(new Translation2d(0.5, 0), 0, false)
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

@@ -85,7 +85,7 @@ public class VisionSubsystem extends SubsystemBase {
   }
 
   public boolean hasCoralInIntake() {
-    return getCoralInIntake() < 35;
+    return getCoralInIntake() < 35 && getBottomStatus() == 0;
   }
 
   public boolean hasCoralInFunnel() {
@@ -141,7 +141,8 @@ public class VisionSubsystem extends SubsystemBase {
     double maxta = 0;
     String camera = null;
     PoseEstimate mt2 = new PoseEstimate();
-    String[] limelights = {"limelight-left", "limelight-right"}; // , "limelight-rear"
+    String[] limelights = {//"limelight-left", 
+    "limelight-right"}; // , "limelight-rear"
     for (String limelight: limelights) {
       LimelightHelpers.PoseEstimate megaTag2Pose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight);
       
@@ -206,10 +207,12 @@ public class VisionSubsystem extends SubsystemBase {
   public void updateLimelightYaw(SwerveSubsystem swerve) {
     double[] stddevs = NetworkTableInstance.getDefault().getTable("limelight-right")
                           .getEntry("stddevs").getDoubleArray(new double[12]);
+    double LL4yaw = LimelightHelpers.getIMUData("limelight-right").Yaw;
     NetworkTableInstance.getDefault().getTable("Limelight stuff").getEntry("Stddevs").setDoubleArray(stddevs);
     NetworkTableInstance.getDefault().getTable("Limelight stuff").getEntry("Stddevs[5]").setDouble(stddevs[5]);
+    NetworkTableInstance.getDefault().getTable("Limelight stuff").getEntry("LL4 Yaw").setDouble(LL4yaw);
 
-    if (stddevs[5] < 0.75) {
+    if (stddevs[5] < 1.5) {
       LimelightHelpers.SetRobotOrientation("limelight-left", 
           LimelightHelpers.getBotPose2d_wpiBlue("limelight-right").getRotation().getDegrees(), 0, 0, 0, 0, 0);
       LimelightHelpers.SetRobotOrientation("limelight-right", 
