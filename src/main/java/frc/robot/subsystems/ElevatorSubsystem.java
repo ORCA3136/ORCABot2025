@@ -129,7 +129,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         if (elevatorCurrentTarget < Constants.WallConstants.kElevatorAboveTopBar) { 
           elTarget = Constants.WallConstants.kElevatorAboveTopBar;
         }
-      } else if (getWristAngle() > 22) {
+      } else if (getWristAngle() > Constants.WristConstants.WristSetpoints.unblock) {
         if (getElevatorPosition() < Constants.WallConstants.kElevatorBelowTopBar) {
           if (elevatorCurrentTarget > Constants.WallConstants.kElevatorBelowTopBar) { 
             elTarget = Constants.WallConstants.kElevatorBelowTopBar;
@@ -143,14 +143,14 @@ public class ElevatorSubsystem extends SubsystemBase {
   
       
       if (getElevatorPosition() > Constants.WallConstants.kElevatorAboveTopBar) {
-        if (wristCurrentTarget < 50) {
-          wristTarget = 50;
+        if (wristCurrentTarget < Constants.WristConstants.WristSetpoints.unblock) {
+          wristTarget = Constants.WristConstants.WristSetpoints.unblock;
         }
       } else if (getElevatorPosition() < Constants.WallConstants.kElevatorBelowBottomBar) {
         wristBool = true;
       } else if (getElevatorPosition() < Constants.WallConstants.kMysteryPos) {
-        if (wristCurrentTarget < 22) {
-          wristTarget = 22;
+        if (wristCurrentTarget < Constants.WristConstants.WristSetpoints.unblock) {
+          wristTarget = Constants.WristConstants.WristSetpoints.unblock;
         }
       } else {
         if (wristCurrentTarget < Constants.WristConstants.WristSetpoints.unblock) {
@@ -160,8 +160,8 @@ public class ElevatorSubsystem extends SubsystemBase {
   
       
       if (changedLevel) {
-        if (Math.abs(getWristPosition() - 107) < 2) changedLevel = false;
-        wristTarget = 107;
+        if (Math.abs(getWristPosition() - Constants.WristConstants.WristSetpoints.unblock) < 2) changedLevel = false;
+        wristTarget = Constants.WristConstants.WristSetpoints.unblock;
         wristBool = false;
   
         elBool = false;

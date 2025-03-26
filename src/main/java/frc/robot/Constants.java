@@ -101,9 +101,9 @@ public final class Constants {
       public static final double kLevel3 = 49;
       public static final double kLevel4 = 57; // max = 58
 
-      public static final double kBottomAlgae = 20.4; // calculated: 34*(12/20)
-      public static final double kTopAlgae = 37.8; // 63*0.6
-      public static final double kProcessor = 3.6;  // calculated from 6
+      public static final double kBottomAlgae = 20.4; // 
+      public static final double kTopAlgae = 37.8; // 
+      public static final double kProcessor = 3.6;  // 
 
       
     }
@@ -133,7 +133,7 @@ public final class Constants {
 
   public static final class WristConstants {
 
-    public static final double wristOffset = 2.5;
+    public static final double wristOffset = 3.5;
 
     public static final class WristSetpoints { // degrees
       public static final double unblock = Limits.kWristSafetyThreshold;
@@ -211,7 +211,7 @@ public final class Constants {
     public static final double kElevatorMinHeight = 0.0;
 
 
-    public static final double kWristSafetyThreshold = 97; //   -> -39
+    public static final double kWristSafetyThreshold = 25; // [20, 30]
 
 
     public static final double kWristMinAngle = WristConstants.wristOffset + 1; // degrees

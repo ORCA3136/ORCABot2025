@@ -48,7 +48,7 @@ public class RunIntakeScoreCommand extends Command {
         intakeSubsystem.setIntakePower(Constants.IntakeConstants.IntakePowerLevels.kOut);
         break;
       case kLevel3:
-        intakeSubsystem.setIntakePower(Constants.IntakeConstants.IntakePowerLevels.kIn);
+        intakeSubsystem.setIntakePower(Constants.IntakeConstants.IntakePowerLevels.kOut);
         break;
       case kLevel4:
         intakeSubsystem.setIntakePower(Constants.IntakeConstants.IntakePowerLevels.kOut);
