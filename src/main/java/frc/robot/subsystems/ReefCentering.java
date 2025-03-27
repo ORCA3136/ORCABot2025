@@ -61,7 +61,12 @@ public class ReefCentering {
     double y = nearestReefSide.getY();
     double rot = nearestReefSide.getRotation().getRadians();
 
-    if (elevatorAtHeight)
+    // if (elevatorAtHeight) {
+      x += FieldPoses.generalScoringOffset * Math.cos(rot);
+      y += FieldPoses.generalScoringOffset * Math.sin(rot);
+    // }
+    /*
+    
       if (elevatorSetpoint != null)
         switch (elevatorSetpoint) {
           case kLevel2:
@@ -88,6 +93,7 @@ public class ReefCentering {
             break;
         }
 
+    */
     switch (side) {
       case Left:
         x -= FieldPoses.leftOffset * Math.sin(rot);

@@ -98,7 +98,7 @@ public final class Constants {
       public static final double kFeederStation = 0;
       public static final double kLevel1 = 0;
       public static final double kLevel2 = 11.3; //
-      public static final double kLevel3 = 49;
+      public static final double kLevel3 = 26.5;
       public static final double kLevel4 = 57; // max = 58
 
       public static final double kBottomAlgae = 20.4; // 
@@ -140,7 +140,7 @@ public final class Constants {
       public static final int kFeederStation = 4;
       public static final int kLevel1 = 4;
       public static final int kLevel2 = 30; 
-      public static final int kLevel3 = 180;
+      public static final int kLevel3 = 27;
       public static final int kLevel4 = 58;
       public static final int kProcessor = 183; 
       public static final int kAlgae1 = 170; 
@@ -172,7 +172,7 @@ public final class Constants {
     }
   }
 
-  public static final class WallConstants { // constants for the "walls" in elevator motion
+  public static final class WallConstants { // constants for the "walls" in elevator motion   most likely redundant now
     public static final double kElevatorAboveTopBar = 54; // 90 -> 54.0
     public static final double kElevatorBelowTopBar = 13.2; // 22
     public static final double kElevatorAboveBottomBar = 0;
@@ -275,6 +275,7 @@ public final class Constants {
     public static final double L4ScoringOffset = 0.315;
     public static final double topAlgaeScoringOffset = 0.23;
     public static final double bottomAlgaeScoringOffset = 0.25;
+    public static final double generalScoringOffset = 0.285;
 
   }
  

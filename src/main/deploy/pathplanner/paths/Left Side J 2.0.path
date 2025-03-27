@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 5.126300448935552,
-        "y": 5.554164230297538
+        "x": 5.0074051491338,
+        "y": 5.297853057042402
       },
       "prevControl": {
-        "x": 5.356798981003781,
-        "y": 6.011645900379115
+        "x": 5.237903681202028,
+        "y": 5.755334727123979
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,7 +45,7 @@
     "rotation": -119.99999999999999
   },
   "reversed": false,
-  "folder": "Pre Districts 1.0",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
     "rotation": -145.34565817242986

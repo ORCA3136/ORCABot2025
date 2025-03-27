@@ -141,8 +141,7 @@ public class VisionSubsystem extends SubsystemBase {
     double maxta = 0;
     String camera = null;
     PoseEstimate mt2 = new PoseEstimate();
-    String[] limelights = {//"limelight-left", 
-    "limelight-right"}; // , "limelight-rear"
+    String[] limelights = {"limelight-left", "limelight-right"}; // , "limelight-rear"
     for (String limelight: limelights) {
       LimelightHelpers.PoseEstimate megaTag2Pose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight);
       
