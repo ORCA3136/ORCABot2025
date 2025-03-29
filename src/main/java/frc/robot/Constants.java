@@ -98,7 +98,7 @@ public final class Constants {
       public static final double kFeederStation = 0;
       public static final double kLevel1 = 0;
       public static final double kLevel2 = 11.3; //
-      public static final double kLevel3 = 26.5;
+      public static final double kLevel3 = 27.5;
       public static final double kLevel4 = 57; // max = 58
 
       public static final double kBottomAlgae = 20.4; // 
@@ -140,7 +140,7 @@ public final class Constants {
       public static final int kFeederStation = 4;
       public static final int kLevel1 = 4;
       public static final int kLevel2 = 30; 
-      public static final int kLevel3 = 27;
+      public static final int kLevel3 = 25;
       public static final int kLevel4 = 58;
       public static final int kProcessor = 183; 
       public static final int kAlgae1 = 170; 
@@ -252,21 +252,21 @@ public final class Constants {
     public static final double[] centerOfReef = {4.487, 4.025};
 
     public static final List<Pose2d> blueReefPoses = new ArrayList<Pose2d>(){{
-      add(new Pose2d(2.890, 4.025, new Rotation2d(Units.degreesToRadians(-4.00))));
-      add(new Pose2d(3.689, 2.642, new Rotation2d(Units.degreesToRadians(56.0))));
-      add(new Pose2d(5.285, 2.642, new Rotation2d(Units.degreesToRadians(116.0))));
-      add(new Pose2d(6.087, 4.025, new Rotation2d(Units.degreesToRadians(176.0))));
-      add(new Pose2d(5.285, 5.408, new Rotation2d(Units.degreesToRadians(236.0))));
-      add(new Pose2d(3.689, 5.408, new Rotation2d(Units.degreesToRadians(296.0))));
+      add(new Pose2d(2.890, 4.025, new Rotation2d(Units.degreesToRadians(0))));
+      add(new Pose2d(3.689, 2.642, new Rotation2d(Units.degreesToRadians(60.0))));
+      add(new Pose2d(5.285, 2.642, new Rotation2d(Units.degreesToRadians(120.0))));
+      add(new Pose2d(6.087, 4.025, new Rotation2d(Units.degreesToRadians(180.0))));
+      add(new Pose2d(5.285, 5.408, new Rotation2d(Units.degreesToRadians(240.0))));
+      add(new Pose2d(3.689, 5.408, new Rotation2d(Units.degreesToRadians(300.0))));
     }};
 
     public static final List<Pose2d> redReefPoses = new ArrayList<Pose2d>(){{
-      add(new Pose2d(11.466, 4.025, new Rotation2d(Units.degreesToRadians(-4.0))));
-      add(new Pose2d(12.265, 2.642, new Rotation2d(Units.degreesToRadians(56.0))));
-      add(new Pose2d(13.861, 2.642, new Rotation2d(Units.degreesToRadians(116.0))));
-      add(new Pose2d(14.663, 4.025, new Rotation2d(Units.degreesToRadians(176.0))));
-      add(new Pose2d(13.861, 5.408, new Rotation2d(Units.degreesToRadians(236.0))));
-      add(new Pose2d(12.265, 5.408, new Rotation2d(Units.degreesToRadians(296.0))));
+      add(new Pose2d(11.466, 4.025, new Rotation2d(Units.degreesToRadians(0))));
+      add(new Pose2d(12.265, 2.642, new Rotation2d(Units.degreesToRadians(60.0))));
+      add(new Pose2d(13.861, 2.642, new Rotation2d(Units.degreesToRadians(120.0))));
+      add(new Pose2d(14.663, 4.025, new Rotation2d(Units.degreesToRadians(180.0))));
+      add(new Pose2d(13.861, 5.408, new Rotation2d(Units.degreesToRadians(240.0))));
+      add(new Pose2d(12.265, 5.408, new Rotation2d(Units.degreesToRadians(300.0))));
     }};
 
     public static final double leftOffset = 0.165;
@@ -275,6 +275,7 @@ public final class Constants {
     public static final double L4ScoringOffset = 0.315;
     public static final double topAlgaeScoringOffset = 0.23;
     public static final double bottomAlgaeScoringOffset = 0.25;
+
     public static final double generalScoringOffset = 0.285;
 
   }

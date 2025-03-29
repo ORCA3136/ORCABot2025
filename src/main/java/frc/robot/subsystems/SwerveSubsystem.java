@@ -49,7 +49,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class SwerveSubsystem extends SubsystemBase {
   
-  SwerveDrive  swerveDrive;
+  SwerveDrive swerveDrive;
 
   VisionSubsystem vision;
   
@@ -154,7 +154,7 @@ public class SwerveSubsystem extends SubsystemBase {
                                                         scaledInputs.getY(),
                                                         headingX,
                                                         headingY,
-                                                        getHeading().getRadians(),
+                                                        getHeadingRadians(),
                                                         Constants.Limits.MAX_SPEED);
   }
 
@@ -174,7 +174,7 @@ public class SwerveSubsystem extends SubsystemBase {
     return swerveDrive.swerveController.getTargetSpeeds(scaledInputs.getX(),
                                                         scaledInputs.getY(),
                                                         angle.getRadians(),
-                                                        getHeading().getRadians(),
+                                                        getHeadingRadians(),
                                                         Constants.Limits.MAX_SPEED);
   }
 
@@ -185,7 +185,7 @@ public class SwerveSubsystem extends SubsystemBase {
     return swerveDrive.swerveController.getTargetSpeeds(scaledInputs.getX(),
                                                         scaledInputs.getY(),
                                                         angle.getRadians(),
-                                                        getHeading().getRadians(),
+                                                        getHeadingRadians(),
                                                         maxSpeed);
   }
 
@@ -229,7 +229,13 @@ public class SwerveSubsystem extends SubsystemBase {
     });
   }
 
+public double getHeadingRadians() {
+  return getHeading().getRadians();
+}
 
+public Rotation2d getHeading() {
+  return swerveDrive.getPose().getRotation();
+}
 
 public SwerveDrive getSwerveDrive(){
   return swerveDrive;
@@ -253,17 +259,6 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
   public Pose2d getPose()
   {
     return swerveDrive.getPose();
-  }
-
-    /**
-   * Gets the current yaw angle of the robot, as reported by the swerve pose estimator in the underlying drivebase.
-   * Note, this is not the raw gyro reading, this may be corrected from calls to resetOdometry().
-   *
-   * @return The yaw angle
-   */
-  public Rotation2d getHeading()
-  {
-    return swerveDrive.getYaw();
   }
 
   public Optional<SwerveDriveSimulation>getMapleSimDrive(){
@@ -334,12 +329,10 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
     NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Rotation").setNumber(swerveDrive.getPose().getRotation().getDegrees());
     NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Position x").setNumber(swerveDrive.getPose().getX());
     NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Position y").setNumber(swerveDrive.getPose().getY());
-    NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Yaw").setNumber(swerveDrive.getYaw().getDegrees());
     NetworkTableInstance.getDefault().getTable("Odometry").getEntry("PoseYaw").setNumber(swerveDrive.getPose().getRotation().getDegrees());
     NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Robot Velocity Rotation").setNumber(swerveDrive.getRobotVelocity().omegaRadiansPerSecond);
     NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Robot Velocity x").setNumber(swerveDrive.getRobotVelocity().vxMetersPerSecond);
     NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Robot Velocity y").setNumber(swerveDrive.getRobotVelocity().vyMetersPerSecond);
-    NetworkTableInstance.getDefault().getTable("Odometry").getEntry("MT2 Rotation").setNumber(getHeading().getDegrees());
 
 
     vision.updateLimelightYaw(this);

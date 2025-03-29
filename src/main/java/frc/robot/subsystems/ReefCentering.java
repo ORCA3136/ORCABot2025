@@ -60,6 +60,7 @@ public class ReefCentering {
     double x = nearestReefSide.getX();
     double y = nearestReefSide.getY();
     double rot = nearestReefSide.getRotation().getRadians();
+    rot += Math.toRadians(-5);
 
     // if (elevatorAtHeight) {
       x += FieldPoses.generalScoringOffset * Math.cos(rot);
@@ -110,6 +111,7 @@ public class ReefCentering {
         break;
     }
 
+    /*
     switch (elevatorSetpoint) {
       case kLevel2:
         rot += Math.toRadians(1);
@@ -120,7 +122,9 @@ public class ReefCentering {
       default:
         break;
     }
+    */
 
+    rot += Math.toRadians(4);
     Pose2d scoringPosition = new Pose2d(x, y, new Rotation2d(rot));
     // m_drive.setCenteringPose(scoringPosition);
     // return m_drive.driveToPose(scoringPosition, PathPlannerConstants.slowConstraints, 0.02);
