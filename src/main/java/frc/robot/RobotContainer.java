@@ -80,7 +80,7 @@ public class RobotContainer {
   private ReefCentering reefCentering = new ReefCentering(driveBase, elevatorSystem);
   private final SendableChooser<Command> autoChooser;
 
-  
+
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -240,9 +240,9 @@ public class RobotContainer {
 
   private void configureNamedCommands() {
     NamedCommands.registerCommand("Intake score", new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kOut, vision,ledSubsystem).withTimeout(0.2));
+    NamedCommands.registerCommand("Auto score", new AutoScoreCommand(intake, elevatorSystem, 0, vision));
     NamedCommands.registerCommand("Intake in", new DoubleLidarRoutine(intake, Constants.IntakeConstants.IntakePowerLevels.kFeed, vision, ledSubsystem, climber));
     NamedCommands.registerCommand("Wait for coral", new WaitForCoralCommand(vision));
-    NamedCommands.registerCommand("Intake score 3", new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kIn, vision,ledSubsystem).withTimeout(0.5));
     NamedCommands.registerCommand("Coral Centering", new DefaultIntakeCommand(intake, vision, climber));
     NamedCommands.registerCommand("Elevator L1", Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel1)));
     NamedCommands.registerCommand("Elevator L2", Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel2)));

@@ -63,22 +63,9 @@
                 }
               },
               {
-                "type": "sequential",
+                "type": "named",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Intake in"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Coral Centering"
-                      }
-                    }
-                  ]
+                  "name": "Coral Centering"
                 }
               }
             ]
@@ -111,7 +98,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Intake in"
+            "name": "Wait for coral"
           }
         },
         {
@@ -152,15 +139,15 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Right C to Source"
+            "name": "Coral Centering"
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "Intake in"
+            "pathName": "Right C to Source"
           }
         }
       ]
