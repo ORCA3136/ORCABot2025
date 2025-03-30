@@ -41,7 +41,7 @@ public class RunIntakeScoreCommand extends Command {
     Setpoint currentSetpoint = elevatorSubsystem.getSetpoint();
 
     switch (currentSetpoint) {
-      case kLevel1:
+      case kFeederStation:
         intakeSubsystem.setIntakePower(Constants.IntakeConstants.IntakePowerLevels.kIn);
         break;
       case kLevel2:

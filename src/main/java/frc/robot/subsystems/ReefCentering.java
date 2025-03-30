@@ -32,7 +32,7 @@ public class ReefCentering {
   private final ElevatorSubsystem m_elevator;
 
   private boolean elevatorAtHeight = false;
-  private Setpoint elevatorSetpoint = Setpoint.kLevel1;
+  private Setpoint elevatorSetpoint = Setpoint.kFeederStation;
   private Pose2d nearestReefSide = new Pose2d();
 
   public enum Side {

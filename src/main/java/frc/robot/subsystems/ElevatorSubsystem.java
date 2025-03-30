@@ -51,7 +51,6 @@ public class ElevatorSubsystem extends SubsystemBase {
   public enum Setpoint {
     kFeederStation,
     kProcessor,
-    kLevel1,
     kLevel2,
     kLevel3,
     kLevel4,
@@ -60,7 +59,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     kBottomAlgae;
   }
 
-  private Setpoint currentLevel = ElevatorSubsystem.Setpoint.kLevel1;
+  private Setpoint currentLevel = ElevatorSubsystem.Setpoint.kFeederStation;
 
   // Initialize elevator SPARK. We will use MAXMotion position control for the elevator, so we also
   // need to initialize the closed loop controller and encoder.
@@ -92,7 +91,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   private double wristCurrentTarget = Constants.ElevatorConstants.ElevatorSetpoints.kFeederStation;
   
   private boolean changedLevel = false;
-  private Setpoint targetSetpoint = Setpoint.kLevel1;
+  private Setpoint targetSetpoint = Setpoint.kFeederStation;
   private static double distanceToReef = 10;
   private boolean aboveLevel1 = false;
   private boolean manualMode = false;
@@ -405,9 +404,6 @@ public class ElevatorSubsystem extends SubsystemBase {
       case kFeederStation:
         aboveLevel1 = false;
         break;
-      case kLevel1:
-        aboveLevel1 = false;
-        break;
       case kLevel2:
         aboveLevel1 = true;
         break;
@@ -449,10 +445,6 @@ public class ElevatorSubsystem extends SubsystemBase {
             case kFeederStation:
               elevatorCurrentTarget = ElevatorSetpoints.kFeederStation;
               wristCurrentTarget = Constants.WristConstants.WristSetpoints.kFeederStation;
-              break;
-            case kLevel1:
-              elevatorCurrentTarget = ElevatorSetpoints.kLevel1;
-              wristCurrentTarget = Constants.WristConstants.WristSetpoints.kLevel1;
               break;
             case kLevel2:
               elevatorCurrentTarget = ElevatorSetpoints.kLevel2;

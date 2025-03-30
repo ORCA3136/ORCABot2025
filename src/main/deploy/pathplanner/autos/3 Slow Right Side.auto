@@ -47,6 +47,12 @@
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "Elevator Target L4"
@@ -102,6 +108,12 @@
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "Elevator Target L4"
@@ -139,15 +151,15 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "Coral Centering"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "Right C to Source"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Coral Centering"
           }
         }
       ]
