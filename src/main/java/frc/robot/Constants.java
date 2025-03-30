@@ -141,7 +141,7 @@ public final class Constants {
       public static final int kLevel1 = 4;
       public static final int kLevel2 = 30; 
       public static final int kLevel3 = 25;
-      public static final int kLevel4 = 58;
+      public static final int kLevel4 = 53;
       public static final int kProcessor = 183; 
       public static final int kAlgae1 = 170; 
       public static final int kAlgae2 = 170; 

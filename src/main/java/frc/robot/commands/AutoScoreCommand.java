@@ -48,7 +48,7 @@ public class AutoScoreCommand extends Command {
   @Override
   public void execute() {
     
-    if (ejectingCoral && !visionSubsystem.hasCoralInIntake() && Timer.getTimestamp() > commandTimer + 0.05) {
+    if (ejectingCoral && !visionSubsystem.hasCoralInIntake() && Timer.getTimestamp() > commandTimer + 0.15) {
       hasScored = true;
     }
 
