@@ -21,7 +21,7 @@ public class AutoScoreCommand extends Command {
   private boolean ejectingCoral = false;
   private boolean hasScored = false;
 
-  private double time;
+  private double commandTimer;
 
   /**
    * Creates a new ExampleCommand.
@@ -34,35 +34,29 @@ public class AutoScoreCommand extends Command {
     powerSetPoint = power;
     visionSubsystem = vision;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(intakeSubsystem, vision);
+    addRequirements(intakeSubsystem, elevatorSubsystem, vision);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     System.out.println("Start of command");
-    time = Timer.getTimestamp();
-    NetworkTableInstance.getDefault().getTable("Wrist").getEntry("Running Intake").setBoolean(true);
+    commandTimer = Timer.getTimestamp();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (!visionSubsystem.hasCoralInIntake()) {
-      time = Timer.getTimestamp();
-    } else if (Timer.getTimestamp() > time + 0.05) {
-      ejectingCoral = true;
-    }
-
-    if (ejectingCoral && !visionSubsystem.hasCoralInIntake()) {
+    
+    if (ejectingCoral && !visionSubsystem.hasCoralInIntake() && Timer.getTimestamp() > commandTimer + 0.05) {
       hasScored = true;
     }
 
     if (elevatorSubsystem.atScoringPosition()) {
+      ejectingCoral = true;
       intakeSubsystem.setIntakePower(powerSetPoint);
-      NetworkTableInstance.getDefault().getTable("Wrist").getEntry("Running Intake").setBoolean(true);
     } else {
-      NetworkTableInstance.getDefault().getTable("Wrist").getEntry("Running Intake").setBoolean(false);
+      commandTimer = Timer.getTimestamp();
     }
   }
 
@@ -70,13 +64,12 @@ public class AutoScoreCommand extends Command {
   @Override
   public void end(boolean interrupted) {
     intakeSubsystem.setIntakePower(0);
-    NetworkTableInstance.getDefault().getTable("Wrist").getEntry("Running Intake").setBoolean(false);
     System.out.println("End of command");
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return hasScored;
+    return hasScored || Timer.getTimestamp() > commandTimer + 1;
   }
 }

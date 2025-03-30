@@ -36,7 +36,7 @@ public class MoveToSetpointCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (e_subsystem.getWristAngle() +1 > Constants.Limits.kWristSafetyThreshold) {
+    if (e_subsystem.getWristPosition() +1 > Constants.Limits.kWristSafetyThreshold) {
       e_subsystem.elevatorMoveToSetpoint(y);
     } else if (e_subsystem.getElevatorPosition()+1 > y) {
       e_subsystem.wristMoveToSetpoint(theta);
@@ -50,6 +50,6 @@ public class MoveToSetpointCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (e_subsystem.getWristAngle() +1 > Constants.Limits.kWristSafetyThreshold && e_subsystem.getElevatorPosition()+1 > y);
+    return (e_subsystem.getWristPosition() +1 > Constants.Limits.kWristSafetyThreshold && e_subsystem.getElevatorPosition()+1 > y);
   }
 }

@@ -80,14 +80,7 @@ public class RobotContainer {
   private ReefCentering reefCentering = new ReefCentering(driveBase, elevatorSystem);
   private final SendableChooser<Command> autoChooser;
 
-
   
-
-  // BooleanLogEntry myBooleanLog;
-  // DoubleLogEntry myDoubleLog;
-  // StringLogEntry myStringLog;
-  
-
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -147,7 +140,7 @@ public class RobotContainer {
                                                 .scaleTranslation(0.8)
                                                 .allianceRelativeControl(true);
     // Derive the heading axis with math!
-    SwerveInputStream driveDirectAngleSim     = driveAngularVelocitySim.copy()
+    SwerveInputStream driveDirectAngleSim = driveAngularVelocitySim.copy()
                                                                       .withControllerHeadingAxis(() -> Math.sin(
                                                                                                       m_driverController.getRawAxis(
                                                                                                           4) * Math.PI) * (Math.PI * 2),
@@ -161,7 +154,7 @@ public class RobotContainer {
 
 
 
-    SwerveInputStream driveForwardAuto  = SwerveInputStream.of(driveBase.getSwerveDrive(),
+    SwerveInputStream driveForwardAuto = SwerveInputStream.of(driveBase.getSwerveDrive(),
                                             () -> 0.15, 
                                             () -> 0)
                                             .allianceRelativeControl(false);
@@ -210,11 +203,6 @@ public class RobotContainer {
       m_driverController.povLeft().whileTrue(reefCentering.createPathCommand(ReefCentering.Side.Left).until(() -> reefCentering.haveConditionsChanged()).repeatedly());
       m_driverController.povRight().whileTrue(reefCentering.createPathCommand(ReefCentering.Side.Right).until(() -> reefCentering.haveConditionsChanged()).repeatedly());
 
-      // m_driverController.povDown().whileTrue();
-      // m_driverController.povUp().whileTrue();
-      // m_driverController.povLeft().whileTrue(new CenterLimelightOnReef(driveBase, Reef.left));
-      // m_driverController.povRight().whileTrue(new CenterLimelightOnReef(driveBase, Reef.right));
-
       m_driverController.axisGreaterThan(3, 0.4).whileTrue(new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kOut, vision,ledSubsystem));
       // Right Trigger - 3 ^^^^
       m_driverController.axisGreaterThan(2, 0.4).whileTrue(new RunIntakeScoreCommand(intake, elevatorSystem, ledSubsystem));
@@ -225,24 +213,27 @@ public class RobotContainer {
       m_driverController.leftBumper().whileTrue(new AutoScoreCommand(intake, elevatorSystem, Constants.IntakeConstants.IntakePowerLevels.kOut, vision));
 
 
-      m_secondaryController.button(1).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel4)));
-      m_secondaryController.button(2).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel3)));
-      m_secondaryController.button(3).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel2)));
-      m_secondaryController.button(4).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel1)));
+      // m_secondaryController.button(1).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel4)));
+      // m_secondaryController.button(2).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel3)));
+      // m_secondaryController.button(3).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel2)));
+      // m_secondaryController.button(4).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel1)));
+      // m_secondaryController.button(5).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kTopAlgae)));
+      // m_secondaryController.button(6).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kProcessor)));
+      // m_secondaryController.button(9).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kBottomAlgae)));
       
-      // m_secondaryController.button(1).whileTrue(Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kLevel4)));
-      // m_secondaryController.button(2).whileTrue(Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kLevel3)));
-      // m_secondaryController.button(3).whileTrue(Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kLevel2)));
-      // m_secondaryController.button(4).whileTrue(Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kFeederStation)));
+      m_secondaryController.button(1).whileTrue(Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kLevel4)));
+      m_secondaryController.button(2).whileTrue(Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kLevel3)));
+      m_secondaryController.button(3).whileTrue(Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kLevel2)));
+      m_secondaryController.button(4).whileTrue(Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kFeederStation)));
+      m_secondaryController.button(5).whileTrue(Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kTopAlgae)));
+      m_secondaryController.button(6).whileTrue(Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kProcessor)));
+      m_secondaryController.button(9).whileTrue(Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kBottomAlgae)));
       
-      m_secondaryController.button(5).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kTopAlgae)));
-      m_secondaryController.button(6).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kProcessor)));
       m_secondaryController.button(7).whileTrue(new RunFunnelCommand(climber, Constants.ClimberConstants.kFunnelSpeed));
       m_secondaryController.button(8).whileTrue(new CappnCrunchCommand(climber, Constants.ClimberConstants.kClimberInSpeed).withTimeout(0.05));
-      // m_secondaryController.button(8).whileTrue(Commands.runOnce(() -> driveBase.driveToDistanceCommand(0.3, 0.3)));
-      m_secondaryController.button(9).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kBottomAlgae)));
       m_secondaryController.button(10).whileTrue(new RunClimberCommand(climber, Constants.ClimberConstants.kClimberInSpeed));
       m_secondaryController.button(11).whileTrue(new RunClimberCommand(climber, Constants.ClimberConstants.kClimberOutSpeed));
+      m_secondaryController.button(12).whileTrue(Commands.runOnce(() -> elevatorSystem.updateMode()));
       m_secondaryController.axisGreaterThan(0, -0.2).whileTrue(new RunClimbSequenceCommand(climber, elevatorSystem, false));
     }
   }
@@ -263,18 +254,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Elevator Processor", Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kProcessor)));
     NamedCommands.registerCommand("Hold Algae", Commands.runOnce(() -> elevatorSystem.setElevatorPower(-0.5)).handleInterrupt(() -> elevatorSystem.setElevatorPower(0)));
     NamedCommands.registerCommand("Release Algae", Commands.runOnce(() -> elevatorSystem.setElevatorPower(0.5)).withTimeout(1).handleInterrupt(() -> elevatorSystem.setElevatorPower(0)));
-    
-    
-
-    // NamedCommands.registerCommand("Centering Right", new SequentialCommandGroup(new WaitCommand(10).until(() -> elevatorSystem.atHeight()), reefCentering.createPathCommand(ReefCentering.Side.Right)));
-    // NamedCommands.registerCommand("Centering Left", new SequentialCommandGroup(new WaitCommand(10).until(() -> elevatorSystem.atHeight()), reefCentering.createPathCommand(ReefCentering.Side.Left)));
-
-    // NamedCommands.registerCommand("drive to score pose I", driveBase.driveToPose(
-    //       new Pose2d(new Translation2d(4.937, 4.871), Rotation2d.fromDegrees(-116)), Constants.PathPlannerConstants.slowConstraints, 0));
-    // NamedCommands.registerCommand("not Back away", Commands.runOnce(() -> driveBase.driveToDistanceCommand(-0.3, 0.3)));
   }
- 
-    // driveBase.drive(new Translation2d(0.5, 0), 0, false)
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
