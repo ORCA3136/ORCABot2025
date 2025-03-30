@@ -37,6 +37,7 @@ public class VisionSubsystem extends SubsystemBase {
   private LaserCan.Measurement bottomMeasurement;
   private LaserCan.Measurement topMeasurement;
 
+  private boolean currentIntakeStatus;
 
 
   boolean initialLimelightPose = false;
@@ -73,7 +74,7 @@ public class VisionSubsystem extends SubsystemBase {
     if (it != null) {
       return it.distance_mm;
     }
-    return -999999999;
+    return 999999999;
   }
 
   public double getCoralInFunnel() {
@@ -81,7 +82,7 @@ public class VisionSubsystem extends SubsystemBase {
     if (it != null) {
       return it.distance_mm;
     }
-    return -999999999;
+    return 999999999;
   }
 
   public boolean hasCoralInIntake() {
@@ -90,6 +91,15 @@ public class VisionSubsystem extends SubsystemBase {
 
   public boolean hasCoralInFunnel() {
     return getCoralInFunnel() < 150;
+  }
+
+  public boolean hasScored() {
+    if (currentIntakeStatus && !hasCoralInIntake()) {
+      currentIntakeStatus = hasCoralInIntake();
+      return true;
+    } 
+    currentIntakeStatus = hasCoralInIntake();
+    return false;
   }
 
   public boolean getTV() {
@@ -144,6 +154,7 @@ public class VisionSubsystem extends SubsystemBase {
     String[] limelights = {"limelight-left", "limelight-right"}; // , "limelight-rear"
     for (String limelight: limelights) {
       LimelightHelpers.PoseEstimate megaTag2Pose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight);
+      LimelightHelpers.getBotPose2d_wpiBlue(limelight);
       
       if (megaTag2Pose != null) {
         if(megaTag2Pose.tagCount > 0)
@@ -246,8 +257,9 @@ public class VisionSubsystem extends SubsystemBase {
 
     topMeasurement = topLidar.getMeasurement();
     if (topMeasurement != null) {
-      SmartDashboard.putNumber("Top Lidar distance", topMeasurement.distance_mm);
-      SmartDashboard.putNumber("Top Lidar status", topMeasurement.status);
+      NetworkTableInstance.getDefault().getTable("Top Lidar").getEntry("Top Lidar distance").setDouble(topMeasurement.distance_mm);
+      NetworkTableInstance.getDefault().getTable("Top Lidar").getEntry("Top Lidar status").setDouble(topMeasurement.status);
+      NetworkTableInstance.getDefault().getTable("Top Lidar").getEntry("Top Lidar Null").setBoolean(true);
       if (Math.abs(topMeasurement.distance_mm) < 150) {
         
         NetworkTableInstance.getDefault().getTable("Top Lidar").getEntry("Has Target").setBoolean(true);
@@ -257,6 +269,7 @@ public class VisionSubsystem extends SubsystemBase {
 
     } else {
       NetworkTableInstance.getDefault().getTable("Top Lidar").getEntry("Has Target").setBoolean(false);
+      NetworkTableInstance.getDefault().getTable("Top Lidar").getEntry("Top Lidar Null").setBoolean(false);
     }
     
 

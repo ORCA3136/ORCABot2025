@@ -37,7 +37,7 @@ public final class Configs {
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         // Set PID values for position control
         .pidf(0.2, 0.0, 0.5, 0.0003)  // d was 0.5   
-        .outputRange(-0.6, 0.95);  // -0.85 0.85
+        .outputRange(-0.80, 1);  // -0.85 0.85
 
 
       // rightElevatorConfig

@@ -301,6 +301,14 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
       );
   }
 
+  public double distanceToReef() {
+    if (!isRedSide()) {
+      return Math.abs(swerveDrive.getPose().getTranslation().getDistance(Constants.FieldPoses.blueCenterOfReef.getTranslation()));
+    } else {
+      return Math.abs(swerveDrive.getPose().getTranslation().getDistance(Constants.FieldPoses.redCenterOfReef.getTranslation()));
+    }
+  }
+
   /**
    * Returns a Command that drives the swerve drive to a specific distance at a given speed.
    *
@@ -340,7 +348,7 @@ public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
     vision.updatePosesEstimatorMT2(swerveDrive);
     swerveDrive.updateOdometry(); // Might be redundant
 
-
+    ElevatorSubsystem.updateDistanceToReef(distanceToReef());
 
     // String[] limelights = {"limelight-left", "limelight-right", "limelight-rear"};
     // PoseEstimate[] poses = vision.getEstimatedGlobalPose(limelights);

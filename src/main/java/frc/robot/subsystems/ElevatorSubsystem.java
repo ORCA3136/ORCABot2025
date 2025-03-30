@@ -17,6 +17,7 @@ import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
@@ -31,6 +32,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -90,7 +92,9 @@ public class ElevatorSubsystem extends SubsystemBase {
   private double wristCurrentTarget = Constants.ElevatorConstants.ElevatorSetpoints.kFeederStation;
   
   private boolean changedLevel = false;
-  
+  private Setpoint targetSetpoint = Setpoint.kLevel1;
+  private static double distanceToReef = 10;
+  private boolean aboveLevel1 = false;
 
   private boolean wristManuallyMoving = true;
   private boolean elevatorManuallyMoving = true;
@@ -167,7 +171,7 @@ public class ElevatorSubsystem extends SubsystemBase {
        */
       
       if (changedLevel) {
-        if (Math.abs(getWristPosition() - Constants.WristConstants.WristSetpoints.unblock) < 2) 
+        if (Math.abs(getWristPosition() - Constants.WristConstants.WristSetpoints.unblock) < 4) 
           changedLevel = false;
         wristTarget = getWristOffset(Constants.WristConstants.WristSetpoints.unblock, 3, 1);
         wristBool = false;
@@ -178,7 +182,7 @@ public class ElevatorSubsystem extends SubsystemBase {
       else if (Math.abs(getElevatorPosition() - elevatorCurrentTarget) > 0.5) {
         wristBool = false;
         // wristTarget = getWristPosition();
-        wristTarget = getWristOffset(Constants.WristConstants.WristSetpoints.unblock, 2, 2);
+        wristTarget = Constants.WristConstants.WristSetpoints.unblock;
       }
   
   
@@ -409,6 +413,41 @@ public class ElevatorSubsystem extends SubsystemBase {
     public double getWristAngle() {
       return getWristPosition();
     }
+
+    public void setTargetSetpoint(Setpoint setpoint) {
+      setWristManuallyMoving(false);
+      setElevatorManuallyMoving(false);
+      targetSetpoint = setpoint;
+
+      switch (targetSetpoint) {
+        case kFeederStation:
+          aboveLevel1 = false;
+          break;
+        case kLevel1:
+          aboveLevel1 = false;
+          break;
+        case kLevel2:
+          aboveLevel1 = true;
+          break;
+        case kLevel3:
+          aboveLevel1 = true;
+          break;
+        case kLevel4:
+          aboveLevel1 = true;
+          break;
+        case kBottomAlgae:
+          aboveLevel1 = true;
+          break;
+        case kTopAlgae:
+          aboveLevel1 = true;
+          break;
+        case kProcessor:
+          aboveLevel1 = false;
+          break;
+        default:
+          break;
+      }
+    }
   
     /**
      * Command to set the subsystem setpoint. This will set the arm and elevator to their predefined
@@ -463,6 +502,38 @@ public class ElevatorSubsystem extends SubsystemBase {
               default:
                 break;
             }
+    }
+
+    private void updateElevatorHeight() {
+      Setpoint newSetpoint;
+
+      if (distanceToReef < 2) {
+        newSetpoint = targetSetpoint;
+      // } 
+      // else if (distanceToReef < 2.35) {
+      //   if (aboveLevel1) {
+      //     newSetpoint = Setpoint.kLevel2; // Needs to be Stow
+      //   } else {
+      //     newSetpoint = targetSetpoint;
+      //   }
+      } else {
+        if (aboveLevel1) {
+          newSetpoint = Setpoint.kFeederStation;
+        } else {
+          newSetpoint = targetSetpoint;
+        }
+      }
+
+      NetworkTableInstance.getDefault().getTable("Elevator").getEntry("newSetpoint").setString("" + newSetpoint);
+      NetworkTableInstance.getDefault().getTable("Elevator").getEntry("targetSetpoint").setString("" + targetSetpoint);
+      if (currentLevel != newSetpoint) {
+        setSetpointCommand(newSetpoint);
+      }
+    }
+    
+    public static void updateDistanceToReef(double distance) {
+      distanceToReef = distance;
+      NetworkTableInstance.getDefault().getTable("Elevator").getEntry("Distance To Reef").setNumber(distance);
     }
   
     public Setpoint getSetpoint() {
@@ -590,13 +661,16 @@ public class ElevatorSubsystem extends SubsystemBase {
     return MathUtil.isNear(elevatorCurrentTarget, getElevatorPosition(), 0.5);
   }
 
-  
+  public boolean atScoringPosition() {
+    return MathUtil.isNear(wristCurrentTarget, getWristPosition(), 3);
+  }
 
   @Override
   public void periodic() {
     zeroElevatorOnLimitSwitch();
 
     if (!wristManuallyMoving || !elevatorManuallyMoving) {
+      updateElevatorHeight();
       moveToSetpointPID();
     }
 
@@ -616,7 +690,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("limit switch", !elevatorLimitSwitch.get());
     SmartDashboard.putBoolean("Changed Level", changedLevel);
 
-    
+    NetworkTableInstance.getDefault().getTable("Wrist").getEntry("At Scoring Pos").setBoolean(atScoringPosition());
 
   }
 

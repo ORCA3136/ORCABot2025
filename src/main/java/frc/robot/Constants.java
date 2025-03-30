@@ -249,7 +249,8 @@ public final class Constants {
 
     public static final double[] fieldSize = {17.55, 8.05};
     // Wall thickness is 0.051
-    public static final double[] centerOfReef = {4.487, 4.025};
+    public static final Pose2d blueCenterOfReef = new Pose2d(4.487, 4.025, new Rotation2d()); // blue
+    public static final Pose2d redCenterOfReef = new Pose2d(13.065, 4.025, new Rotation2d()); // red
 
     public static final List<Pose2d> blueReefPoses = new ArrayList<Pose2d>(){{
       add(new Pose2d(2.890, 4.025, new Rotation2d(Units.degreesToRadians(0))));

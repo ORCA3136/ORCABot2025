@@ -53,18 +53,14 @@ public class DoubleLidarRoutine extends Command {
   public void execute() {
     if (!vision.hasCoralInFunnel()) {
       intakeSubsystem.setIntakePower(-0.1);
-      // intakeSubsystem.setIntakePower(0);
+      climberSubsystem.setFunnelPower(0);
+      time = Timer.getTimestamp();
     } else if (vision.hasCoralInFunnel()) {
       intakeSubsystem.setIntakePower(powerSetPoint);
     }
 
-    if (!vision.hasCoralInFunnel()) {
-      climberSubsystem.setFunnelPower(0);
-      time = Timer.getTimestamp();
-    }
-
-    if (!pulse && Timer.getTimestamp() > time + 0.25) {
-      climberSubsystem.setFunnelPower(-0.3);
+    if (!pulse && Timer.getTimestamp() > time + 0.15) {
+      climberSubsystem.setFunnelPower(-0.30);
       time = Timer.getTimestamp();
       pulse = !pulse;
     } 

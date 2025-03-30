@@ -4,26 +4,34 @@
 
 package frc.robot.commands;
 
+import frc.robot.Configs.ClimberConfigs;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /** An example command that uses an example subsystem. */
 public class DefaultIntakeCommand extends Command {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private IntakeSubsystem intakeSubsystem;
+  private ClimberSubsystem climberSubsystem;
   //private LaserCan lidarObect;
   private VisionSubsystem vision;
   // private LEDSubsystem led;
+
+  private boolean pulse = false;
+  private double time;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public DefaultIntakeCommand(IntakeSubsystem intakeSubsystem, VisionSubsystem vision) {
+  public DefaultIntakeCommand(IntakeSubsystem intakeSubsystem, VisionSubsystem vision, ClimberSubsystem climberSubsystem) {
+    this.climberSubsystem = climberSubsystem;
     this.intakeSubsystem = intakeSubsystem;
     this.vision = vision;
     // led = ledSubsystem;
@@ -33,15 +41,34 @@ public class DefaultIntakeCommand extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    time = Timer.getTimestamp();
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+
     if (vision.hasCoralInIntake()) {
       intakeSubsystem.setIntakePower(0.08);
+      climberSubsystem.setFunnelPower(0);
+      time = Timer.getTimestamp();
+    } else if (vision.hasCoralInFunnel()) {
+      intakeSubsystem.setIntakePower(-0.4);
     } else {
       intakeSubsystem.setIntakePower(0);
+      climberSubsystem.setFunnelPower(0);
+      time = Timer.getTimestamp();
+    } 
+
+    if (!pulse && Timer.getTimestamp() > time + 0.175) {
+      climberSubsystem.setFunnelPower(-0.30);
+      time = Timer.getTimestamp();
+      pulse = !pulse;
+    } else if (pulse && Timer.getTimestamp() > time + 0.075) {
+      climberSubsystem.setFunnelPower(0.1);
+      time = Timer.getTimestamp();
+      pulse = !pulse;
     }
   }
 
@@ -49,6 +76,7 @@ public class DefaultIntakeCommand extends Command {
   @Override
   public void end(boolean interrupted) {
     intakeSubsystem.setIntakePower(0);
+    climberSubsystem.setFunnelPower(0);
   }
 
   // Returns true when the command should end.
