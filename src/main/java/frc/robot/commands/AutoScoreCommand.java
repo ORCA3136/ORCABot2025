@@ -34,7 +34,7 @@ public class AutoScoreCommand extends Command {
     powerSetPoint = power;
     visionSubsystem = vision;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(intakeSubsystem, elevatorSubsystem, vision);
+    addRequirements(intakeSubsystem);
   }
 
   // Called when the command is initially scheduled.

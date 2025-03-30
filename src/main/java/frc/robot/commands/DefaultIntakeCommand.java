@@ -54,7 +54,7 @@ public class DefaultIntakeCommand extends Command {
       climberSubsystem.setFunnelPower(0);
       time = Timer.getTimestamp();
     } else if (vision.hasCoralInFunnel()) {
-      intakeSubsystem.setIntakePower(-0.4);
+      intakeSubsystem.setIntakePower(-0.5);
     } else {
       intakeSubsystem.setIntakePower(0);
       climberSubsystem.setFunnelPower(0);
