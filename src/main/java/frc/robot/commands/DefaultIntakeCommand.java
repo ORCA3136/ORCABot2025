@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import frc.robot.Constants;
 import frc.robot.Configs.ClimberConfigs;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
@@ -54,7 +55,7 @@ public class DefaultIntakeCommand extends Command {
       climberSubsystem.setFunnelPower(0);
       time = Timer.getTimestamp();
     } else if (vision.hasCoralInFunnel()) {
-      intakeSubsystem.setIntakePower(-0.5);
+      intakeSubsystem.setIntakePower(Constants.IntakeConstants.IntakePowerLevels.kFeed);
     } else {
       intakeSubsystem.setIntakePower(0);
       climberSubsystem.setFunnelPower(0);

@@ -41,6 +41,12 @@
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "Elevator Target L4"
@@ -87,6 +93,12 @@
           "type": "named",
           "data": {
             "name": "Wait for coral"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
           }
         },
         {

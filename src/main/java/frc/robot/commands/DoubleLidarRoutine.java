@@ -24,6 +24,7 @@ public class DoubleLidarRoutine extends Command {
 
   private boolean pulse = false;
   private double time;
+  private double commandTime;
 
   /**
    * Creates a new ExampleCommand.
@@ -46,6 +47,7 @@ public class DoubleLidarRoutine extends Command {
     intakeSubsystem.setIntakePower(powerSetPoint);
 
     time = Timer.getTimestamp();
+    commandTime = Timer.getTimestamp();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -55,7 +57,8 @@ public class DoubleLidarRoutine extends Command {
       intakeSubsystem.setIntakePower(-0.1);
       climberSubsystem.setFunnelPower(0);
       time = Timer.getTimestamp();
-    } else if (vision.hasCoralInFunnel()) {
+      commandTime = Timer.getTimestamp();
+    } else {
       intakeSubsystem.setIntakePower(powerSetPoint);
     }
 
@@ -81,6 +84,6 @@ public class DoubleLidarRoutine extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return vision.hasCoralInIntake();
+    return vision.hasCoralInIntake() || Timer.getTimestamp() > commandTime + 0.35;
   }
 }
