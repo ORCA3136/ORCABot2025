@@ -62,39 +62,35 @@ public class ReefCentering {
     double rot = nearestReefSide.getRotation().getRadians();
     rot += Math.toRadians(-5);
 
-    // if (elevatorAtHeight) {
-      x += FieldPoses.generalScoringOffset * Math.cos(rot);
-      y += FieldPoses.generalScoringOffset * Math.sin(rot);
-    // }
-    /*
     
-      if (elevatorSetpoint != null)
-        switch (elevatorSetpoint) {
-          case kLevel2:
-            x += FieldPoses.L2ScoringOffset * Math.cos(rot);
-            y += FieldPoses.L2ScoringOffset * Math.sin(rot);
-            break;
-          case kLevel3:
-            x += FieldPoses.L3ScoringOffset * Math.cos(rot);
-            y += FieldPoses.L3ScoringOffset * Math.sin(rot);
-            break;
-          case kLevel4:
-            x += FieldPoses.L4ScoringOffset * Math.cos(rot);
-            y += FieldPoses.L4ScoringOffset * Math.sin(rot);
-            break;
-          case kTopAlgae:
-            x += FieldPoses.topAlgaeScoringOffset * Math.cos(rot);
-            y += FieldPoses.topAlgaeScoringOffset * Math.sin(rot);
-            break;
-          case kBottomAlgae:
-            x += FieldPoses.bottomAlgaeScoringOffset * Math.cos(rot);
-            y += FieldPoses.bottomAlgaeScoringOffset * Math.sin(rot);
-            break;
-          default:
-            break;
-        }
+    if (elevatorSetpoint != null)
+      switch (elevatorSetpoint) {
+        // case kLevel2:
+        //   x += FieldPoses.L2ScoringOffset * Math.cos(rot);
+        //   y += FieldPoses.L2ScoringOffset * Math.sin(rot);
+        //   break;
+        // case kLevel3:
+        //   x += FieldPoses.L3ScoringOffset * Math.cos(rot);
+        //   y += FieldPoses.L3ScoringOffset * Math.sin(rot);
+        //   break;
+        // case kLevel4:
+        //   x += FieldPoses.L4ScoringOffset * Math.cos(rot);
+        //   y += FieldPoses.L4ScoringOffset * Math.sin(rot);
+        //   break;
+        case kTopAlgae:
+          x += FieldPoses.topAlgaeScoringOffset * Math.cos(rot);
+          y += FieldPoses.topAlgaeScoringOffset * Math.sin(rot);
+          break;
+        case kBottomAlgae:
+          x += FieldPoses.bottomAlgaeScoringOffset * Math.cos(rot);
+          y += FieldPoses.bottomAlgaeScoringOffset * Math.sin(rot);
+          break;
+        default:
+          x += FieldPoses.generalScoringOffset * Math.cos(rot);
+          y += FieldPoses.generalScoringOffset * Math.sin(rot);
+          break;
+      }
 
-    */
     switch (side) {
       case Left:
         x -= FieldPoses.leftOffset * Math.sin(rot);

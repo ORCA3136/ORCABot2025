@@ -123,12 +123,14 @@ public class RobotContainer {
     SwerveInputStream driveRobotOriented = driveAngularVelocity.copy().robotRelative(true)
                                                              .allianceRelativeControl(false);
     SwerveInputStream driveRobotOrientedReefSpeed = driveRobotOriented.copy().scaleTranslation(0.2);
+    SwerveInputStream driveRobotOrientedReefFast  = driveRobotOriented.copy().scaleTranslation(2);
 
     Command driveFieldOrientedDirectAngle = driveBase.driveFieldOriented(driveDirectAngle);
     Command driveFieldOrientedAngularVelocity = driveBase.driveFieldOriented(driveRegular);
     Command driveFieldOrientedAngularVelocitySlow = driveBase.driveFieldOriented(driveAngularVelocitySlow);
     
     Command driveRobotOrientedAngularVelocitySuperSlow = driveBase.driveFieldOriented(driveRobotOrientedReefSpeed);
+    Command driveRobotOrientedAngularVelocitySuperFast = driveBase.driveFieldOriented(driveRobotOrientedReefFast);
 
     
 
@@ -183,7 +185,7 @@ public class RobotContainer {
     {
 
       driveBase.setDefaultCommand(driveFieldOrientedAngularVelocity);
-      intake.setDefaultCommand(new DefaultIntakeCommand(intake, vision, climber));
+      intake.setDefaultCommand(new DefaultIntakeCommand(intake, vision, climber, elevatorSystem));
 
 
 
@@ -226,7 +228,7 @@ public class RobotContainer {
       m_secondaryController.button(3).whileTrue(Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kLevel2)));
       m_secondaryController.button(4).whileTrue(Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kFeederStation)));
       m_secondaryController.button(5).whileTrue(Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kTopAlgae)));
-      m_secondaryController.button(6).whileTrue(Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kProcessor)));
+      m_secondaryController.button(6).whileTrue(driveRobotOrientedAngularVelocitySuperFast);
       m_secondaryController.button(9).whileTrue(Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kBottomAlgae)));
       
       m_secondaryController.button(7).whileTrue(new RunFunnelCommand(climber, Constants.ClimberConstants.kFunnelSpeed));
@@ -234,16 +236,16 @@ public class RobotContainer {
       m_secondaryController.button(10).whileTrue(new RunClimberCommand(climber, Constants.ClimberConstants.kClimberInSpeed));
       m_secondaryController.button(11).whileTrue(new RunClimberCommand(climber, Constants.ClimberConstants.kClimberOutSpeed));
       m_secondaryController.button(12).whileTrue(Commands.runOnce(() -> elevatorSystem.updateMode()));
-      m_secondaryController.axisGreaterThan(0, -0.2).whileTrue(new RunClimbSequenceCommand(climber, elevatorSystem, false));
+      m_secondaryController.axisGreaterThan(0, -0.2).onTrue(new RunClimbSequenceCommand(climber, elevatorSystem, false));
     }
   }
 
   private void configureNamedCommands() {
-    NamedCommands.registerCommand("Intake score", new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kOut, vision,ledSubsystem).withTimeout(0.25));
+    NamedCommands.registerCommand("Intake score", new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kOut, vision,ledSubsystem).withTimeout(0.3));
     NamedCommands.registerCommand("Auto score", new AutoScoreCommand(intake, elevatorSystem, 0, vision));
     NamedCommands.registerCommand("Intake in", new DoubleLidarRoutine(intake, Constants.IntakeConstants.IntakePowerLevels.kFeed, vision, ledSubsystem, climber));
     NamedCommands.registerCommand("Wait for coral", new WaitForCoralCommand(vision));
-    NamedCommands.registerCommand("Coral Centering", new DefaultIntakeCommand(intake, vision, climber));
+    NamedCommands.registerCommand("Coral Centering", new DefaultIntakeCommand(intake, vision, climber, elevatorSystem));
     NamedCommands.registerCommand("Elevator L1", Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kFeederStation)));
     NamedCommands.registerCommand("Elevator L2", Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel2)));
     NamedCommands.registerCommand("Elevator L3", Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel3)));

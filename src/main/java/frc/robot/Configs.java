@@ -58,7 +58,8 @@ public final class Configs {
     static {
       wristMotorConfig
         .inverted(true)
-        .idleMode(IdleMode.kBrake); // IDK about this; verify
+        .idleMode(IdleMode.kBrake) // IDK about this; verify
+        .smartCurrentLimit(15);
 
       wristMotorConfig
         .closedLoop

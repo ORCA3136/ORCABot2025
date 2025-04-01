@@ -23,6 +23,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -112,7 +113,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     rightElevator.configure(Configs.ElevatorConfigs.rightElevatorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
 
     wristMotor.configure(Configs.WristConfigs.wristMotorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
-
 
     elevatorLimitSwitch = new DigitalInput(0);
 
@@ -484,20 +484,38 @@ public class ElevatorSubsystem extends SubsystemBase {
     if (manualMode) {
       newSetpoint = targetSetpoint;
     } else {
-      if (distanceToReef < 2) {
-        newSetpoint = targetSetpoint;
-      // } 
-      // else if (distanceToReef < 2.35) {
-      //   if (aboveLevel1) {
-      //     newSetpoint = Setpoint.kLevel2; // Needs to be Stow
-      //   } else {
-      //     newSetpoint = targetSetpoint;
-      //   }
-      } else {
-        if (aboveLevel1) {
-          newSetpoint = Setpoint.kFeederStation;
-        } else {
+
+      if (currentLevel == Setpoint.kBottomAlgae || currentLevel == Setpoint.kTopAlgae) {
+        if (distanceToReef < Constants.FieldPoses.reefAlgaeElevatorRange) {
           newSetpoint = targetSetpoint;
+        } else {
+          if (aboveLevel1) {
+            newSetpoint = Setpoint.kFeederStation;
+          } else {
+            newSetpoint = targetSetpoint;
+          }
+        }
+      } else {
+        if (distanceToReef < Constants.FieldPoses.reefElevatorRange) {
+          newSetpoint = targetSetpoint;
+        } else {
+          if (aboveLevel1) {
+            newSetpoint = Setpoint.kFeederStation;
+          } else {
+            newSetpoint = targetSetpoint;
+          }
+        }
+      }
+      
+      if (DriverStation.isAutonomous()) {
+        if (distanceToReef < Constants.FieldPoses.reefAutoElevatorRange) {
+          newSetpoint = targetSetpoint;
+        } else {
+          if (aboveLevel1) {
+            newSetpoint = Setpoint.kFeederStation;
+          } else {
+            newSetpoint = targetSetpoint;
+          }
         }
       }
     }
@@ -510,12 +528,21 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public void updateMode() {
+    if (!manualMode) {
+      if (distanceToReef > Constants.FieldPoses.reefElevatorRange) {
+        targetSetpoint = Setpoint.kFeederStation;
+      }
+    }
     manualMode = !manualMode;
   }
   
   public static void updateDistanceToReef(double distance) {
     distanceToReef = distance;
     NetworkTableInstance.getDefault().getTable("Elevator").getEntry("Distance To Reef").setNumber(distance);
+  }
+
+  public static double getDistanceToReef() {
+    return distanceToReef;
   }
 
   public Setpoint getSetpoint() {

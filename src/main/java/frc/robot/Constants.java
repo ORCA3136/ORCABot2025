@@ -101,8 +101,8 @@ public final class Constants {
       public static final double kLevel3 = 27.5;
       public static final double kLevel4 = 57; // max = 58
 
-      public static final double kBottomAlgae = 20.4; // 
-      public static final double kTopAlgae = 37.8; // 
+      public static final double kBottomAlgae = 14.6; // 
+      public static final double kTopAlgae = 32; // 
       public static final double kProcessor = 3.6;  // 
 
       
@@ -139,12 +139,12 @@ public final class Constants {
       public static final double unblock = Limits.kWristSafetyThreshold;
       public static final int kFeederStation = 4;
       public static final int kLevel1 = 4;
-      public static final int kLevel2 = 30; 
+      public static final int kLevel2 = 30;
       public static final int kLevel3 = 25;
       public static final int kLevel4 = 53;
-      public static final int kProcessor = 183; 
-      public static final int kAlgae1 = 170; 
-      public static final int kAlgae2 = 170; 
+      public static final int kProcessor = 183;
+      public static final int kAlgae1 = 132;
+      public static final int kAlgae2 = 132;
       public static final int kClimb = 13;
     }
 
@@ -278,6 +278,10 @@ public final class Constants {
     public static final double bottomAlgaeScoringOffset = 0.25;
 
     public static final double generalScoringOffset = 0.285;
+
+    public static final double reefElevatorRange = 2;  // Units.feetToMeters(6); // 1.8 meters
+    public static final double reefAlgaeElevatorRange = 2.4;
+    public static final double reefAutoElevatorRange = 3;
 
   }
  
