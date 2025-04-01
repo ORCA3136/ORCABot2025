@@ -65,8 +65,8 @@ public final class Configs {
         .closedLoop
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
         // Set PID values for position control
-        .pid(0.015, 0.0, 0.05) // 0.02 -> 0.03
-        .outputRange(-0.8, 0.8); // .95 -> .6
+        .pid(0.02, 0.0, 0.1) // Old was 0.015 and 0.5
+        .outputRange(-0.7, 0.7); // Old was +-0.8
     }
   }
 

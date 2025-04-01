@@ -34,7 +34,7 @@ public class AutoScoreCommand extends Command {
     powerSetPoint = power;
     visionSubsystem = vision;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(intakeSubsystem);
+    addRequirements(intakeSubsystem, elevatorSubsystem, vision);
   }
 
   // Called when the command is initially scheduled.
@@ -42,13 +42,16 @@ public class AutoScoreCommand extends Command {
   public void initialize() {
     System.out.println("Start of command");
     commandTimer = Timer.getTimestamp();
+    ejectingCoral = false;
+    hasScored = false;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     
-    if (ejectingCoral && !visionSubsystem.hasCoralInIntake() && Timer.getTimestamp() > commandTimer + 0.15) {
+    if (ejectingCoral && !visionSubsystem.hasCoralInIntake() && Timer.getTimestamp() > commandTimer + 0.25) {
+      System.out.println("Command ended naturally");
       hasScored = true;
     }
 
@@ -64,12 +67,15 @@ public class AutoScoreCommand extends Command {
   @Override
   public void end(boolean interrupted) {
     intakeSubsystem.setIntakePower(0);
-    System.out.println("End of command");
+    System.out.println("End of command interrupted: " + interrupted);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    if (hasScored) System.out.println("Command ended naturally");
+    if (Timer.getTimestamp() > commandTimer + 1) System.out.println("Command timed out");
+
     return hasScored || Timer.getTimestamp() > commandTimer + 1;
   }
 }

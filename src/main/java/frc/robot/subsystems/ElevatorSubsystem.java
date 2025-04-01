@@ -24,6 +24,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -42,6 +43,8 @@ import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants.ElevatorSetpoints;
 
 public class ElevatorSubsystem extends SubsystemBase {
+
+  private VisionSubsystem vision;
 
   /** Instantiates elevator motors */
   SparkMax leftElevator = new SparkMax(Constants.SparkConstants.kLeftElevatorCanId, MotorType.kBrushless);
@@ -103,7 +106,9 @@ public class ElevatorSubsystem extends SubsystemBase {
   private final DigitalInput elevatorLimitSwitch;
 
   
-  public ElevatorSubsystem() {
+  public ElevatorSubsystem(VisionSubsystem vision) {
+
+    this.vision = vision;
 
     zeroElevator();
     Configs.ElevatorConfigs.rightElevatorConfig 
@@ -115,7 +120,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     wristMotor.configure(Configs.WristConfigs.wristMotorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
 
     elevatorLimitSwitch = new DigitalInput(0);
-
+    
   }
   
   // main elevator/wrist movement
@@ -517,6 +522,10 @@ public class ElevatorSubsystem extends SubsystemBase {
             newSetpoint = targetSetpoint;
           }
         }
+      }
+
+      if (vision.hasCoralInFunnel()) {
+        newSetpoint = currentLevel;
       }
     }
 

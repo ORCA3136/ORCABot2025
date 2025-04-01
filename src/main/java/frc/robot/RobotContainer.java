@@ -74,7 +74,7 @@ public class RobotContainer {
   private VisionSubsystem vision = new VisionSubsystem();
   private final SwerveSubsystem driveBase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/ORCA2025"), vision); // where to configure the robot or "choose" it
   private IntakeSubsystem intake = new IntakeSubsystem();
-  private ElevatorSubsystem elevatorSystem = new ElevatorSubsystem();
+  private ElevatorSubsystem elevatorSystem = new ElevatorSubsystem(vision);
   private ClimberSubsystem climber = new ClimberSubsystem();
   private LEDSubsystem ledSubsystem = new LEDSubsystem();
   private ReefCentering reefCentering = new ReefCentering(driveBase, elevatorSystem);
@@ -212,7 +212,7 @@ public class RobotContainer {
 
       m_driverController.rightBumper().whileTrue(new DoubleLidarRoutine(intake, Constants.IntakeConstants.IntakePowerLevels.kFeed, vision, ledSubsystem, climber));
       
-      m_driverController.leftBumper().whileTrue(new AutoScoreCommand(intake, elevatorSystem, Constants.IntakeConstants.IntakePowerLevels.kOut, vision));
+      m_driverController.leftBumper().onTrue(new AutoScoreCommand(intake, elevatorSystem, Constants.IntakeConstants.IntakePowerLevels.kOut, vision));
 
 
       // m_secondaryController.button(1).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel4)));
@@ -241,7 +241,7 @@ public class RobotContainer {
   }
 
   private void configureNamedCommands() {
-    NamedCommands.registerCommand("Intake score", new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kOut, vision,ledSubsystem).withTimeout(0.3));
+    NamedCommands.registerCommand("Intake score", new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kOut, vision,ledSubsystem).withTimeout(0.5));
     NamedCommands.registerCommand("Auto score", new AutoScoreCommand(intake, elevatorSystem, 0, vision));
     NamedCommands.registerCommand("Intake in", new DoubleLidarRoutine(intake, Constants.IntakeConstants.IntakePowerLevels.kFeed, vision, ledSubsystem, climber));
     NamedCommands.registerCommand("Wait for coral", new WaitForCoralCommand(vision));

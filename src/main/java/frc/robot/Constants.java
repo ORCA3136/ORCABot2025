@@ -99,7 +99,7 @@ public final class Constants {
       public static final double kLevel1 = 0;
       public static final double kLevel2 = 11.3; //
       public static final double kLevel3 = 27.5;
-      public static final double kLevel4 = 57; // max = 58
+      public static final double kLevel4 = 55; // max = 58
 
       public static final double kBottomAlgae = 14.6; // 
       public static final double kTopAlgae = 32; // 
@@ -186,7 +186,7 @@ public final class Constants {
     
     public static final class IntakePowerLevels {
       public static final double kOut = -0.9;
-      public static final double kFeed = -0.5;
+      public static final double kFeed = -0.6;
       public static final double kIn = 0.9;
       public static final double kVomit = 0.95;
     }
