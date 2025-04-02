@@ -7,6 +7,8 @@ package frc.robot.commands;
 import frc.robot.Constants;
 import frc.robot.Configs.ClimberConfigs;
 import frc.robot.subsystems.ClimberSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem.Setpoint;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
@@ -19,6 +21,7 @@ public class DefaultIntakeCommand extends Command {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private IntakeSubsystem intakeSubsystem;
   private ClimberSubsystem climberSubsystem;
+  private ElevatorSubsystem elevatorSubsystem;
   //private LaserCan lidarObect;
   private VisionSubsystem vision;
   // private LEDSubsystem led;
@@ -31,13 +34,15 @@ public class DefaultIntakeCommand extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public DefaultIntakeCommand(IntakeSubsystem intakeSubsystem, VisionSubsystem vision, ClimberSubsystem climberSubsystem) {
+  public DefaultIntakeCommand(IntakeSubsystem intakeSubsystem, VisionSubsystem vision, 
+                              ClimberSubsystem climberSubsystem, ElevatorSubsystem elevatorSubsystem) {
     this.climberSubsystem = climberSubsystem;
     this.intakeSubsystem = intakeSubsystem;
+    this.elevatorSubsystem = elevatorSubsystem;
     this.vision = vision;
     // led = ledSubsystem;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(intakeSubsystem);
+    addRequirements(intakeSubsystem, climberSubsystem);
   }
 
   // Called when the command is initially scheduled.
@@ -49,32 +54,41 @@ public class DefaultIntakeCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
     if (climberSubsystem.getClimbingMode()) {
       intakeSubsystem.setIntakePower(0);
     } 
     
     else {
-      if (vision.hasCoralInIntake()) {
-        intakeSubsystem.setIntakePower(0.08);
-        climberSubsystem.setFunnelPower(0);
-        time = Timer.getTimestamp();
-      } else if (vision.hasCoralInFunnel()) {
-        intakeSubsystem.setIntakePower(Constants.IntakeConstants.IntakePowerLevels.kFeed);
-      } else {
-        intakeSubsystem.setIntakePower(0);
-        climberSubsystem.setFunnelPower(0);
-        time = Timer.getTimestamp();
-      } 
 
-      if (!pulse && Timer.getTimestamp() > time + 0.175) {
-        climberSubsystem.setFunnelPower(-0.30);
+      if (elevatorSubsystem.getSetpoint() == Setpoint.kTopAlgae || elevatorSubsystem.getSetpoint() == Setpoint.kBottomAlgae) {
+        climberSubsystem.setFunnelPower(0);
         time = Timer.getTimestamp();
-        pulse = !pulse;
-      } else if (pulse && Timer.getTimestamp() > time + 0.075) {
-        climberSubsystem.setFunnelPower(0.1);
-        time = Timer.getTimestamp();
-        pulse = !pulse;
+        
+        intakeSubsystem.setIntakePower(0.7);
+      }
+
+      else {
+        if (vision.hasCoralInIntake()) {
+          intakeSubsystem.setIntakePower(0.08);
+          climberSubsystem.setFunnelPower(0);
+          time = Timer.getTimestamp();
+        } else if (vision.hasCoralInFunnel()) {
+          intakeSubsystem.setIntakePower(-0.5);
+        } else {
+          intakeSubsystem.setIntakePower(0);
+          climberSubsystem.setFunnelPower(0);
+          time = Timer.getTimestamp();
+        } 
+
+        if (!pulse && Timer.getTimestamp() > time + 0.175) {
+          climberSubsystem.setFunnelPower(-0.30);
+          time = Timer.getTimestamp();
+          pulse = !pulse;
+        } else if (pulse && Timer.getTimestamp() > time + 0.075) {
+          climberSubsystem.setFunnelPower(0.1);
+          time = Timer.getTimestamp();
+          pulse = !pulse;
+        }
       }
     }
   }

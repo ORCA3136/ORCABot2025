@@ -10,6 +10,7 @@ import frc.robot.subsystems.ClimberSubsystem;
 // import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 
 /** An example command that uses an example subsystem. */
 public class RunFunnelCommand extends Command {
@@ -43,6 +44,7 @@ public class RunFunnelCommand extends Command {
   @Override
   public void end(boolean interrupted) {
   climberSubsystem.setFunnelPower(0);
+    Commands.runOnce(() -> Commands.print("Funnel ended; early:" + interrupted));
     // isFinished();
   }
 
