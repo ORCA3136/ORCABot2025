@@ -13,7 +13,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Right to E"
+            "pathName": "Right to E Updated"
           }
         },
         {
@@ -51,7 +51,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "E to Right Source 2.0"
+                        "pathName": "E to Right Source 2.0 Updated"
                       }
                     }
                   ]
