@@ -59,9 +59,14 @@ public class RunClimbSequenceCommand extends Command {
 
     if (m_climber.getClimberPosition() > Constants.ClimberConstants.kClimberOutPos && !isOut) {
       m_climber.setClimberPower(0);
+    } else {
+      m_climber.setClimberPower(Constants.ClimberConstants.kClimberOutSpeed);
     }
+    
     if (m_climber.getClimberPosition() < Constants.ClimberConstants.kClimberInPos && isOut) {
       m_climber.setClimberPower(0);
+    } else {
+      m_climber.setClimberPower(Constants.ClimberConstants.kClimberInSpeed);
     }
   }
 

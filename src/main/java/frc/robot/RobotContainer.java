@@ -183,8 +183,8 @@ public class RobotContainer {
     else
     {
 
-      driveBase.setDefaultCommand(driveFieldOrientedAngularVelocity);
-      intake.setDefaultCommand(new DefaultIntakeCommand(intake, vision, climber));
+      driveBase.setDefaultCommand(driveFieldOrientedWithElevatorDampening);
+      intake.setDefaultCommand(new DefaultIntakeCommand(intake, vision, climber, elevatorSystem));
 
 
 
