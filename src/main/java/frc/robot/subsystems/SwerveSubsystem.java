@@ -229,28 +229,40 @@ public class SwerveSubsystem extends SubsystemBase {
     });
   }
 
-public double getHeadingRadians() {
-  return getHeading().getRadians();
-}
+  public double getHeadingRadians() {
+    return getHeading().getRadians();
+  }
 
-public Rotation2d getHeading() {
-  return swerveDrive.getPose().getRotation();
-}
+  public Rotation2d getHeading() {
+    return swerveDrive.getPose().getRotation();
+  }
 
-public SwerveDrive getSwerveDrive(){
-  return swerveDrive;
-}
+  public SwerveDrive getSwerveDrive(){
+    return swerveDrive;
+  }
 
-public void driveFieldOriented(ChassisSpeeds velocity){
-  swerveDrive.driveFieldOriented(velocity);
-}
+  public void driveFieldOriented(ChassisSpeeds velocity){
+    swerveDrive.driveFieldOriented(velocity);
+  }
 
-public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
-{
-  return run(()->{
-    swerveDrive.driveFieldOriented(velocity.get());
-  });
-}
+  public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
+  {
+    return run(()->{
+      swerveDrive.driveFieldOriented(velocity.get());
+    });
+  }
+
+  public Command driveFieldOrientedElevatorSpeed(Supplier<ChassisSpeeds> velocity, ElevatorSubsystem elevator)
+  {
+    return run(()->{
+      double elevatorHeight = elevator.getElevatorPosition();
+      if (elevatorHeight > Constants.ElevatorConstants.ElevatorSetpoints.kElevatorSlowdownThreshhold)
+          swerveDrive.driveFieldOriented(velocity.get().times(Constants.Limits.ELEVATOR_SPEED_FACTOR));
+      else
+          swerveDrive.driveFieldOriented(velocity.get());
+    });
+  }
+
   /**
    * Gets the current pose (position and rotation) of the robot, as reported by odometry.
    *

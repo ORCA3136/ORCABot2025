@@ -23,6 +23,8 @@ public class ClimberSubsystem extends SubsystemBase {
   private RelativeEncoder climberEncoder = climberMotor.getEncoder();
   private RelativeEncoder funnelEncoder = funnelMotor.getEncoder();
 
+  private boolean startedClimbing = false;
+
 
   /** Creates a new ExampleSubsystem. */
   public ClimberSubsystem() {
@@ -49,6 +51,14 @@ public class ClimberSubsystem extends SubsystemBase {
 
   public boolean isFlipped() {
     return getFunnelPosition() < Constants.ClimberConstants.kFunnelOutPos;
+  }
+
+  public void setClimbingMode(boolean mode) {
+    startedClimbing = mode;
+  }
+
+  public boolean getClimbingMode() {
+    return startedClimbing;
   }
   
 

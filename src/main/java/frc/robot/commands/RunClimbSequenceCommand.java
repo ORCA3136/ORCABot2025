@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 /** A command that uses a Climber subsystem. */
 public class RunClimbSequenceCommand extends Command {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final ClimberSubsystem m_subsystem;
+  private final ClimberSubsystem m_climber;
   private final ElevatorSubsystem m_elevator;
   private boolean flipped;
   private boolean isOut;
@@ -23,7 +23,7 @@ public class RunClimbSequenceCommand extends Command {
    * @param subsystem The subsystem used by this command.
    */
   public RunClimbSequenceCommand(ClimberSubsystem subsystem, ElevatorSubsystem elevator, boolean isOut) {
-    m_subsystem = subsystem;
+    m_climber = subsystem;
     m_elevator = elevator;
     this.isOut = isOut;
     addRequirements(subsystem, elevator);
@@ -32,15 +32,20 @@ public class RunClimbSequenceCommand extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if (!m_subsystem.isFlipped()) {
-      m_subsystem.setFunnelPower(Constants.ClimberConstants.kFunnelSpeed);
-    } 
+    m_climber.setClimbingMode(true);
+
+    if (!m_climber.isFlipped()) {
+      m_climber.setFunnelPower(Constants.ClimberConstants.kFunnelSpeed);
+    } else {
+      m_climber.setFunnelPower(0);
+    }
+
     m_elevator.setWristTarget(Constants.WristConstants.WristSetpoints.kClimb);
 
     if (isOut) {
-      m_subsystem.setClimberPower(Constants.ClimberConstants.kClimberInSpeed);
+      m_climber.setClimberPower(Constants.ClimberConstants.kClimberInSpeed);
     } else {
-      m_subsystem.setClimberPower(Constants.ClimberConstants.kClimberOutSpeed);
+      m_climber.setClimberPower(Constants.ClimberConstants.kClimberOutSpeed);
     }
     
   }
@@ -48,33 +53,33 @@ public class RunClimbSequenceCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (m_subsystem.isFlipped()) {
-      m_subsystem.setFunnelPower(0);
+    if (m_climber.isFlipped()) {
+      m_climber.setFunnelPower(0);
     }
 
-    if (m_subsystem.getClimberPosition() > Constants.ClimberConstants.kClimberOutPos && !isOut) {
-      m_subsystem.setClimberPower(0);
+    if (m_climber.getClimberPosition() > Constants.ClimberConstants.kClimberOutPos && !isOut) {
+      m_climber.setClimberPower(0);
     }
-    if (m_subsystem.getClimberPosition() < Constants.ClimberConstants.kClimberInPos && isOut) {
-      m_subsystem.setClimberPower(0);
+    if (m_climber.getClimberPosition() < Constants.ClimberConstants.kClimberInPos && isOut) {
+      m_climber.setClimberPower(0);
     }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_subsystem.setClimberPower(0);
-    m_subsystem.setFunnelPower (0);
+    m_climber.setClimberPower(0);
+    m_climber.setFunnelPower (0);
 
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_subsystem.isFlipped() 
+    return m_climber.isFlipped() 
     && 
-    ((m_subsystem.getClimberPosition() > Constants.ClimberConstants.kClimberOutPos && !isOut)
+    ((m_climber.getClimberPosition() > Constants.ClimberConstants.kClimberOutPos && !isOut)
     ||
-    (m_subsystem.getClimberPosition() < Constants.ClimberConstants.kClimberInPos && isOut));
+    (m_climber.getClimberPosition() < Constants.ClimberConstants.kClimberInPos && isOut));
   }
 }

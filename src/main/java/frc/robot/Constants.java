@@ -105,7 +105,7 @@ public final class Constants {
       public static final double kTopAlgae = 37.8; // 
       public static final double kProcessor = 3.6;  // 
 
-      
+      public static final double kElevatorSlowdownThreshhold = 40;
     }
     public static final class ElevatorPowerLevels {
       public static final double kDown = -0.1;
@@ -218,6 +218,7 @@ public final class Constants {
     public static final double kWristMaxAngle = 200; // degrees  110 untested; was 94
 
     public static final double MAX_SPEED = Units.feetToMeters(10); // theoretical: 14.63 Ft/s
+    public static final double ELEVATOR_SPEED_FACTOR = 0.5; // Used to scale drive speed when elevator is above the threshold
     public static final double MEDIUM_SPEED_FACTOR = 0.42;
     public static final double PATHPLANNER_MAX_SPEED = Units.feetToMeters(5);
   }

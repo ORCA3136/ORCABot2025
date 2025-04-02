@@ -125,10 +125,10 @@ public class RobotContainer {
     SwerveInputStream driveRobotOrientedReefSpeed = driveRobotOriented.copy().scaleTranslation(0.2);
 
     Command driveFieldOrientedDirectAngle = driveBase.driveFieldOriented(driveDirectAngle);
-    Command driveFieldOrientedAngularVelocity = driveBase.driveFieldOriented(driveRegular);
-    Command driveFieldOrientedAngularVelocitySlow = driveBase.driveFieldOriented(driveAngularVelocitySlow);
-    
-    Command driveRobotOrientedAngularVelocitySuperSlow = driveBase.driveFieldOriented(driveRobotOrientedReefSpeed);
+    Command driveFieldOrientedAngularVelocity = driveBase.driveFieldOriented(driveRegular); // Normal Drive
+    Command driveFieldOrientedWithElevatorDampening = driveBase.driveFieldOrientedElevatorSpeed(driveRegular, elevatorSystem); // Normal drive with elevator dampening
+    Command driveFieldOrientedAngularVelocitySlow = driveBase.driveFieldOriented(driveAngularVelocitySlow); // Right stick
+    Command driveRobotOrientedAngularVelocitySuperSlow = driveBase.driveFieldOriented(driveRobotOrientedReefSpeed); // Left stick
 
     
 
@@ -182,7 +182,7 @@ public class RobotContainer {
     else
     {
 
-      driveBase.setDefaultCommand(driveFieldOrientedAngularVelocity);
+      driveBase.setDefaultCommand(driveFieldOrientedWithElevatorDampening);
       intake.setDefaultCommand(new DefaultIntakeCommand(intake, vision, climber));
 
 

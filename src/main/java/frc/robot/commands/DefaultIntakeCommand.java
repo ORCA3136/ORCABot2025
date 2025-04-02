@@ -50,26 +50,32 @@ public class DefaultIntakeCommand extends Command {
   @Override
   public void execute() {
 
-    if (vision.hasCoralInIntake()) {
-      intakeSubsystem.setIntakePower(0.08);
-      climberSubsystem.setFunnelPower(0);
-      time = Timer.getTimestamp();
-    } else if (vision.hasCoralInFunnel()) {
-      intakeSubsystem.setIntakePower(Constants.IntakeConstants.IntakePowerLevels.kFeed);
-    } else {
+    if (climberSubsystem.getClimbingMode()) {
       intakeSubsystem.setIntakePower(0);
-      climberSubsystem.setFunnelPower(0);
-      time = Timer.getTimestamp();
     } 
+    
+    else {
+      if (vision.hasCoralInIntake()) {
+        intakeSubsystem.setIntakePower(0.08);
+        climberSubsystem.setFunnelPower(0);
+        time = Timer.getTimestamp();
+      } else if (vision.hasCoralInFunnel()) {
+        intakeSubsystem.setIntakePower(Constants.IntakeConstants.IntakePowerLevels.kFeed);
+      } else {
+        intakeSubsystem.setIntakePower(0);
+        climberSubsystem.setFunnelPower(0);
+        time = Timer.getTimestamp();
+      } 
 
-    if (!pulse && Timer.getTimestamp() > time + 0.175) {
-      climberSubsystem.setFunnelPower(-0.30);
-      time = Timer.getTimestamp();
-      pulse = !pulse;
-    } else if (pulse && Timer.getTimestamp() > time + 0.075) {
-      climberSubsystem.setFunnelPower(0.1);
-      time = Timer.getTimestamp();
-      pulse = !pulse;
+      if (!pulse && Timer.getTimestamp() > time + 0.175) {
+        climberSubsystem.setFunnelPower(-0.30);
+        time = Timer.getTimestamp();
+        pulse = !pulse;
+      } else if (pulse && Timer.getTimestamp() > time + 0.075) {
+        climberSubsystem.setFunnelPower(0.1);
+        time = Timer.getTimestamp();
+        pulse = !pulse;
+      }
     }
   }
 
@@ -77,7 +83,9 @@ public class DefaultIntakeCommand extends Command {
   @Override
   public void end(boolean interrupted) {
     intakeSubsystem.setIntakePower(0);
-    climberSubsystem.setFunnelPower(0);
+    if (!climberSubsystem.getClimbingMode()) {
+      climberSubsystem.setFunnelPower(0);
+    }
   }
 
   // Returns true when the command should end.
