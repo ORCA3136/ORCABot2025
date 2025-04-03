@@ -42,7 +42,7 @@ public class DefaultIntakeCommand extends Command {
     this.vision = vision;
     // led = ledSubsystem;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(intakeSubsystem, climberSubsystem);
+    addRequirements(intakeSubsystem);
   }
 
   // Called when the command is initially scheduled.

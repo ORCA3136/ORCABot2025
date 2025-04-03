@@ -28,7 +28,8 @@ public class RunClimberCommand extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-  climberSubsystem.setClimberPower(powerSetPoint);
+    climberSubsystem.setClimbingMode(true);
+    climberSubsystem.setClimberPower(powerSetPoint);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

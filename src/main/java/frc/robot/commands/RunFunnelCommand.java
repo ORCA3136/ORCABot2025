@@ -33,7 +33,8 @@ public class RunFunnelCommand extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-  climberSubsystem.setFunnelPower(powerSetPoint);
+    climberSubsystem.setClimbingMode(true);
+    climberSubsystem.setFunnelPower(powerSetPoint);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
