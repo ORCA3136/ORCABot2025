@@ -99,7 +99,7 @@ public final class Constants {
       public static final double kLevel1 = 0;
       public static final double kLevel2 = 11.3; //
       public static final double kLevel3 = 27.5;
-      public static final double kLevel4 = 55.5; // max = 58
+      public static final double kLevel4 = 56; // max = 58
 
       public static final double kBottomAlgae = 14.6; // 
       public static final double kTopAlgae = 32; // 
@@ -145,7 +145,7 @@ public final class Constants {
       public static final int kProcessor = 183;
       public static final int kAlgae1 = 132;
       public static final int kAlgae2 = 132;
-      public static final int kClimb = 13;
+      public static final int kClimb = 17;
     }
 
     public static final class WristPowerLevels {
@@ -198,8 +198,8 @@ public final class Constants {
     public static final double kClimberInSpeed = -1;
     public static final double kClimberOutSpeed = 1;
 
-    public static final double kClimberInPos = -90;
-    public static final double kClimberOutPos = 155;
+    public static final double kClimberInPos = -60;
+    public static final double kClimberOutPos = 192;
     public static final double kFunnelOutPos = -40;
   }
 

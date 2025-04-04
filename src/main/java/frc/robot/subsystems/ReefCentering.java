@@ -73,10 +73,10 @@ public class ReefCentering {
         //   x += FieldPoses.L3ScoringOffset * Math.cos(rot);
         //   y += FieldPoses.L3ScoringOffset * Math.sin(rot);
         //   break;
-        // case kLevel4:
-        //   x += FieldPoses.L4ScoringOffset * Math.cos(rot);
-        //   y += FieldPoses.L4ScoringOffset * Math.sin(rot);
-        //   break;
+        case kLevel4:
+          x += FieldPoses.L4ScoringOffset * Math.cos(rot);
+          y += FieldPoses.L4ScoringOffset * Math.sin(rot);
+          break;
         case kTopAlgae:
           x += FieldPoses.topAlgaeScoringOffset * Math.cos(rot);
           y += FieldPoses.topAlgaeScoringOffset * Math.sin(rot);
