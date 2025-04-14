@@ -90,7 +90,7 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    DriverStation.silenceJoystickConnectionWarning(true);
+    DriverStation.silenceJoystickConnectionWarning(false);
 
     // Configure the trigger bindings
     configureBindings();
@@ -115,22 +115,15 @@ public class RobotContainer {
     SwerveInputStream driveAngularVelocitySlow = driveAngularVelocity.copy().scaleTranslation(Constants.Limits.MEDIUM_SPEED_FACTOR);
 
   
-    SwerveInputStream driveDirectAngle = driveAngularVelocity.copy()
-                                                            .withControllerHeadingAxis(m_driverController::getRightX, 
-                                                            m_driverController::getRightY).headingWhile(false);
-                                                          //withControllerHeadingAxis(m_driverController::getRightX, m_driverController::getRightX  <- change this to Y for special mode
-
     SwerveInputStream driveRobotOriented = driveAngularVelocity.copy().robotRelative(true)
                                                              .allianceRelativeControl(false);
-    SwerveInputStream driveRobotOrientedReefSpeed = driveRobotOriented.copy().scaleTranslation(0.2);
-    SwerveInputStream driveRobotOrientedReefFast  = driveRobotOriented.copy().scaleTranslation(2);
+    SwerveInputStream driveRobotOrientedSlow = driveRobotOriented.copy().scaleTranslation(0.2);
+    SwerveInputStream driveRobotOrientedFast  = driveRobotOriented.copy().scaleTranslation(2);
 
-    Command driveFieldOrientedDirectAngle = driveBase.driveFieldOriented(driveDirectAngle);
-    Command driveFieldOrientedAngularVelocity = driveBase.driveFieldOriented(driveRegular); // Normal Drive
     Command driveFieldOrientedWithElevatorDampening = driveBase.driveFieldOrientedElevatorSpeed(driveRegular, elevatorSystem); // Normal drive with elevator dampening
     Command driveFieldOrientedAngularVelocitySlow = driveBase.driveFieldOriented(driveAngularVelocitySlow); // Right stick
-    Command driveRobotOrientedAngularVelocitySuperSlow = driveBase.driveFieldOriented(driveRobotOrientedReefSpeed); // Left stick
-    Command driveRobotOrientedAngularVelocitySuperFast = driveBase.driveFieldOriented(driveRobotOrientedReefFast);
+    Command driveRobotOrientedAngularVelocitySuperSlow = driveBase.driveFieldOriented(driveRobotOrientedSlow); // Left stick
+    Command driveRobotOrientedAngularVelocitySuperFast = driveBase.driveFieldOriented(driveRobotOrientedFast);
     
 
     SwerveInputStream driveAngularVelocitySim = SwerveInputStream.of(driveBase.getSwerveDrive(),
@@ -142,15 +135,10 @@ public class RobotContainer {
                                                 .allianceRelativeControl(true);
     // Derive the heading axis with math!
     SwerveInputStream driveDirectAngleSim = driveAngularVelocitySim.copy()
-                                                                      .withControllerHeadingAxis(() -> Math.sin(
-                                                                                                      m_driverController.getRawAxis(
-                                                                                                          4) * Math.PI) * (Math.PI * 2),
-                                                                                                  () -> Math.cos(
-                                                                                                      m_driverController.getRawAxis(
-                                                                                                          4) * Math.PI) *
-                                                                                                        (Math.PI * 2))
-                                                                      .headingWhile(true);
-
+                                              .withControllerHeadingAxis(
+                                              () -> Math.sin(m_driverController.getRawAxis(4) * Math.PI) * (Math.PI * 2),
+                                              () -> Math.cos(m_driverController.getRawAxis(4) * Math.PI) * (Math.PI * 2))
+                                              .headingWhile(true);
     Command driveFieldOrientedDirectAngleSim = driveBase.driveFieldOriented(driveDirectAngleSim);
 
 
@@ -159,7 +147,6 @@ public class RobotContainer {
                                             () -> 0.15, 
                                             () -> 0)
                                             .allianceRelativeControl(false);
-
     Command driveForwardAutoCommand = driveBase.driveFieldOriented(driveForwardAuto);
 
   /**
@@ -174,9 +161,7 @@ public class RobotContainer {
   private void configureBindings() {
     if (RobotBase.isSimulation())
     {
-      driveBase.setDefaultCommand(RobotBase.isSimulation() ? 
-                                driveFieldOrientedDirectAngle :
-                                driveFieldOrientedDirectAngleSim);
+      driveBase.setDefaultCommand(driveFieldOrientedDirectAngleSim);
     
       m_driverController.start().onTrue(Commands.runOnce(() -> driveBase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
     }
