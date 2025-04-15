@@ -47,7 +47,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class SwerveSubsystem extends SubsystemBase {
+public class SwerveSubsystemSim extends SubsystemBase {
   
   SwerveDrive swerveDrive;
 
@@ -55,7 +55,7 @@ public class SwerveSubsystem extends SubsystemBase {
   
   private final Pigeon2 pigeon2 = new Pigeon2(9, "rio"); // Pigeon is on roboRIO CAN Bus with device ID 9
 
-  public SwerveSubsystem(File directory, VisionSubsystem vision) {
+  public SwerveSubsystemSim(File directory, VisionSubsystem vision) {
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.LOW;
     this.vision = vision;
 
@@ -86,7 +86,7 @@ public class SwerveSubsystem extends SubsystemBase {
     setupPathPlanner();
   }
 
-  public SwerveSubsystem(File directory) {
+  public SwerveSubsystemSim(File directory) {
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.LOW;
 
     try
@@ -381,7 +381,7 @@ public class SwerveSubsystem extends SubsystemBase {
     NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Robot Velocity y").setNumber(swerveDrive.getRobotVelocity().vyMetersPerSecond);
 
 
-    vision.updateLimelightYaw(this);
+    // vision.updateLimelightYaw(this);
     // vision.updatePosesEstimator(swerveDrive);
     vision.updatePosesEstimatorMT2(swerveDrive);
     swerveDrive.updateOdometry(); // Might be redundant

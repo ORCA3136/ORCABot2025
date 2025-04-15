@@ -36,6 +36,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.ReefCentering;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.SwerveSubsystemSim;
 import frc.robot.subsystems.VisionSubsystem;
 import swervelib.SwerveInputStream;
 import edu.wpi.first.hal.simulation.DriverStationDataJNI;
@@ -71,14 +72,16 @@ import edu.wpi.first.wpilibj.DriverStation;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private VisionSubsystem vision = new VisionSubsystem();
-  private final SwerveSubsystem driveBase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/ORCA2025"), vision); // where to configure the robot or "choose" it
-  private IntakeSubsystem intake = new IntakeSubsystem();
-  private ElevatorSubsystem elevatorSystem = new ElevatorSubsystem(vision);
-  private ClimberSubsystem climber = new ClimberSubsystem();
-  private LEDSubsystem ledSubsystem = new LEDSubsystem();
-  private ReefCentering reefCentering = new ReefCentering(driveBase, elevatorSystem);
+  // private VisionSubsystem vision = new VisionSubsystem();
+  private SwerveSubsystem driveBase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/ORCA2025")); // where to configure the robot or "choose" it
+  // private IntakeSubsystem intake = new IntakeSubsystem();
+  // private ElevatorSubsystem elevatorSystem = new ElevatorSubsystem(vision);
+  // private ClimberSubsystem climber = new ClimberSubsystem();
+  // private LEDSubsystem ledSubsystem = new LEDSubsystem();
+  // private ReefCentering reefCentering = new ReefCentering(driveBase, elevatorSystem);
   private final SendableChooser<Command> autoChooser;
+
+  private SwerveSubsystemSim driveBaseSim = new SwerveSubsystemSim(new File(Filesystem.getDeployDirectory(), "swerve/ORCA2025"));
 
 
 
@@ -120,7 +123,7 @@ public class RobotContainer {
     SwerveInputStream driveRobotOrientedSlow = driveRobotOriented.copy().scaleTranslation(0.2);
     SwerveInputStream driveRobotOrientedFast  = driveRobotOriented.copy().scaleTranslation(2);
 
-    Command driveFieldOrientedWithElevatorDampening = driveBase.driveFieldOrientedElevatorSpeed(driveRegular, elevatorSystem); // Normal drive with elevator dampening
+    // Command driveFieldOrientedWithElevatorDampening = driveBase.driveFieldOrientedElevatorSpeed(driveRegular, elevatorSystem); // Normal drive with elevator dampening
     Command driveFieldOrientedAngularVelocitySlow = driveBase.driveFieldOriented(driveAngularVelocitySlow); // Right stick
     Command driveRobotOrientedAngularVelocitySuperSlow = driveBase.driveFieldOriented(driveRobotOrientedSlow); // Left stick
     Command driveRobotOrientedAngularVelocitySuperFast = driveBase.driveFieldOriented(driveRobotOrientedFast);
@@ -165,6 +168,8 @@ public class RobotContainer {
     
       m_driverController.start().onTrue(Commands.runOnce(() -> driveBase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
     }
+
+    /*
     else
     {
 
@@ -197,15 +202,6 @@ public class RobotContainer {
       m_driverController.rightBumper().whileTrue(new DoubleLidarRoutine(intake, Constants.IntakeConstants.IntakePowerLevels.kFeed, vision, ledSubsystem, climber));
       
       m_driverController.leftBumper().onTrue(new AutoScoreCommand(intake, elevatorSystem, Constants.IntakeConstants.IntakePowerLevels.kOut, vision));
-
-
-      // m_secondaryController.button(1).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel4)));
-      // m_secondaryController.button(2).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel3)));
-      // m_secondaryController.button(3).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel2)));
-      // m_secondaryController.button(4).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kFeederStation)));
-      // m_secondaryController.button(5).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kTopAlgae)));
-      // m_secondaryController.button(6).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kProcessor)));
-      // m_secondaryController.button(9).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kBottomAlgae)));
       
       m_secondaryController.button(1).whileTrue(Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kLevel4)));
       m_secondaryController.button(2).whileTrue(Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kLevel3)));
@@ -222,9 +218,11 @@ public class RobotContainer {
       m_secondaryController.button(12).whileTrue(Commands.runOnce(() -> elevatorSystem.updateMode()));
       m_secondaryController.axisGreaterThan(0, -0.2).onTrue(new RunClimbSequenceCommand(climber, elevatorSystem, false));
     }
+    */
   }
 
   private void configureNamedCommands() {
+    /*
     NamedCommands.registerCommand("Intake score", new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kOut, vision,ledSubsystem).withTimeout(0.5));
     NamedCommands.registerCommand("Auto score", new AutoScoreCommand(intake, elevatorSystem, 0, vision));
     NamedCommands.registerCommand("Intake in", new DoubleLidarRoutine(intake, Constants.IntakeConstants.IntakePowerLevels.kFeed, vision, ledSubsystem, climber));
@@ -240,6 +238,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Elevator Processor", Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kProcessor)));
     NamedCommands.registerCommand("Hold Algae", Commands.runOnce(() -> elevatorSystem.setElevatorPower(-0.5)).handleInterrupt(() -> elevatorSystem.setElevatorPower(0)));
     NamedCommands.registerCommand("Release Algae", Commands.runOnce(() -> elevatorSystem.setElevatorPower(0.5)).withTimeout(1).handleInterrupt(() -> elevatorSystem.setElevatorPower(0)));
+    */
   }
 
   /**
@@ -249,7 +248,8 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     
-    return autoChooser.getSelected();
+    return null;
+    // return autoChooser.getSelected();
 
   }
 }
