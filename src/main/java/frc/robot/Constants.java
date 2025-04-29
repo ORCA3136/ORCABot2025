@@ -139,7 +139,7 @@ public final class Constants {
     public static final double kWristMinAngle = 0.5; // revolutions
     public static final double kWristMaxAngle = 94; //rev
 
-    public static final double MAX_SPEED = Units.feetToMeters(4.5);  // theoretical: 14.63 Ft/s
+    public static final double MAX_SPEED = Units.feetToMeters(7);  // theoretical: 14.63 Ft/s
   }
 
 
