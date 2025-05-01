@@ -374,7 +374,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     // wristPID(wristCurrentTarget);
     wristClosedLoopController.setReference(
         pos, ControlType.kPosition);
-  }
+  } 
 
   public void elevatorMoveToSetpoint(double pos) {
     elevatorClosedLoopController.setReference(
@@ -436,7 +436,7 @@ public class ElevatorSubsystem extends SubsystemBase {
    * Command to set the subsystem setpoint. This will set the arm and elevator to their predefined
    * positions for the given setpoint.
    */
-  public void setSetpointCommand(Setpoint setpoint) {  // see wrist subsystem counterpart
+  public void setSetpointCommand(Setpoint setpoint) { 
     //return this.runOnce(
         //() -> {
           if (currentLevel != setpoint || currentLevel == null) {
@@ -543,6 +543,10 @@ public class ElevatorSubsystem extends SubsystemBase {
       }
     }
     manualMode = !manualMode;
+  }
+
+  public void setMode(boolean bool) {
+    manualMode = bool;
   }
   
   public static void updateDistanceToReef(double distance) {

@@ -186,9 +186,12 @@ public final class Constants {
     
     public static final class IntakePowerLevels {
       public static final double kOut = -0.9;
-      public static final double kFeed = -0.6;
+      public static final double kFeed = -0.6;  // Algae out
       public static final double kIn = 0.9;
-      public static final double kVomit = 0.95;
+      public static final double kVomit = 0.95; // Algae in
+      public static final double kAlgaeIn = 0.95;
+      public static final double kAlgaeHold = 0.5;
+      public static final double kAlgaeOut = -0.95;
     }
   }
 
@@ -207,7 +210,7 @@ public final class Constants {
 
     public static final double kElevatorSafetyThreshold = 5.0;
 
-    public static final double kElevatorMaxHeight = 96;     //0.948;
+    public static final double kElevatorMaxHeight = 61;     //0.948;
     public static final double kElevatorMinHeight = 0.0;
 
 
