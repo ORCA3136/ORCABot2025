@@ -28,6 +28,7 @@ import frc.robot.commands.RunRecursiveIntakeRoutine;
 import frc.robot.commands.RunIntakeScoreCommand;
 import frc.robot.commands.RunVomitCommand;
 import frc.robot.commands.RunWristCommand;
+import frc.robot.commands.UppercutCommand;
 import frc.robot.commands.WaitForCoralCommand;
 import frc.robot.commands.ZeroElevatorCommand;
 import frc.robot.subsystems.ClimberSubsystem;
@@ -199,7 +200,7 @@ public class RobotContainer {
       m_driverController.b().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kOut));
       m_driverController.x().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kIn));
 
-      m_driverController.povDown().whileTrue(Commands.runOnce(() -> elevatorSystem.elevatorMoveToSetpoint(59)));
+      m_driverController.povDown().whileTrue(new UppercutCommand(elevatorSystem, intake));
       m_driverController.povUp().whileTrue(reefCentering.createPathCommand(ReefCentering.Side.Middle).until(() -> reefCentering.haveConditionsChanged()).repeatedly());
       m_driverController.povLeft().whileTrue(reefCentering.createPathCommand(ReefCentering.Side.Left).until(() -> reefCentering.haveConditionsChanged()).repeatedly());
       m_driverController.povRight().whileTrue(reefCentering.createPathCommand(ReefCentering.Side.Right).until(() -> reefCentering.haveConditionsChanged()).repeatedly());

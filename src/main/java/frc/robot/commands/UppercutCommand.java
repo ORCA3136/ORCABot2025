@@ -45,7 +45,9 @@ public class UppercutCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    elevatorSubsystem.elevatorMoveToSetpoint(59);
+    if (elevatorSubsystem.getWristPosition() > 25) {
+      elevatorSubsystem.elevatorMoveToSetpoint(59);
+    }
     if (elevatorSubsystem.getElevatorPosition() > 55) {
       elevatorSubsystem.wristMoveToSetpoint(10);
       intake.setIntakePower(Constants.IntakeConstants.IntakePowerLevels.kAlgaeOut);

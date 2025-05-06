@@ -381,6 +381,11 @@ public class ElevatorSubsystem extends SubsystemBase {
       pos, ControlType.kPosition);
   }
 
+  public void elevatorMoveAgressivelyToSetpoint(double pos) {
+    leftElevator.set(Math.signum(getElevatorPosition() - pos)); //TODO
+
+  }
+
   /** Set the elevator motor power in the range of [-1, 1]. */
   public void setElevatorPower(double power) {
     leftElevator.set(power);
@@ -647,7 +652,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     if ( (getElevatorPosition() < 0 || !elevatorReset) && !elevatorLimitSwitch.get()) {
       // Zero the encoder only when the limit switch is switches from "unpressed" to "pressed" to
       // prevent constant zeroing while pressed
-      new PrintCommand("RESETTING ELEVATOR");
+      // new PrintCommand("RESETTING ELEVATOR");
       zeroElevator();    
       elevatorReset = true;  
     } else if (elevatorLimitSwitch.get()) {
