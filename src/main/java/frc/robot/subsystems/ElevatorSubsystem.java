@@ -381,10 +381,10 @@ public class ElevatorSubsystem extends SubsystemBase {
       pos, ControlType.kPosition);
   }
 
-  public void elevatorMoveAgressivelyToSetpoint(double pos) {
-    leftElevator.set(Math.signum(getElevatorPosition() - pos)); //TODO
+  // public void elevatorMoveAgressivelyToSetpoint(double pos) {
+  //   leftElevator.set(Math.signum(getElevatorPosition() - pos)); //TODO?
 
-  }
+  // }
 
   /** Set the elevator motor power in the range of [-1, 1]. */
   public void setElevatorPower(double power) {

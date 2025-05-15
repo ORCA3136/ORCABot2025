@@ -38,7 +38,8 @@ public class UppercutCommand extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    elevatorSubsystem.wristMoveToSetpoint(Constants.WristConstants.WristSetpoints.kAlgae1);
+    elevatorSubsystem.wristMoveToSetpoint(100); // Constants.WristConstants.WristSetpoints.kAlgae1 //135
+    intake.setIntakePower(Constants.IntakeConstants.IntakePowerLevels.kAlgaeHold);
     // elevatorSubsystem.setMode(true);
   }
 
@@ -46,11 +47,17 @@ public class UppercutCommand extends Command {
   @Override
   public void execute() {
     if (elevatorSubsystem.getWristPosition() > 25) {
-      elevatorSubsystem.elevatorMoveToSetpoint(59);
+      elevatorSubsystem.setElevatorManuallyMoving(true);
+      elevatorSubsystem.setElevatorPower(0.9);
     }
-    if (elevatorSubsystem.getElevatorPosition() > 55) {
+    if (elevatorSubsystem.getElevatorPosition() > 45) {
       elevatorSubsystem.wristMoveToSetpoint(10);
       intake.setIntakePower(Constants.IntakeConstants.IntakePowerLevels.kAlgaeOut);
+    }
+    if (elevatorSubsystem.getElevatorPosition() > 58) {
+      elevatorSubsystem.setElevatorPower(-0.1);
+      
+      elevatorSubsystem.setElevatorPower(0);
     }
   }
 
@@ -64,6 +71,6 @@ public class UppercutCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (elevatorSubsystem.getElevatorPosition() >= Constants.Limits.kElevatorMaxHeight-10) && (elevatorSubsystem.getWristPosition() < 15);
+    return (elevatorSubsystem.getElevatorPosition() >= Constants.Limits.kElevatorMaxHeight-5) && (elevatorSubsystem.getWristPosition() < 15);
   }
 }

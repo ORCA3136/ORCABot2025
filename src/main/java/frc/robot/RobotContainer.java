@@ -18,6 +18,7 @@ import frc.robot.commands.CenterLimelightOnReef;
 import frc.robot.commands.DefaultIntakeCommand;
 import frc.robot.commands.DoubleLidarRoutine;
 import frc.robot.commands.DriveToPoseCommand;
+import frc.robot.commands.GoToScoreAlgaeCommand;
 import frc.robot.commands.RunIntakeRoutine;
 import frc.robot.commands.RunClimbSequenceCommand;
 import frc.robot.commands.RunClimberCommand;
@@ -48,6 +49,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -187,7 +189,7 @@ public class RobotContainer {
       driveBase.setDefaultCommand(driveFieldOrientedWithElevatorDampening);
       intake.setDefaultCommand(new DefaultIntakeCommand(intake, vision, climber, elevatorSystem));
 
-
+      
 
       m_driverController.start().onTrue(Commands.runOnce(driveBase::zeroGyro));
       m_driverController.back().whileTrue(new ZeroElevatorCommand(elevatorSystem));
@@ -200,7 +202,7 @@ public class RobotContainer {
       m_driverController.b().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kOut));
       m_driverController.x().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kIn));
 
-      m_driverController.povDown().whileTrue(new UppercutCommand(elevatorSystem, intake));
+      // m_driverController.povDown()  button .whileTrue(new UppercutCommand(elevatorSystem, intake));
       m_driverController.povUp().whileTrue(reefCentering.createPathCommand(ReefCentering.Side.Middle).until(() -> reefCentering.haveConditionsChanged()).repeatedly());
       m_driverController.povLeft().whileTrue(reefCentering.createPathCommand(ReefCentering.Side.Left).until(() -> reefCentering.haveConditionsChanged()).repeatedly());
       m_driverController.povRight().whileTrue(reefCentering.createPathCommand(ReefCentering.Side.Right).until(() -> reefCentering.haveConditionsChanged()).repeatedly());
@@ -214,7 +216,9 @@ public class RobotContainer {
       
       m_driverController.leftBumper().onTrue(new AutoScoreCommand(intake, elevatorSystem, Constants.IntakeConstants.IntakePowerLevels.kOut, vision));
 
+      m_driverController.povDown().whileTrue(new GoToScoreAlgaeCommand(driveBase));
 
+      // m_secondaryController.button(0).whileTrue(   driveBase.driveToPose(new Pose2d(new Translation2d(7.775, driveBase.getPose().getY()), new Rotation2d(180)), null) );
       // m_secondaryController.button(1).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel4)));
       // m_secondaryController.button(2).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel3)));
       // m_secondaryController.button(3).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel2)));
@@ -228,12 +232,13 @@ public class RobotContainer {
       m_secondaryController.button(3).whileTrue(Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kLevel2)));
       m_secondaryController.button(4).whileTrue(Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kFeederStation)));
       m_secondaryController.button(5).whileTrue(Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kTopAlgae)));
-      //m_secondaryController.button(6).whileTrue(driveRobotOrientedAngularVelocitySuperFast);
+      //m_secondaryController.button(10).whileTrue(driveRobotOrientedAngularVelocitySuperFast);
       m_secondaryController.button(9).whileTrue(Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kBottomAlgae)));
+      m_secondaryController.button(6).whileTrue(new UppercutCommand(elevatorSystem, intake));
       
       //m_secondaryController.button(7).whileTrue(new RunFunnelCommand(climber, Constants.ClimberConstants.kFunnelSpeed));
-      //m_secondaryController.button(8).whileTrue(new CappnCrunchCommand(climber, Constants.ClimberConstants.kClimberInSpeed).withTimeout(0.05));
-      //m_secondaryController.button(10).whileTrue(new RunClimberCommand(climber, Constants.ClimberConstants.kClimberInSpeed));
+      //m_secondaryController.button(6).whileTrue(new CappnCrunchCommand(climber, Constants.ClimberConstants.kClimberInSpeed).withTimeout(0.05));
+      //m_secondaryController.button(8).whileTrue(new RunClimberCommand(climber, Constants.ClimberConstants.kClimberInSpeed));
       //m_secondaryController.button(11).whileTrue(new RunClimberCommand(climber, Constants.ClimberConstants.kClimberOutSpeed));
       m_secondaryController.button(12).whileTrue(Commands.runOnce(() -> elevatorSystem.updateMode()));
       //m_secondaryController.axisGreaterThan(0, -0.2).onTrue(new RunClimbSequenceCommand(climber, elevatorSystem, false));
