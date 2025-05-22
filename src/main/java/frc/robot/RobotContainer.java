@@ -73,15 +73,15 @@ import edu.wpi.first.wpilibj.DriverStation;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   // private VisionSubsystem vision = new VisionSubsystem();
-  private SwerveSubsystem driveBase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/ORCA2025")); // where to configure the robot or "choose" it
+  // private SwerveSubsystem driveBase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/ORCA2025")); // where to configure the robot or "choose" it
   // private IntakeSubsystem intake = new IntakeSubsystem();
   // private ElevatorSubsystem elevatorSystem = new ElevatorSubsystem(vision);
   // private ClimberSubsystem climber = new ClimberSubsystem();
   // private LEDSubsystem ledSubsystem = new LEDSubsystem();
   // private ReefCentering reefCentering = new ReefCentering(driveBase, elevatorSystem);
-  private final SendableChooser<Command> autoChooser;
+  // private final SendableChooser<Command> autoChooser;
 
-  private SwerveSubsystemSim driveBaseSim = new SwerveSubsystemSim(new File(Filesystem.getDeployDirectory(), "swerve/ORCA2025"));
+  private SwerveSubsystemSim driveBaseSim = new SwerveSubsystemSim(new File(Filesystem.getDeployDirectory(), "swerve/ORCA2025Sim"));
 
 
 
@@ -93,18 +93,19 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    DriverStation.silenceJoystickConnectionWarning(false);
+    DriverStation.silenceJoystickConnectionWarning(true);
 
     // Configure the trigger bindings
     configureBindings();
     configureNamedCommands();
     
-    autoChooser = AutoBuilder.buildAutoChooser("default auto"); //pick a default
-    SmartDashboard.putData("Auto Chooser", autoChooser);
+    // autoChooser = AutoBuilder.buildAutoChooser("default auto"); //pick a default
+    // SmartDashboard.putData("Auto Chooser", autoChooser);
 
-    autoChooser.setDefaultOption("default auto", driveForwardAutoCommand);
+    // autoChooser.setDefaultOption("default auto", driveForwardAutoCommand);
     }
     
+    /*
     SwerveInputStream driveAngularVelocity  = SwerveInputStream.of(driveBase.getSwerveDrive(),
                                             () -> -m_driverController.getLeftY(), 
                                             () -> -m_driverController.getLeftX())
@@ -128,29 +129,28 @@ public class RobotContainer {
     Command driveRobotOrientedAngularVelocitySuperSlow = driveBase.driveFieldOriented(driveRobotOrientedSlow); // Left stick
     Command driveRobotOrientedAngularVelocitySuperFast = driveBase.driveFieldOriented(driveRobotOrientedFast);
     
+    SwerveInputStream driveForwardAuto = SwerveInputStream.of(driveBase.getSwerveDrive(),
+                                            () -> 0.15, 
+                                            () -> 0)
+                                            .allianceRelativeControl(false);
+    Command driveForwardAutoCommand = driveBase.driveFieldOriented(driveForwardAuto);
+    */
 
-    SwerveInputStream driveAngularVelocitySim = SwerveInputStream.of(driveBase.getSwerveDrive(),
+
+
+    SwerveInputStream driveAngularVelocitySim = SwerveInputStream.of(driveBaseSim.getSwerveDrive(),
                                                 () -> m_driverController.getLeftY(),
                                                 () -> m_driverController.getLeftX())
-                                                .withControllerRotationAxis(m_driverController::getRightX)
                                                 .deadband(OperatorConstants.DEADBAND)
                                                 .scaleTranslation(0.8)
                                                 .allianceRelativeControl(true);
     // Derive the heading axis with math!
     SwerveInputStream driveDirectAngleSim = driveAngularVelocitySim.copy()
                                               .withControllerHeadingAxis(
-                                              () -> Math.sin(m_driverController.getRawAxis(4) * Math.PI) * (Math.PI * 2),
-                                              () -> Math.cos(m_driverController.getRawAxis(4) * Math.PI) * (Math.PI * 2))
+                                              () -> Math.sin(m_driverController.getRawAxis(2) * Math.PI) * (Math.PI * 2),
+                                              () -> Math.cos(m_driverController.getRawAxis(2) * Math.PI) * (Math.PI * 2))
                                               .headingWhile(true);
-    Command driveFieldOrientedDirectAngleSim = driveBase.driveFieldOriented(driveDirectAngleSim);
-
-
-
-    SwerveInputStream driveForwardAuto = SwerveInputStream.of(driveBase.getSwerveDrive(),
-                                            () -> 0.15, 
-                                            () -> 0)
-                                            .allianceRelativeControl(false);
-    Command driveForwardAutoCommand = driveBase.driveFieldOriented(driveForwardAuto);
+    Command driveFieldOrientedDirectAngleSim = driveBaseSim.driveFieldOriented(driveDirectAngleSim);
 
   /**
    * Use this method to define your trigger->command mappings. Triggers can be created via the
@@ -164,9 +164,9 @@ public class RobotContainer {
   private void configureBindings() {
     if (RobotBase.isSimulation())
     {
-      driveBase.setDefaultCommand(driveFieldOrientedDirectAngleSim);
+      driveBaseSim.setDefaultCommand(driveFieldOrientedDirectAngleSim);
     
-      m_driverController.start().onTrue(Commands.runOnce(() -> driveBase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
+      m_driverController.start().onTrue(Commands.runOnce(() -> driveBaseSim.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
     }
 
     /*

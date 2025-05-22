@@ -22,6 +22,9 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
@@ -32,6 +35,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.util.Units;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -50,10 +55,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class SwerveSubsystemSim extends SubsystemBase {
   
   SwerveDrive swerveDrive;
-
   VisionSubsystem vision;
   
   private final Pigeon2 pigeon2 = new Pigeon2(9, "rio"); // Pigeon is on roboRIO CAN Bus with device ID 9
+  private Supplier<Pose2d> poseSupplier;
+
+  private Field2d field;
 
   public SwerveSubsystemSim(File directory, VisionSubsystem vision) {
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.LOW;
@@ -112,6 +119,12 @@ public class SwerveSubsystemSim extends SubsystemBase {
     swerveDrive.pushOffsetsToEncoders(); // Set the absolute encoder to be used over the internal encoder and push the offsets onto it. Throws warning if not possible
 
     setupPathPlanner();
+
+    field = new Field2d();
+    SmartDashboard.putData(field);
+
+    // poseSupplier = (Supplier<Pose2d>) getMapleSimPose();
+    // NetworkTableInstance.getDefault().getDefault().
   }
 
 
@@ -304,7 +317,12 @@ public class SwerveSubsystemSim extends SubsystemBase {
   }
 
   public Pose2d getMapleSimPose(){
-    return getMapleSimDrive().get().getSimulatedDriveTrainPose();
+    // In degrees
+    Pose2d pose = getMapleSimDrive().get().getSimulatedDriveTrainPose();
+
+    Pose2d newPose = new Pose2d(pose.getX(), pose.getY(), new Rotation2d(pose.getRotation().getDegrees()));
+
+    return newPose;
   }
  
   /**
@@ -329,16 +347,6 @@ public class SwerveSubsystemSim extends SubsystemBase {
     swerveDrive.resetOdometry(initialHolonomicPose);
   }
 
-  public void zeroHeading() {
-    pigeon2.reset();
-  }
-
-  public Command zeroHeadingCommand() {
-    return runOnce(
-      () -> {zeroHeading();} 
-      );
-  }
-
   public double distanceToReef() {
     if (!isRedSide()) {
       return Math.abs(swerveDrive.getPose().getTranslation().getDistance(Constants.FieldPoses.blueCenterOfReef.getTranslation()));
@@ -346,69 +354,22 @@ public class SwerveSubsystemSim extends SubsystemBase {
       return Math.abs(swerveDrive.getPose().getTranslation().getDistance(Constants.FieldPoses.redCenterOfReef.getTranslation()));
     }
   }
-
-  /**
-   * Returns a Command that drives the swerve drive to a specific distance at a given speed.
-   *
-   * @param distanceInMeters       the distance to drive in meters
-   * @param speedInMetersPerSecond the speed at which to drive in meters per second
-   * @return a Command that drives the swerve drive to a specific distance at a given speed
-   */
-  public Command driveToDistanceCommand(double distanceInMeters, double speedInMetersPerSecond)
-  {
-    return run(() -> drive(new ChassisSpeeds(speedInMetersPerSecond, 0, 0)))
-        .until(() -> swerveDrive.getPose().getTranslation().getDistance(new Translation2d(0, 0)) >
-                     distanceInMeters);
-  }
-
-  public Command driveTimedCommand(double time, double speedInMetersPerSecond)
-  {
-    return run(() -> drive(new ChassisSpeeds(speedInMetersPerSecond, 0, 0)))
-        .withTimeout(time);
-  }
   
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
-
-    NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Rotation").setNumber(swerveDrive.getPose().getRotation().getDegrees());
-    NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Position x").setNumber(swerveDrive.getPose().getX());
-    NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Position y").setNumber(swerveDrive.getPose().getY());
-    NetworkTableInstance.getDefault().getTable("Odometry").getEntry("PoseYaw").setNumber(swerveDrive.getPose().getRotation().getDegrees());
-    NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Robot Velocity Rotation").setNumber(swerveDrive.getRobotVelocity().omegaRadiansPerSecond);
-    NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Robot Velocity x").setNumber(swerveDrive.getRobotVelocity().vxMetersPerSecond);
-    NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Robot Velocity y").setNumber(swerveDrive.getRobotVelocity().vyMetersPerSecond);
-
-
-    // vision.updateLimelightYaw(this);
-    // vision.updatePosesEstimator(swerveDrive);
-    vision.updatePosesEstimatorMT2(swerveDrive);
-    swerveDrive.updateOdometry(); // Might be redundant
-
-    ElevatorSubsystem.updateDistanceToReef(distanceToReef());
-
-    // String[] limelights = {"limelight-left", "limelight-right", "limelight-rear"};
-    // PoseEstimate[] poses = vision.getEstimatedGlobalPose(limelights);
-    
-
-    // LimelightHelpers.SetRobotOrientation("limelight-left",getHeading().getDegrees(),0,0,0,0,0);
-    // LimelightHelpers.SetRobotOrientation("limelight-left",swerveDrive.getPose().getRotation().getDegrees(),0,0,0,0,0);
-    // LimelightHelpers.SetRobotOrientation("limelight-three",getHeading().getDegrees(),0,0,0,0,0);
-
-    
+    if (RobotBase.isReal()) {
+      ElevatorSubsystem.updateDistanceToReef(distanceToReef());
+      vision.updatePosesEstimatorMT2(swerveDrive);
+      field.getObject("Robot").setPose(getPose());
+    }
+      
+    swerveDrive.updateOdometry();
   }
 
   @Override
   public void simulationPeriodic() {
-    // This method will be called once per scheduler run during simulation
-
-    // Network Table Values
-    // Update Yaw
-    // Update Pose
-    // Update Odometry
-    // Update Distance To Reef
-    
+    field.getObject("Robot").setPose(getMapleSimPose());
   }
 
 
@@ -564,3 +525,15 @@ public class SwerveSubsystemSim extends SubsystemBase {
   }
 }
 
+
+
+/*
+ 
+
+
+
+  public void simulationPeriodic() {
+    REVPhysicsSim.getInstance().run();
+  }
+ 
+ */
