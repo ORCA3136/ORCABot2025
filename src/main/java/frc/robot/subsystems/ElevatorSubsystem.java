@@ -91,6 +91,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   private double m_wristSpeed;
   private boolean wasResetByButton = false;
   private boolean elevatorReset = false;
+  private boolean wristReset = false;
   private double elevatorCurrentTarget = Constants.ElevatorConstants.ElevatorSetpoints.kFeederStation;
   private double wristCurrentTarget = Constants.ElevatorConstants.ElevatorSetpoints.kFeederStation;
   
@@ -104,6 +105,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   private boolean elevatorManuallyMoving = true;
 
   private final DigitalInput elevatorLimitSwitch;
+  private final DigitalInput algaeLimitSwitch;
 
   
   public ElevatorSubsystem(VisionSubsystem vision) {
@@ -120,6 +122,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     wristMotor.configure(Configs.WristConfigs.wristMotorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
 
     elevatorLimitSwitch = new DigitalInput(0);
+    algaeLimitSwitch = new DigitalInput(1);
     
   }
   
@@ -716,7 +719,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Wrist current position", getWristPosition());
     SmartDashboard.putNumber("Wrist current 'angle'", getWristPosition());
 
-    SmartDashboard.putBoolean("limit switch", !elevatorLimitSwitch.get());
+    SmartDashboard.putBoolean("Elevator limit switch", !elevatorLimitSwitch.get());
+    SmartDashboard.putBoolean("Algaelimit switch", !algaeLimitSwitch.get());
     SmartDashboard.putBoolean("Changed Level", changedLevel);
 
     NetworkTableInstance.getDefault().getTable("Wrist").getEntry("At Scoring Pos").setBoolean(atScoringPosition());
