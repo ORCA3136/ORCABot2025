@@ -99,7 +99,7 @@ public final class Constants {
       public static final double kLevel1 = 0;
       public static final double kLevel2 = 11.3; //
       public static final double kLevel3 = 27.5;
-      public static final double kLevel4 = 56; // max = 58
+      public static final double kLevel4 = 56; // max = 61
 
       public static final double kBottomAlgae = 14.6; // 
       public static final double kTopAlgae = 32; // 
