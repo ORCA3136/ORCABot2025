@@ -65,8 +65,6 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   private Setpoint currentLevel = ElevatorSubsystem.Setpoint.kFeederStation;
 
-  // Initialize elevator SPARK. We will use MAXMotion position control for the elevator, so we also
-  // need to initialize the closed loop controller and encoder.
   private SparkClosedLoopController elevatorClosedLoopController =
       leftElevator.getClosedLoopController();
 
@@ -79,17 +77,14 @@ public class ElevatorSubsystem extends SubsystemBase {
   //     new ProfiledPIDController(0.001, 0, 0, m_constraints, 0.02);
   //private final ElevatorFeedforward m_feedforward = new ElevatorFeedforward(kS, kG, kV);
 
-  private ProfiledPIDController ourNewestPIDControllerYet = new ProfiledPIDController(Constants.ElevatorConstants.ElevatorPIDConstants.kElevatorKp, 0, Constants.ElevatorConstants.ElevatorPIDConstants.kElevatorKd, Constants.ElevatorConstants.ElevatorPIDConstants.kElevatorConstraints);
-  private ProfiledPIDController newWristPIDController = new ProfiledPIDController(Constants.WristConstants.WristPIDConstants.kWristKp, Constants.WristConstants.WristPIDConstants.kWristKi, Constants.WristConstants.WristPIDConstants.kWristKd, Constants.WristConstants.WristPIDConstants.kWristConstraints);
+  // private ProfiledPIDController ourNewestPIDControllerYet = new ProfiledPIDController(Constants.ElevatorConstants.ElevatorPIDConstants.kElevatorKp, 0, Constants.ElevatorConstants.ElevatorPIDConstants.kElevatorKd, Constants.ElevatorConstants.ElevatorPIDConstants.kElevatorConstraints);
+  // private ProfiledPIDController newWristPIDController = new ProfiledPIDController(Constants.WristConstants.WristPIDConstants.kWristKp, Constants.WristConstants.WristPIDConstants.kWristKi, Constants.WristConstants.WristPIDConstants.kWristKd, Constants.WristConstants.WristPIDConstants.kWristConstraints);
 
-  private RelativeEncoder elevatorEncoder = leftElevator.getEncoder(); //need a relative encoder to get number of ticks
-   //private RelativeEncoder elevatorEncoder = leftElevator.getEncoder(); we might want to get both left and right encoder and average the values
+  private RelativeEncoder elevatorEncoder = leftElevator.getEncoder();
 
   private AbsoluteEncoder wristEncoder = wristMotor.getAbsoluteEncoder();
+
   // Member variables for subsystem state management
-  private double m_elevatorSpeed;
-  private double m_wristSpeed;
-  private boolean wasResetByButton = false;
   private boolean elevatorReset = false;
   private double elevatorCurrentTarget = Constants.ElevatorConstants.ElevatorSetpoints.kFeederStation;
   private double wristCurrentTarget = Constants.ElevatorConstants.ElevatorSetpoints.kFeederStation;
@@ -110,9 +105,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     this.vision = vision;
 
-    zeroElevator();
-    Configs.ElevatorConfigs.rightElevatorConfig 
-          .follow(leftElevator, true);
+    Configs.ElevatorConfigs.rightElevatorConfig.follow(leftElevator, true);
     
     leftElevator.configure(Configs.ElevatorConfigs.leftElevatorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
     rightElevator.configure(Configs.ElevatorConfigs.rightElevatorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
@@ -206,148 +199,6 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   }
 
-  /*
-  private void moveToSetpointBetter() {
-    boolean elBool = false;
-    double elTarget = 3;
-
-    boolean wristBool = false;
-    double wristTarget = 3;
-
-    int currentZone;
-    int targetZone;
-    boolean differentZones = false;
-    
-    if (getElevatorPosition() < 23) {
-      currentZone = 1;
-    } else if (getElevatorPosition() < 39) {
-      currentZone = 2;
-    } else {
-      currentZone = 3;
-    }
-
-    if (elevatorCurrentTarget < 23) {
-      targetZone = 1;
-    } else if (elevatorCurrentTarget < 39) {
-      targetZone = 2;
-    } else {
-      targetZone = 3;
-    }
-
-    if (currentZone == 1 && targetZone == 3 || currentZone == 3 && targetZone == 1) {
-      differentZones = true;
-    }
-
-    if (differentZones) {
-      elTarget = 31;
-    } else if (currentZone == 1) {
-
-      if (getWristPosition() > Constants.WristConstants.WristSetpoints.unblock && getWristPosition() < 350) {
-        elBool = true;
-      } else if (getWristPosition() > 25) {
-        if (getElevatorPosition() < 20) {
-          if (elevatorCurrentTarget > 20) { // can wrist go around???
-            elTarget = 20;
-          } // is elevator just free here
-        } 
-      //   else if (40 < getElevatorPosition() && getElevatorPosition() < 65) {
-      //     if (elevatorCurrentTarget < 40) {
-      //       elTarget = 40;
-      //     }
-      //     if (elevatorCurrentTarget > 65) {
-      //       elTarget = 65;
-      //     }
-      //   }
-        
-      // } else if (getWristAngle() > 15 && getElevatorPosition() > 40) {
-      //   if (elevatorCurrentTarget < 40) {
-      //     elTarget = 40;
-      //   }
-      //   if (elevatorCurrentTarget > 65) {
-      //     elTarget = 65;
-      //   }
-      } else {
-        if (elevatorCurrentTarget > 5) {
-          elTarget = 5;
-        }
-      }
-    } else if (currentZone == 3) {
-      if (getWristPosition() > Constants.WristConstants.WristSetpoints.unblock && getWristPosition() < 350) {
-        elBool = true;
-      } else if (25 > getWristPosition() && getWristPosition() < Constants.WristConstants.WristSetpoints.unblock) {
-        if (getElevatorPosition() < 65 && getElevatorPosition() > 40) {
-          if (getElevatorCurrentTarget() > 65) {
-            elTarget = 65;
-          } else if (getElevatorCurrentTarget() < 40) {
-            elTarget = 40;
-          }
-        }
-      }
-    }
-
-    if (differentZones) {
-      wristTarget = Constants.WristConstants.WristSetpoints.unblock + 10;
-    } else if (currentZone == 1) {
-      if (getElevatorPosition() < 5) {
-        wristBool = true;
-      } else if (getElevatorPosition() < 20) {
-        if (wristCurrentTarget < 25) {
-          wristTarget = 25;
-        }
-      // } else if (getElevatorPosition() < 40) {
-      //   if (wristCurrentTarget < Constants.WristConstants.WristSetpoints.unblock) {
-      //     wristTarget = Constants.WristConstants.WristSetpoints.unblock;
-      //   }
-      // } else if (getElevatorPosition() < 65) {
-      //   if (wristCurrentTarget < 15) {
-      //     wristTarget = 15;
-      //   }
-      } else {
-        if (wristCurrentTarget < Constants.WristConstants.WristSetpoints.unblock) {
-          wristTarget = Constants.WristConstants.WristSetpoints.unblock;
-        }
-      }
-    } else if (currentZone == 3) {
-      if (getElevatorPosition() < 40 || getElevatorPosition() > 65) {
-        if (wristCurrentTarget < Constants.WristConstants.WristSetpoints.unblock) {
-          wristTarget = Constants.WristConstants.WristSetpoints.unblock;
-        }
-      } else if (getElevatorPosition() < 65) {
-        if (wristCurrentTarget < 15) {
-          wristTarget = 15;
-        }
-      }
-    }
-
-
-    if (!isElevatorManuallyMoving()) {
-      if (elBool) {
-        elevatorMoveToSetpoint();
-      } else {
-        if (elTarget != 3) {
-          elevatorMoveToSetpoint(elTarget);
-        }
-        else {
-          elevatorMoveToSetpoint();
-        }
-      }
-    }
-
-    if (!isWristManuallyMoving()) {
-      if (wristBool) {
-        wristMoveToSetpoint();
-      } else {
-        if (wristTarget != 3) {
-          wristMoveToSetpoint(wristTarget);
-        }
-        else {
-          wristMoveToSetpoint();
-        }
-      }
-    }
-  }
-  */
-
   private double getTargetOffset(double target, double pos, double offset, double tolerance){
     if (MathUtil.isNear(target, pos, tolerance)) {
       return target;
@@ -359,21 +210,15 @@ public class ElevatorSubsystem extends SubsystemBase {
     return getTargetOffset(target, getWristPosition(), offset, tolerance);
   }
 
-  private void wristMoveToSetpoint() {
-    // wristPID(wristCurrentTarget);
-    wristClosedLoopController.setReference(
-        wristCurrentTarget, ControlType.kPosition);
-  }
-
   public void elevatorMoveToSetpoint() {
     elevatorClosedLoopController.setReference(
       elevatorCurrentTarget, ControlType.kPosition);
   }
 
-  public void wristMoveToSetpoint(double pos) {
+  private void wristMoveToSetpoint() {
     // wristPID(wristCurrentTarget);
     wristClosedLoopController.setReference(
-        pos, ControlType.kPosition);
+        wristCurrentTarget, ControlType.kPosition);
   }
 
   public void elevatorMoveToSetpoint(double pos) {
@@ -381,6 +226,12 @@ public class ElevatorSubsystem extends SubsystemBase {
       pos, ControlType.kPosition);
   }
 
+  public void wristMoveToSetpoint(double pos) {
+    // wristPID(wristCurrentTarget);
+    wristClosedLoopController.setReference(
+        pos, ControlType.kPosition);
+  }
+  
   /** Set the elevator motor power in the range of [-1, 1]. */
   public void setElevatorPower(double power) {
     leftElevator.set(power);
@@ -392,44 +243,12 @@ public class ElevatorSubsystem extends SubsystemBase {
     setWristManuallyMoving(true);
   }
 
-  public double getWristCurrentTarget() {
-    return wristCurrentTarget;
-  }
-
   public double getElevatorCurrentTarget() {
     return elevatorCurrentTarget;
   }
 
-  public void setTargetSetpoint(Setpoint setpoint) {
-    setWristManuallyMoving(false);
-    setElevatorManuallyMoving(false);
-    targetSetpoint = setpoint;
-
-    switch (targetSetpoint) {
-      case kFeederStation:
-        aboveLevel1 = false;
-        break;
-      case kLevel2:
-        aboveLevel1 = true;
-        break;
-      case kLevel3:
-        aboveLevel1 = true;
-        break;
-      case kLevel4:
-        aboveLevel1 = true;
-        break;
-      case kBottomAlgae:
-        aboveLevel1 = true;
-        break;
-      case kTopAlgae:
-        aboveLevel1 = true;
-        break;
-      case kProcessor:
-        aboveLevel1 = false;
-        break;
-      default:
-        break;
-    }
+  public double getWristCurrentTarget() {
+    return wristCurrentTarget;
   }
 
   /**
@@ -535,19 +354,9 @@ public class ElevatorSubsystem extends SubsystemBase {
       setSetpointCommand(newSetpoint);
     }
   }
-
-  public void updateMode() {
-    if (!manualMode) {
-      if (distanceToReef > Constants.FieldPoses.reefElevatorRange) {
-        targetSetpoint = Setpoint.kFeederStation;
-      }
-    }
-    manualMode = !manualMode;
-  }
   
   public static void updateDistanceToReef(double distance) {
     distanceToReef = distance;
-    NetworkTableInstance.getDefault().getTable("Elevator").getEntry("Distance To Reef").setNumber(distance);
   }
 
   public static double getDistanceToReef() {
@@ -558,76 +367,30 @@ public class ElevatorSubsystem extends SubsystemBase {
     return currentLevel;
   }
 
-  /*
-  private void elevatorPID(double position){
-    ourNewestPIDControllerYet.setGoal(position);
-    m_elevatorSpeed = ourNewestPIDControllerYet.calculate(getElevatorPosition());
-    if (ourNewestPIDControllerYet.atGoal()) {
-      m_elevatorSpeed = 0;
-    }
-    
-    if (getElevatorPosition() > Constants.Limits.kElevatorMaxHeight && m_elevatorSpeed < 0) {
-      m_elevatorSpeed = 0;
-    }
-
-    if (!elevatorLimitSwitch.get() && m_elevatorSpeed > 0) {
-        m_elevatorSpeed = 0;
-      }
-    
-    ElevatorMove(m_elevatorSpeed); 
-  }
-
-  public void wristPID(double position){ //TODO test this function
-    newWristPIDController.setGoal(position);
-    m_wristSpeed = newWristPIDController.calculate(getWristPosition());
-    // Shuffleboard.putNumber
-    if (newWristPIDController.atGoal()) {
-      m_wristSpeed = 0;
-    }
-    
-    if (getWristPosition() > Constants.Limits.kWristMaxAngle && m_wristSpeed < 0) {
-      m_wristSpeed = 0;
-    }
-
-    if (getWristPosition() < Constants.Limits.kWristMinAngle && m_wristSpeed > 0) {
-      m_wristSpeed = 0;
-      }
-    
-    WristMove(m_wristSpeed); 
-  }
-  
-  public void ElevatorMove(double d) {
-    leftElevator.set(-d);
-  }
-
-  public void WristMove(double d) {
-    wristMotor.set(-d); // negative is in
-  }
-  */
-
-  public void setWristTarget(double target) {
-    wristCurrentTarget = target;
-    setWristManuallyMoving(false);
+  public void setElevatorManuallyMoving(boolean bool) {
+    elevatorManuallyMoving = bool;
   }
 
   public void setWristManuallyMoving(boolean bool) {
     wristManuallyMoving = bool;
   }
   
-  public boolean isWristManuallyMoving() {
-    return wristManuallyMoving;
-  }
-
   public void setElevatorTarget(double target) {
     elevatorCurrentTarget = target;
     setElevatorManuallyMoving(false);
   }
-  
-  public void setElevatorManuallyMoving(boolean bool) {
-    elevatorManuallyMoving = bool;
+
+  public void setWristTarget(double target) {
+    wristCurrentTarget = target;
+    setWristManuallyMoving(false);
   }
+  
   public boolean isElevatorManuallyMoving() {
     return elevatorManuallyMoving;
+  }
+
+  public boolean isWristManuallyMoving() {
+    return wristManuallyMoving;
   }
 
   public double getElevatorPosition() {
@@ -635,15 +398,12 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public double getWristPosition() {
-    return wristEncoder.getPosition(); // 
+    return wristEncoder.getPosition(); 
   }
 
    /** Zero the elevator encoder when the limit switch is pressed. */
    private void zeroElevatorOnLimitSwitch() {
     if ( (getElevatorPosition() < 0 || !elevatorReset) && !elevatorLimitSwitch.get()) {
-      // Zero the encoder only when the limit switch is switches from "unpressed" to "pressed" to
-      // prevent constant zeroing while pressed
-      new PrintCommand("RESETTING ELEVATOR");
       zeroElevator();    
       elevatorReset = true;  
     } else if (elevatorLimitSwitch.get()) {
@@ -653,14 +413,6 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   public void zeroElevator() {
     elevatorEncoder.setPosition(0);
-  }
-
-  /**
-   * Stop the control loop and motor output.
-   */
-  public void stop()
-  {
-    leftElevator.set(0.0);
   }
 
     /**
@@ -693,25 +445,6 @@ public class ElevatorSubsystem extends SubsystemBase {
       updateElevatorHeight();
       moveToSetpointPID();
     }
-
-    NetworkTableInstance.getDefault().getTable("Wrist").getEntry("Wrist at feeder").setBoolean(Math.abs(getWristPosition() - 4) < 2);
-    NetworkTableInstance.getDefault().getTable("Elevator").getEntry("Elevator current target").setNumber(elevatorCurrentTarget);
-    NetworkTableInstance.getDefault().getTable("Elevator").getEntry("Elevator left output").setNumber(leftElevator.getAppliedOutput());
-    NetworkTableInstance.getDefault().getTable("Elevator").getEntry("Elevator right output").setNumber(rightElevator.getAppliedOutput());
-
-    SmartDashboard.putNumber("Elevator current target", elevatorCurrentTarget);
-    SmartDashboard.putNumber("Elevator current position", getElevatorPosition());
-    SmartDashboard.putBoolean("Elevator manually moving", wristManuallyMoving);
-
-    SmartDashboard.putNumber("Wrist current target", wristCurrentTarget);
-    SmartDashboard.putNumber("Wrist current position", getWristPosition());
-    SmartDashboard.putNumber("Wrist current 'angle'", getWristPosition());
-
-    SmartDashboard.putBoolean("limit switch", !elevatorLimitSwitch.get());
-    SmartDashboard.putBoolean("Changed Level", changedLevel);
-
-    NetworkTableInstance.getDefault().getTable("Wrist").getEntry("At Scoring Pos").setBoolean(atScoringPosition());
-
   }
 
  
