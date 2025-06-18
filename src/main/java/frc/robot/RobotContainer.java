@@ -39,6 +39,7 @@ import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.ReefCentering;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.ReefCentering.Side;
 import swervelib.SwerveInputStream;
 import edu.wpi.first.hal.simulation.DriverStationDataJNI;
 import edu.wpi.first.math.MathUtil;
@@ -216,7 +217,7 @@ public class RobotContainer {
       
       m_driverController.leftBumper().onTrue(new AutoScoreCommand(intake, elevatorSystem, Constants.IntakeConstants.IntakePowerLevels.kOut, vision));
 
-      m_driverController.povDown().whileTrue(new GoToScoreAlgaeCommand(driveBase));
+      m_driverController.povDown().whileTrue(reefCentering.createPathCommand(Side.Algae));
 
       // m_secondaryController.button(0).whileTrue(   driveBase.driveToPose(new Pose2d(new Translation2d(7.775, driveBase.getPose().getY()), new Rotation2d(180)), null) );
       // m_secondaryController.button(1).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel4)));
@@ -237,12 +238,12 @@ public class RobotContainer {
       m_secondaryController.button(9).whileTrue(Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kBottomAlgae)));
       m_secondaryController.button(6).onTrue(new UppercutCommand(elevatorSystem, intake));
       
-      // m_secondaryController.button(7).whileTrue(new RunFunnelCommand(climber, Constants.ClimberConstants.kFunnelSpeed));
+      m_secondaryController.button(7).whileTrue(new RunFunnelCommand(climber, Constants.ClimberConstants.kFunnelSpeed));
       // m_secondaryController.button(6).whileTrue(new CappnCrunchCommand(climber, Constants.ClimberConstants.kClimberInSpeed).withTimeout(0.05));
-      // m_secondaryController.button(8).whileTrue(new RunClimberCommand(climber, Constants.ClimberConstants.kClimberInSpeed));
-      // m_secondaryController.button(11).whileTrue(new RunClimberCommand(climber, Constants.ClimberConstants.kClimberOutSpeed));
+      m_secondaryController.button(8).whileTrue(new RunClimberCommand(climber, Constants.ClimberConstants.kClimberInSpeed));
+      m_secondaryController.button(11).whileTrue(new RunClimberCommand(climber, Constants.ClimberConstants.kClimberOutSpeed));
       m_secondaryController.button(12).whileTrue(Commands.runOnce(() -> elevatorSystem.updateMode()));
-      //m_secondaryController.axisGreaterThan(0, -0.2).onTrue(new RunClimbSequenceCommand(climber, elevatorSystem, false));
+      m_secondaryController.axisGreaterThan(0, -0.2).onTrue(new RunClimbSequenceCommand(climber, elevatorSystem, false));
     }
   }
 

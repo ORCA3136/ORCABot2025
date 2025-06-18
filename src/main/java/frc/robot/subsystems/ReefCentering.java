@@ -17,6 +17,7 @@ import com.pathplanner.lib.path.Waypoint;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -39,7 +40,8 @@ public class ReefCentering {
     Left,
     Middle,
     Right,
-    Back
+    Back,
+    Algae
   }
 
   public ReefCentering(SwerveSubsystem drive, ElevatorSubsystem elevator) {
@@ -103,6 +105,12 @@ public class ReefCentering {
       case Back:
         rot += Math.toRadians(180);
         break;
+      case Algae:
+        if (m_drive.getPose().getX() > 8.775) {
+          return new Pose2d(new Translation2d(9.775, m_drive.getPose().getY()), new Rotation2d(0));
+        } else {
+          return new Pose2d(new Translation2d(7.775, m_drive.getPose().getY()), new Rotation2d(180));
+        }
       default:
         break;
     }
