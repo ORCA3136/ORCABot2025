@@ -24,11 +24,17 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+import edu.wpi.first.wpilibj.simulation.EncoderSim;
+import edu.wpi.first.wpilibj.simulation.PWMSim;
+import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
@@ -449,5 +455,92 @@ public class ElevatorSubsystem extends SubsystemBase {
 
  
 
-  public void simulationPeriodic() {}
+
+
+
+
+
+
+
+
+
+
+  private final DCMotor m_elevatorGearbox = DCMotor.getNEO(2);
+  private final Encoder m_encoder =
+      new Encoder(10, 11);
+  private final PWMSparkMax m_motor = new PWMSparkMax(10);
+
+  private final ProfiledPIDController m_controller =
+  new ProfiledPIDController(
+      0.2,
+      0,
+      0.5,
+      new TrapezoidProfile.Constraints(2.45, 2.45));
+ElevatorFeedforward m_feedforward =
+  new ElevatorFeedforward(
+      0,
+      0.002,
+      0.0003,
+      0);
+
+  // Simulation classes help us simulate what's going on, including gravity.
+  private final ElevatorSim m_elevatorSim =
+      new ElevatorSim(
+          m_elevatorGearbox,        // Gearbox
+          10,         // Gearing
+          10,            // Carraige mass
+          0.038,      // Drum radius - 1.5 in
+          0, // Min height
+          1.575, // Max height
+          true,
+          0,
+          0.01,
+          0.0);
+  private final EncoderSim m_encoderSim = new EncoderSim(m_encoder);
+  private final PWMSim m_motorSim = new PWMSim(m_motor);
+
+  // Create a Mechanism2d visualization of the elevator
+  private final Mechanism2d m_mech2d = new Mechanism2d(20, 50);
+  private final MechanismRoot2d m_mech2dRoot = m_mech2d.getRoot("Elevator Root", 10, 0);
+  private final MechanismLigament2d m_elevatorMech2d =
+      m_mech2dRoot.append(
+          new MechanismLigament2d("Elevator", m_elevatorSim.getPositionMeters(), 90));
+
+  public void reachGoal(double goal) {
+    m_controller.setGoal(goal);
+
+    // With the setpoint value we run PID control like normal
+    double pidOutput = m_controller.calculate(m_encoder.getDistance());
+    double feedforwardOutput = m_feedforward.calculate(m_controller.getSetpoint().velocity);
+    m_motor.setVoltage(pidOutput + feedforwardOutput);
+  }
+
+  /** Update telemetry, including the mechanism visualization. */
+  public void updateTelemetry() {
+    // Update elevator visualization with position
+    m_elevatorMech2d.setLength(m_encoder.getDistance());
+  }
+
+  /** Stop the control loop and motor output. */
+  public void stop() {
+    m_controller.setGoal(0.0);
+    m_motor.set(0.0);
+  }
+
+
+
+  public void simulationPeriodic() {
+    // In this method, we update our simulation of what our elevator is doing
+    // First, we set our "inputs" (voltages)
+    m_elevatorSim.setInput(m_motorSim.getSpeed() * RobotController.getBatteryVoltage());
+
+    // Next, we update it. The standard loop time is 20ms.
+    m_elevatorSim.update(0.020);
+
+    // Finally, we set our simulated encoder's readings and simulated battery voltage
+    m_encoderSim.setDistance(m_elevatorSim.getPositionMeters());
+    // SimBattery estimates loaded battery voltages
+    RoboRioSim.setVInVoltage(
+        BatterySim.calculateDefaultBatteryLoadedVoltage(m_elevatorSim.getCurrentDrawAmps()));
+  }
 }
