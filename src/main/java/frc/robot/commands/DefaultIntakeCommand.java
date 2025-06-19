@@ -64,7 +64,12 @@ public class DefaultIntakeCommand extends Command {
         climberSubsystem.setFunnelPower(0);
         time = Timer.getTimestamp();
         
-        intakeSubsystem.setIntakePower(0.7);
+        if (elevatorSubsystem.hasAlgae()) {
+          intakeSubsystem.setIntakePower(Constants.IntakeConstants.IntakePowerLevels.kAlgaeHold);
+        }
+        else {
+          intakeSubsystem.setIntakePower(Constants.IntakeConstants.IntakePowerLevels.kAlgaeIn);
+        }
       }
 
       else {

@@ -190,8 +190,9 @@ public class ElevatorSubsystem extends SubsystemBase {
         }
       }
     }
+    // When we have algae higher wrist limit
 
-    if (!isWristManuallyMoving()) {
+    if (!(isWristManuallyMoving())) {
       if (wristBool) {
         wristMoveToSetpoint();
       } else {
@@ -663,6 +664,14 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
   }
 
+  public boolean hasAlgae() {
+    return algaeLimitSwitch.get();
+  }
+
+  public boolean isElevatorDown() {
+    return !elevatorLimitSwitch.get();
+  }
+
   public void zeroElevator() {
     elevatorEncoder.setPosition(0);
   }
@@ -720,7 +729,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Wrist current 'angle'", getWristPosition());
 
     SmartDashboard.putBoolean("Elevator limit switch", !elevatorLimitSwitch.get());
-    SmartDashboard.putBoolean("Algaelimit switch", !algaeLimitSwitch.get());
+    SmartDashboard.putBoolean("Algaelimit switch", algaeLimitSwitch.get());
     SmartDashboard.putBoolean("Changed Level", changedLevel);
 
     NetworkTableInstance.getDefault().getTable("Wrist").getEntry("At Scoring Pos").setBoolean(atScoringPosition());

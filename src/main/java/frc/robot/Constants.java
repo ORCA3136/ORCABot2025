@@ -188,9 +188,10 @@ public final class Constants {
       public static final double kOut = -0.9;
       public static final double kFeed = -0.6;  // Algae out
       public static final double kIn = 0.9;
-      public static final double kVomit = 0.95; // Algae in
-      public static final double kAlgaeIn = 0.95;
-      public static final double kAlgaeHold = 0.5;
+
+      // public static final double kVomit = 0.95; // Algae in
+      public static final double kAlgaeIn = 0.45;
+      public static final double kAlgaeHold = 0.10;
       public static final double kAlgaeOut = -0.95;
     }
   }
