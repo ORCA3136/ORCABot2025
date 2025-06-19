@@ -39,13 +39,13 @@ public class UppercutCommand extends Command {
   @Override
   public void initialize() {
     elevatorSubsystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kTop);
-    intake.setIntakePower(0); // (Constants.IntakeConstants.IntakePowerLevels.kAlgaeHold);
+    intake.setIntakePower(Constants.IntakeConstants.IntakePowerLevels.kAlgaeHold); // (Constants.IntakeConstants.IntakePowerLevels.kAlgaeHold);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (elevatorSubsystem.getElevatorPosition() > 55) {
+    if (elevatorSubsystem.getElevatorPosition() > 37) {
       elevatorSubsystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kBarge);
       intake.setIntakePower(Constants.IntakeConstants.IntakePowerLevels.kAlgaeOut);
     }
@@ -54,12 +54,13 @@ public class UppercutCommand extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    elevatorSubsystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kTop);
     intake.setIntakePower(Constants.IntakeConstants.IntakePowerLevels.kAlgaeHold);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (elevatorSubsystem.getElevatorPosition() >= Constants.Limits.kElevatorMaxHeight-4) && (elevatorSubsystem.getWristPosition() < 10);
+    return (elevatorSubsystem.getElevatorPosition() >= Constants.ElevatorConstants.ElevatorSetpoints.kBarge - 1 && elevatorSubsystem.getWristPosition() < 30);
   }
 }

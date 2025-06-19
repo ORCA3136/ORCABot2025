@@ -165,6 +165,11 @@ public class ElevatorSubsystem extends SubsystemBase {
       wristTarget = Constants.WristConstants.WristSetpoints.unblock;
     }
 
+    if (wristCurrentTarget == Constants.WristConstants.WristSetpoints.kAlgae && isSetpointAlgae(currentLevel)) 
+    {
+      wristBool = true;
+    }
+
 
     if (!isElevatorManuallyMoving()) {
       if (elBool) {
@@ -443,9 +448,11 @@ public class ElevatorSubsystem extends SubsystemBase {
     //return this.runOnce(
         //() -> {
 
-          double tempWristTarget = wristCurrentTarget;
           if (currentLevel != setpoint || currentLevel == null) {
-            changedLevel = true;
+            if ( !(isSetpointAlgae(setpoint) && isSetpointAlgae(currentLevel))) 
+            {
+              changedLevel = true;
+            }
           }
           currentLevel = setpoint;
 
@@ -494,10 +501,13 @@ public class ElevatorSubsystem extends SubsystemBase {
             default:
               break;
           }
+  }
 
-          if (tempWristTarget == wristCurrentTarget) {
-            changedLevel = false;
-          }
+  private boolean isSetpointAlgae(Setpoint level) {
+    if (level == Setpoint.kBarge || level == Setpoint.kTop || level == Setpoint.kBottomAlgae || level == Setpoint.kTopAlgae) {
+      return true;
+    }
+    return false;
   }
 
   private void updateElevatorHeight() {
