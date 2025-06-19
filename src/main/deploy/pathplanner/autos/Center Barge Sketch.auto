@@ -48,21 +48,57 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "Copy of After G"
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "Elevator L1"
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "G to Algae Back"
+          }
+        },
+        {
           "type": "named",
           "data": {
-            "name": "Elevator Target L1"
+            "name": "Elevator Top Algae"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Algae Back Pickup"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Algae Back To Barge"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.1
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": null
           }
         }
       ]
