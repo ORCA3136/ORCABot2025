@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.775,
-        "y": 5.097215625835596
+        "x": 6.206,
+        "y": 4.022
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.526272938657126,
-        "y": 5.072019416681476
+        "x": 5.956057790107106,
+        "y": 4.016624898711982
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.579979031521315,
-        "y": 4.030352079206838
+        "x": 5.839915905414041,
+        "y": 4.022498836726851
       },
       "prevControl": {
-        "x": 6.829492176141946,
-        "y": 4.045946650747112
+        "x": 6.08978800363423,
+        "y": 4.014502929583805
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,7 +31,14 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Elevator Bottom Algae",
+      "waypointRelativePos": 0.4969615124915643,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 1.0,
     "maxAcceleration": 3.0,
