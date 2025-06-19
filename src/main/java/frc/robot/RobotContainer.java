@@ -236,7 +236,8 @@ public class RobotContainer {
       m_secondaryController.button(10).whileTrue(Commands.runOnce(() -> {elevatorSystem.setElevatorManuallyMoving(true);
                                                                                 elevatorSystem.setWristManuallyMoving(true);}));
       m_secondaryController.button(9).whileTrue(Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kBottomAlgae)));
-      m_secondaryController.button(6).onTrue(new UppercutCommand(elevatorSystem, intake));
+      // m_secondaryController.button(6).onTrue(new UppercutCommand(elevatorSystem, intake));
+      m_secondaryController.button(6).whileTrue(reefCentering.createPathCommand(ReefCentering.Side.Middle));
       
       m_secondaryController.button(7).whileTrue(new RunFunnelCommand(climber, Constants.ClimberConstants.kFunnelSpeed));
       // m_secondaryController.button(6).whileTrue(new CappnCrunchCommand(climber, Constants.ClimberConstants.kClimberInSpeed).withTimeout(0.05));
