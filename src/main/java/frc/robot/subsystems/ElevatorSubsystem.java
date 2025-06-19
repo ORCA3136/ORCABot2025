@@ -58,6 +58,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     kLevel2,
     kLevel3,
     kLevel4,
+    kTop,
+    kBarge,
     kUnblock,
     kTopAlgae,
     kBottomAlgae;
@@ -73,25 +75,11 @@ public class ElevatorSubsystem extends SubsystemBase {
   private SparkClosedLoopController wristClosedLoopController =
       wristMotor.getClosedLoopController();
 
-  // private final TrapezoidProfile.Constraints m_constraints =
-  //     new TrapezoidProfile.Constraints(3, 2);  // (kMaxVelocity, kMaxAcceleration)
-  // private final ProfiledPIDController m_controller =
-  //     new ProfiledPIDController(0.001, 0, 0, m_constraints, 0.02);
-  //private final ElevatorFeedforward m_feedforward = new ElevatorFeedforward(kS, kG, kV);
-
-  private ProfiledPIDController ourNewestPIDControllerYet = new ProfiledPIDController(Constants.ElevatorConstants.ElevatorPIDConstants.kElevatorKp, 0, Constants.ElevatorConstants.ElevatorPIDConstants.kElevatorKd, Constants.ElevatorConstants.ElevatorPIDConstants.kElevatorConstraints);
-  private ProfiledPIDController newWristPIDController = new ProfiledPIDController(Constants.WristConstants.WristPIDConstants.kWristKp, Constants.WristConstants.WristPIDConstants.kWristKi, Constants.WristConstants.WristPIDConstants.kWristKd, Constants.WristConstants.WristPIDConstants.kWristConstraints);
-
   private RelativeEncoder elevatorEncoder = leftElevator.getEncoder(); //need a relative encoder to get number of ticks
-   //private RelativeEncoder elevatorEncoder = leftElevator.getEncoder(); we might want to get both left and right encoder and average the values
 
   private AbsoluteEncoder wristEncoder = wristMotor.getAbsoluteEncoder();
   // Member variables for subsystem state management
-  private double m_elevatorSpeed;
-  private double m_wristSpeed;
-  private boolean wasResetByButton = false;
   private boolean elevatorReset = false;
-  private boolean wristReset = false;
   private double elevatorCurrentTarget = Constants.ElevatorConstants.ElevatorSetpoints.kFeederStation;
   private double wristCurrentTarget = Constants.ElevatorConstants.ElevatorSetpoints.kFeederStation;
   
@@ -369,18 +357,18 @@ public class ElevatorSubsystem extends SubsystemBase {
         wristCurrentTarget, ControlType.kPosition);
   }
 
-  public void elevatorMoveToSetpoint() {
+  private void elevatorMoveToSetpoint() {
     elevatorClosedLoopController.setReference(
       elevatorCurrentTarget, ControlType.kPosition);
   }
 
-  public void wristMoveToSetpoint(double pos) {
+  private void wristMoveToSetpoint(double pos) {
     // wristPID(wristCurrentTarget);
     wristClosedLoopController.setReference(
         pos, ControlType.kPosition);
   } 
 
-  public void elevatorMoveToSetpoint(double pos) {
+  private void elevatorMoveToSetpoint(double pos) {
     elevatorClosedLoopController.setReference(
       pos, ControlType.kPosition);
   }
@@ -427,6 +415,12 @@ public class ElevatorSubsystem extends SubsystemBase {
       case kLevel4:
         aboveLevel1 = true;
         break;
+      case kTop:
+        aboveLevel1 = true;
+        break;
+      case kBarge:
+        aboveLevel1 = true;
+        break;
       case kBottomAlgae:
         aboveLevel1 = true;
         break;
@@ -448,6 +442,8 @@ public class ElevatorSubsystem extends SubsystemBase {
   public void setSetpointCommand(Setpoint setpoint) { 
     //return this.runOnce(
         //() -> {
+
+          double tempWristTarget = wristCurrentTarget;
           if (currentLevel != setpoint || currentLevel == null) {
             changedLevel = true;
           }
@@ -472,13 +468,21 @@ public class ElevatorSubsystem extends SubsystemBase {
               elevatorCurrentTarget = ElevatorSetpoints.kLevel4;
               wristCurrentTarget = Constants.WristConstants.WristSetpoints.kLevel4;
               break;
+            case kTop:
+              elevatorCurrentTarget = ElevatorSetpoints.kBarge;
+              wristCurrentTarget = Constants.WristConstants.WristSetpoints.kAlgae;
+            break;
+            case kBarge:
+              elevatorCurrentTarget = ElevatorSetpoints.kBarge;
+              wristCurrentTarget = Constants.WristConstants.WristSetpoints.kBarge;
+              break;
             case kBottomAlgae:
               elevatorCurrentTarget = Constants.ElevatorConstants.ElevatorSetpoints.kBottomAlgae;
-              wristCurrentTarget = Constants.WristConstants.WristSetpoints.kAlgae1;
+              wristCurrentTarget = Constants.WristConstants.WristSetpoints.kAlgae;
               break;
             case kTopAlgae:
               elevatorCurrentTarget = Constants.ElevatorConstants.ElevatorSetpoints.kTopAlgae;
-              wristCurrentTarget = Constants.WristConstants.WristSetpoints.kAlgae2;
+              wristCurrentTarget = Constants.WristConstants.WristSetpoints.kAlgae;
               break;
             case kProcessor:
               elevatorCurrentTarget = Constants.ElevatorConstants.ElevatorSetpoints.kProcessor;
@@ -489,6 +493,10 @@ public class ElevatorSubsystem extends SubsystemBase {
               break;
             default:
               break;
+          }
+
+          if (tempWristTarget == wristCurrentTarget) {
+            changedLevel = false;
           }
   }
 

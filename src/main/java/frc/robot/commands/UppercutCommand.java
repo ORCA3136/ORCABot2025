@@ -38,17 +38,15 @@ public class UppercutCommand extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    elevatorSubsystem.wristMoveToSetpoint(100); // Constants.WristConstants.WristSetpoints.kAlgae1 //135
-    elevatorSubsystem.setElevatorTarget(58);
-    intake.setIntakePower(Constants.IntakeConstants.IntakePowerLevels.kAlgaeHold);
-    // elevatorSubsystem.setMode(true);
+    elevatorSubsystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kTop);
+    intake.setIntakePower(0); // (Constants.IntakeConstants.IntakePowerLevels.kAlgaeHold);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     if (elevatorSubsystem.getElevatorPosition() > 55) {
-      elevatorSubsystem.wristMoveToSetpoint(9);
+      elevatorSubsystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kBarge);
       intake.setIntakePower(Constants.IntakeConstants.IntakePowerLevels.kAlgaeOut);
     }
   }
@@ -56,8 +54,7 @@ public class UppercutCommand extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    elevatorSubsystem.wristMoveToSetpoint(Constants.WristConstants.WristSetpoints.unblock);
-    intake.setIntakePower(0);
+    intake.setIntakePower(Constants.IntakeConstants.IntakePowerLevels.kAlgaeHold);
   }
 
   // Returns true when the command should end.

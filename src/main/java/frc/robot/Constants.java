@@ -100,6 +100,7 @@ public final class Constants {
       public static final double kLevel2 = 11.3; //
       public static final double kLevel3 = 27.5;
       public static final double kLevel4 = 56; // max = 61
+      public static final double kBarge = 58;
 
       public static final double kBottomAlgae = 14.6; // 
       public static final double kTopAlgae = 32; // 
@@ -142,9 +143,9 @@ public final class Constants {
       public static final int kLevel2 = 30;
       public static final int kLevel3 = 25;
       public static final int kLevel4 = 53;
+      public static final int kBarge = 15;
       public static final int kProcessor = 183;
-      public static final int kAlgae1 = 132;
-      public static final int kAlgae2 = 132;
+      public static final int kAlgae = 132;
       public static final int kClimb = 17;
     }
 
@@ -188,11 +189,11 @@ public final class Constants {
       public static final double kOut = -0.9;
       public static final double kFeed = -0.6;  // Algae out
       public static final double kIn = 0.9;
-
       // public static final double kVomit = 0.95; // Algae in
-      public static final double kAlgaeIn = 0.45;
-      public static final double kAlgaeHold = 0.10;
-      public static final double kAlgaeOut = -0.95;
+
+      public static final double kAlgaeIn = 0.15; // 0.45
+      public static final double kAlgaeHold = 0.05; // 0.1
+      public static final double kAlgaeOut = -0.30; // -0.95
     }
   }
 
