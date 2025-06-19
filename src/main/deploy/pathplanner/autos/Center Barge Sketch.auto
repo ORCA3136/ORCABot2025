@@ -62,13 +62,13 @@
         {
           "type": "named",
           "data": {
-            "name": "Elevator Top Algae"
+            "name": "Elevator Bottom Algae"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.25
+            "waitTime": 0.5
           }
         },
         {
@@ -80,7 +80,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.2
+            "waitTime": 0.25
           }
         },
         {
@@ -98,7 +98,25 @@
         {
           "type": "named",
           "data": {
-            "name": null
+            "name": "Elevator L4"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.1
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Elevator Target L1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Barge To Park"
           }
         }
       ]
