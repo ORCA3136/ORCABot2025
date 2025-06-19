@@ -235,12 +235,11 @@ public class RobotContainer {
       m_secondaryController.button(5).whileTrue(Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kTopAlgae)));
       m_secondaryController.button(10).whileTrue(Commands.runOnce(() -> {elevatorSystem.setElevatorManuallyMoving(true);
                                                                                 elevatorSystem.setWristManuallyMoving(true);}));
+
       m_secondaryController.button(9).whileTrue(Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kBottomAlgae)));
-      // m_secondaryController.button(6).onTrue(new UppercutCommand(elevatorSystem, intake));
-      m_secondaryController.button(6).whileTrue(reefCentering.createPathCommand(ReefCentering.Side.Middle));
+      m_secondaryController.button(6).onTrue(new UppercutCommand(elevatorSystem, intake));
       
       m_secondaryController.button(7).whileTrue(new RunFunnelCommand(climber, Constants.ClimberConstants.kFunnelSpeed));
-      // m_secondaryController.button(6).whileTrue(new CappnCrunchCommand(climber, Constants.ClimberConstants.kClimberInSpeed).withTimeout(0.05));
       m_secondaryController.button(8).whileTrue(new RunClimberCommand(climber, Constants.ClimberConstants.kClimberInSpeed));
       m_secondaryController.button(11).whileTrue(new RunClimberCommand(climber, Constants.ClimberConstants.kClimberOutSpeed));
       m_secondaryController.button(12).whileTrue(Commands.runOnce(() -> elevatorSystem.updateMode()));
@@ -261,6 +260,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Elevator Target L1", Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kFeederStation)));
     NamedCommands.registerCommand("Elevator Target L4", Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kLevel4)));
     NamedCommands.registerCommand("Elevator Bottom Algae", Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kBottomAlgae)));
+    NamedCommands.registerCommand("Elevator Top Algae", Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kTopAlgae)));
     NamedCommands.registerCommand("Elevator Processor", Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kProcessor)));
     NamedCommands.registerCommand("Hold Algae", Commands.runOnce(() -> elevatorSystem.setElevatorPower(-0.5)).handleInterrupt(() -> elevatorSystem.setElevatorPower(0)));
     NamedCommands.registerCommand("Release Algae", Commands.runOnce(() -> elevatorSystem.setElevatorPower(0.5)).withTimeout(1).handleInterrupt(() -> elevatorSystem.setElevatorPower(0)));
