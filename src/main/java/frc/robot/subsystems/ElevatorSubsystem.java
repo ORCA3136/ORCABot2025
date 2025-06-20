@@ -165,9 +165,10 @@ public class ElevatorSubsystem extends SubsystemBase {
       wristTarget = Constants.WristConstants.WristSetpoints.unblock;
     }
 
-    if (wristCurrentTarget == Constants.WristConstants.WristSetpoints.kAlgae && isSetpointAlgae(currentLevel)) 
+    if (wristCurrentTarget == Constants.WristConstants.WristSetpoints.kAlgae && getWristPosition() > 100) 
     {
       wristBool = true;
+      changedLevel = false;
     }
 
 

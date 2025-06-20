@@ -47,6 +47,9 @@ public class UppercutCommand extends Command {
   public void execute() {
     if (elevatorSubsystem.getElevatorPosition() > 37) {
       elevatorSubsystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kBarge);
+    }
+
+    if (elevatorSubsystem.getWristPosition() < 125) {
       intake.setIntakePower(Constants.IntakeConstants.IntakePowerLevels.kAlgaeOut);
     }
   }
