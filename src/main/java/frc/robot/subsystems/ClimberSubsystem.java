@@ -41,12 +41,12 @@ public class ClimberSubsystem extends SubsystemBase {
     funnelMotor.set(power);
   }
 
-  public double getFunnelPosition() {
-    return funnelEncoder.getPosition();
-  }
-
   public double getClimberPosition() {
     return climberEncoder.getPosition();
+  }
+
+  public double getFunnelPosition() {
+    return funnelEncoder.getPosition();
   }
 
   public boolean isFlipped() {
@@ -70,7 +70,5 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   @Override
-  public void simulationPeriodic() {
-    // This method will be called once per scheduler run during simulation
-  }
+  public void simulationPeriodic() {}
 }

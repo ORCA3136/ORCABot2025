@@ -5,29 +5,20 @@
 package frc.robot;
 
 import java.io.File;
-import java.util.Set;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.Constants.Reef;
 import frc.robot.commands.AutoScoreCommand;
-import frc.robot.commands.CappnCrunchCommand;
-import frc.robot.commands.CenterLimelightOnReef;
 import frc.robot.commands.DefaultIntakeCommand;
 import frc.robot.commands.DoubleLidarRoutine;
-import frc.robot.commands.DriveToPoseCommand;
-import frc.robot.commands.GoToScoreAlgaeCommand;
-import frc.robot.commands.RunIntakeRoutine;
 import frc.robot.commands.RunClimbSequenceCommand;
 import frc.robot.commands.RunClimberCommand;
 import frc.robot.commands.RunElevatorCommand;
 import frc.robot.commands.RunFunnelCommand;
 import frc.robot.commands.RunIntakeCommand;
-import frc.robot.commands.RunRecursiveIntakeRoutine;
 import frc.robot.commands.RunIntakeScoreCommand;
-import frc.robot.commands.RunVomitCommand;
 import frc.robot.commands.RunWristCommand;
 import frc.robot.commands.UppercutCommand;
 import frc.robot.commands.WaitForCoralCommand;
@@ -41,25 +32,14 @@ import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.ReefCentering.Side;
 import swervelib.SwerveInputStream;
-import edu.wpi.first.hal.simulation.DriverStationDataJNI;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -259,8 +239,10 @@ public class RobotContainer {
     NamedCommands.registerCommand("Elevator Bottom Algae", Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kBottomAlgae)));
     NamedCommands.registerCommand("Elevator Top Algae", Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kTopAlgae)));
     NamedCommands.registerCommand("Elevator Processor", Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kProcessor)));
-    NamedCommands.registerCommand("Hold Algae", Commands.runOnce(() -> elevatorSystem.setElevatorPower(0.1)).handleInterrupt(() -> elevatorSystem.setElevatorPower(0)));
-    NamedCommands.registerCommand("Release Algae", Commands.runOnce(() -> elevatorSystem.setElevatorPower(0.5)).withTimeout(1).handleInterrupt(() -> elevatorSystem.setElevatorPower(0)));
+    
+    // Use coral centering for picking up and holding algae
+    // NamedCommands.registerCommand("Hold Algae", Commands.runOnce(() -> elevatorSystem.setElevatorPower(0.1)).handleInterrupt(() -> elevatorSystem.setElevatorPower(0)));
+    // NamedCommands.registerCommand("Release Algae", Commands.runOnce(() -> elevatorSystem.setElevatorPower(0.5)).withTimeout(1).handleInterrupt(() -> elevatorSystem.setElevatorPower(0)));
   }
 
   /**

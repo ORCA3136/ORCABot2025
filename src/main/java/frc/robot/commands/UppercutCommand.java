@@ -7,20 +7,14 @@ package frc.robot.commands;
 import frc.robot.Constants;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-
 
 
 
 /** An example command that uses an example subsystem. */
 public class UppercutCommand extends Command {
-  @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final ElevatorSubsystem elevatorSubsystem;
   private final IntakeSubsystem intake;
-  //private boolean safe = true;
 
   /**
    * Creates a new ExampleCommand.
