@@ -32,10 +32,7 @@ import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.ReefCentering.Side;
 import swervelib.SwerveInputStream;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -84,67 +81,46 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
     autoChooser.setDefaultOption("default auto", driveForwardAutoCommand);
-    }
+  }
     
-    SwerveInputStream driveAngularVelocity  = SwerveInputStream.of(driveBase.getSwerveDrive(),
-                                            () -> -m_driverController.getLeftY(), 
-                                            () -> -m_driverController.getLeftX())
-                                            .withControllerRotationAxis(() -> -m_driverController.getRightX())
-                                            .deadband(OperatorConstants.DEADBAND)
-                                            .scaleTranslation(0.8)
-                                            .allianceRelativeControl(true);
+  SwerveInputStream driveAngularVelocity  = SwerveInputStream.of(driveBase.getSwerveDrive(),
+                                          () -> -m_driverController.getLeftY(), 
+                                          () -> -m_driverController.getLeftX())
+                                          .withControllerRotationAxis(() -> -m_driverController.getRightX())
+                                          .deadband(OperatorConstants.DEADBAND)
+                                          .scaleTranslation(0.8)
+                                          .allianceRelativeControl(true);
 
-    SwerveInputStream driveRegular = driveAngularVelocity.copy().scaleTranslation(1.05);
+  SwerveInputStream driveRegular = driveAngularVelocity.copy().scaleTranslation(1.05);
 
-    SwerveInputStream driveAngularVelocitySlow = driveAngularVelocity.copy().scaleTranslation(Constants.Limits.MEDIUM_SPEED_FACTOR);
+  SwerveInputStream driveAngularVelocitySlow = driveAngularVelocity.copy().scaleTranslation(Constants.Limits.MEDIUM_SPEED_FACTOR);
 
+
+  SwerveInputStream driveDirectAngle = driveAngularVelocity.copy()
+                                                          .withControllerHeadingAxis(m_driverController::getRightX, 
+                                                          m_driverController::getRightY).headingWhile(false);
+                                                        //withControllerHeadingAxis(m_driverController::getRightX, m_driverController::getRightX  <- change this to Y for special mode
+
+  SwerveInputStream driveRobotOriented = driveAngularVelocity.copy().robotRelative(true)
+                                                            .allianceRelativeControl(false);
+  SwerveInputStream driveRobotOrientedReefSpeed = driveRobotOriented.copy().scaleTranslation(0.2);
+  SwerveInputStream driveRobotOrientedReefFast  = driveRobotOriented.copy().scaleTranslation(2);
+
+  Command driveFieldOrientedDirectAngle = driveBase.driveFieldOriented(driveDirectAngle);
+  Command driveFieldOrientedAngularVelocity = driveBase.driveFieldOriented(driveRegular); // Normal Drive
+  Command driveFieldOrientedWithElevatorDampening = driveBase.driveFieldOrientedElevatorSpeed(driveRegular, elevatorSystem); // Normal drive with elevator dampening
+  Command driveFieldOrientedAngularVelocitySlow = driveBase.driveFieldOriented(driveAngularVelocitySlow); // Right stick
+  Command driveRobotOrientedAngularVelocitySuperSlow = driveBase.driveFieldOriented(driveRobotOrientedReefSpeed); // Left stick
+  Command driveRobotOrientedAngularVelocitySuperFast = driveBase.driveFieldOriented(driveRobotOrientedReefFast);
   
-    SwerveInputStream driveDirectAngle = driveAngularVelocity.copy()
-                                                            .withControllerHeadingAxis(m_driverController::getRightX, 
-                                                            m_driverController::getRightY).headingWhile(false);
-                                                          //withControllerHeadingAxis(m_driverController::getRightX, m_driverController::getRightX  <- change this to Y for special mode
-
-    SwerveInputStream driveRobotOriented = driveAngularVelocity.copy().robotRelative(true)
-                                                             .allianceRelativeControl(false);
-    SwerveInputStream driveRobotOrientedReefSpeed = driveRobotOriented.copy().scaleTranslation(0.2);
-    SwerveInputStream driveRobotOrientedReefFast  = driveRobotOriented.copy().scaleTranslation(2);
-
-    Command driveFieldOrientedDirectAngle = driveBase.driveFieldOriented(driveDirectAngle);
-    Command driveFieldOrientedAngularVelocity = driveBase.driveFieldOriented(driveRegular); // Normal Drive
-    Command driveFieldOrientedWithElevatorDampening = driveBase.driveFieldOrientedElevatorSpeed(driveRegular, elevatorSystem); // Normal drive with elevator dampening
-    Command driveFieldOrientedAngularVelocitySlow = driveBase.driveFieldOriented(driveAngularVelocitySlow); // Right stick
-    Command driveRobotOrientedAngularVelocitySuperSlow = driveBase.driveFieldOriented(driveRobotOrientedReefSpeed); // Left stick
-    Command driveRobotOrientedAngularVelocitySuperFast = driveBase.driveFieldOriented(driveRobotOrientedReefFast);
-    
-
-    SwerveInputStream driveAngularVelocitySim = SwerveInputStream.of(driveBase.getSwerveDrive(),
-                                                () -> m_driverController.getLeftY(),
-                                                () -> m_driverController.getLeftX())
-                                                .withControllerRotationAxis(m_driverController::getRightX)
-                                                .deadband(OperatorConstants.DEADBAND)
-                                                .scaleTranslation(0.8)
-                                                .allianceRelativeControl(true);
-    // Derive the heading axis with math!
-    SwerveInputStream driveDirectAngleSim = driveAngularVelocitySim.copy()
-                                                                      .withControllerHeadingAxis(() -> Math.sin(
-                                                                                                      m_driverController.getRawAxis(
-                                                                                                          4) * Math.PI) * (Math.PI * 2),
-                                                                                                  () -> Math.cos(
-                                                                                                      m_driverController.getRawAxis(
-                                                                                                          4) * Math.PI) *
-                                                                                                        (Math.PI * 2))
-                                                                      .headingWhile(true);
-
-    Command driveFieldOrientedDirectAngleSim = driveBase.driveFieldOriented(driveDirectAngleSim);
 
 
+  SwerveInputStream driveForwardAuto = SwerveInputStream.of(driveBase.getSwerveDrive(),
+                                          () -> 0.15, 
+                                          () -> 0)
+                                          .allianceRelativeControl(false);
 
-    SwerveInputStream driveForwardAuto = SwerveInputStream.of(driveBase.getSwerveDrive(),
-                                            () -> 0.15, 
-                                            () -> 0)
-                                            .allianceRelativeControl(false);
-
-    Command driveForwardAutoCommand = driveBase.driveFieldOriented(driveForwardAuto);
+  Command driveForwardAutoCommand = driveBase.driveFieldOriented(driveForwardAuto);
 
   /**
    * Use this method to define your trigger->command mappings. Triggers can be created via the
@@ -156,75 +132,55 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    if (RobotBase.isSimulation())
-    {
-      driveBase.setDefaultCommand(RobotBase.isSimulation() ? 
-                                driveFieldOrientedDirectAngle :
-                                driveFieldOrientedDirectAngleSim);
+    driveBase.setDefaultCommand(driveFieldOrientedWithElevatorDampening);
+    intake.setDefaultCommand(new DefaultIntakeCommand(intake, vision, climber, elevatorSystem));
+
     
-      m_driverController.start().onTrue(Commands.runOnce(() -> driveBase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
-    }
-    else
-    {
 
-      driveBase.setDefaultCommand(driveFieldOrientedWithElevatorDampening);
-      intake.setDefaultCommand(new DefaultIntakeCommand(intake, vision, climber, elevatorSystem));
+    m_driverController.start().onTrue(Commands.runOnce(driveBase::zeroGyro));
+    m_driverController.back().whileTrue(new ZeroElevatorCommand(elevatorSystem));
 
+    m_driverController.leftStick().whileTrue(driveRobotOrientedAngularVelocitySuperSlow);
+    m_driverController.rightStick().whileTrue(driveFieldOrientedAngularVelocitySlow);
+
+    m_driverController.y().whileTrue(new RunElevatorCommand(elevatorSystem, Constants.ElevatorConstants.ElevatorPowerLevels.kUp));
+    m_driverController.a().whileTrue(new RunElevatorCommand(elevatorSystem, Constants.ElevatorConstants.ElevatorPowerLevels.kDown));
+    m_driverController.b().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kOut));
+    m_driverController.x().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kIn));
+
+    // m_driverController.povDown().whileTrue();
+    m_driverController.povUp().whileTrue(reefCentering.createPathCommand(ReefCentering.Side.Middle).until(() -> reefCentering.haveConditionsChanged()).repeatedly());
+    m_driverController.povLeft().whileTrue(reefCentering.createPathCommand(ReefCentering.Side.Left).until(() -> reefCentering.haveConditionsChanged()).repeatedly());
+    m_driverController.povRight().whileTrue(reefCentering.createPathCommand(ReefCentering.Side.Right).until(() -> reefCentering.haveConditionsChanged()).repeatedly());
+
+    // Right Trigger - 3
+    m_driverController.axisGreaterThan(3, 0.4).whileTrue(new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kOut, vision,ledSubsystem));
+    // Left Trigger - 2
+    m_driverController.axisGreaterThan(2, 0.4).whileTrue(new RunIntakeScoreCommand(intake, elevatorSystem, ledSubsystem));
       
+    m_driverController.rightBumper().whileTrue(new DoubleLidarRoutine(intake, Constants.IntakeConstants.IntakePowerLevels.kFeed, vision, ledSubsystem, climber));
+    
+    m_driverController.leftBumper().onTrue(new AutoScoreCommand(intake, elevatorSystem, Constants.IntakeConstants.IntakePowerLevels.kOut, vision));
 
-      m_driverController.start().onTrue(Commands.runOnce(driveBase::zeroGyro));
-      m_driverController.back().whileTrue(new ZeroElevatorCommand(elevatorSystem));
-
-      m_driverController.leftStick().whileTrue(driveRobotOrientedAngularVelocitySuperSlow);
-      m_driverController.rightStick().whileTrue(driveFieldOrientedAngularVelocitySlow);
-
-      m_driverController.y().whileTrue(new RunElevatorCommand(elevatorSystem, Constants.ElevatorConstants.ElevatorPowerLevels.kUp));
-      m_driverController.a().whileTrue(new RunElevatorCommand(elevatorSystem, Constants.ElevatorConstants.ElevatorPowerLevels.kDown));
-      m_driverController.b().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kOut));
-      m_driverController.x().whileTrue(new RunWristCommand(elevatorSystem, Constants.WristConstants.WristPowerLevels.kIn));
-
-      // m_driverController.povDown()  button .whileTrue(new UppercutCommand(elevatorSystem, intake));
-      m_driverController.povUp().whileTrue(reefCentering.createPathCommand(ReefCentering.Side.Middle).until(() -> reefCentering.haveConditionsChanged()).repeatedly());
-      m_driverController.povLeft().whileTrue(reefCentering.createPathCommand(ReefCentering.Side.Left).until(() -> reefCentering.haveConditionsChanged()).repeatedly());
-      m_driverController.povRight().whileTrue(reefCentering.createPathCommand(ReefCentering.Side.Right).until(() -> reefCentering.haveConditionsChanged()).repeatedly());
-
-      m_driverController.axisGreaterThan(3, 0.4).whileTrue(new RunIntakeCommand(intake, Constants.IntakeConstants.IntakePowerLevels.kOut, vision,ledSubsystem));
-      // Right Trigger - 3 ^^^^
-      m_driverController.axisGreaterThan(2, 0.4).whileTrue(new RunIntakeScoreCommand(intake, elevatorSystem, ledSubsystem));
-      // Left Trigger - 2 ^^^^
-
-      m_driverController.rightBumper().whileTrue(new DoubleLidarRoutine(intake, Constants.IntakeConstants.IntakePowerLevels.kFeed, vision, ledSubsystem, climber));
-      
-      m_driverController.leftBumper().onTrue(new AutoScoreCommand(intake, elevatorSystem, Constants.IntakeConstants.IntakePowerLevels.kOut, vision));
-
-      m_driverController.povDown().whileTrue(reefCentering.createPathCommand(Side.Algae));
-
-      // m_secondaryController.button(0).whileTrue(   driveBase.driveToPose(new Pose2d(new Translation2d(7.775, driveBase.getPose().getY()), new Rotation2d(180)), null) );
-      // m_secondaryController.button(1).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel4)));
-      // m_secondaryController.button(2).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel3)));
-      // m_secondaryController.button(3).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kLevel2)));
-      // m_secondaryController.button(4).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kFeederStation)));
-      // m_secondaryController.button(5).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kTopAlgae)));
-      // m_secondaryController.button(6).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kProcessor)));
-      // m_secondaryController.button(9).whileTrue(Commands.runOnce(() -> elevatorSystem.setSetpointCommand(ElevatorSubsystem.Setpoint.kBottomAlgae)));
-      
-      m_secondaryController.button(1).whileTrue(Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kLevel4)));
-      m_secondaryController.button(2).whileTrue(Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kLevel3)));
-      m_secondaryController.button(3).whileTrue(Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kLevel2)));
-      m_secondaryController.button(4).whileTrue(Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kFeederStation)));
-      m_secondaryController.button(5).whileTrue(Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kTopAlgae)));
-      m_secondaryController.button(10).whileTrue(Commands.runOnce(() -> {elevatorSystem.setElevatorManuallyMoving(true);
-                                                                                elevatorSystem.setWristManuallyMoving(true);}));
-
-      m_secondaryController.button(9).whileTrue(Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kBottomAlgae)));
-      m_secondaryController.button(6).onTrue(new UppercutCommand(elevatorSystem, intake));
-      
-      m_secondaryController.button(7).whileTrue(new RunFunnelCommand(climber, Constants.ClimberConstants.kFunnelSpeed));
-      m_secondaryController.button(8).whileTrue(new RunClimberCommand(climber, Constants.ClimberConstants.kClimberInSpeed));
-      m_secondaryController.button(11).whileTrue(new RunClimberCommand(climber, Constants.ClimberConstants.kClimberOutSpeed));
-      m_secondaryController.button(12).whileTrue(Commands.runOnce(() -> elevatorSystem.updateMode()));
-      m_secondaryController.axisGreaterThan(0, -0.2).onTrue(new RunClimbSequenceCommand(climber, elevatorSystem, false));
-    }
+    m_driverController.povDown().whileTrue(reefCentering.createPathCommand(Side.Algae));
+    
+    m_secondaryController.button(1).whileTrue(Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kLevel4)));
+    m_secondaryController.button(2).whileTrue(Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kLevel3)));
+    m_secondaryController.button(3).whileTrue(Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kLevel2)));
+    m_secondaryController.button(4).whileTrue(Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kFeederStation)));
+    m_secondaryController.button(5).whileTrue(Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kTopAlgae)));
+    m_secondaryController.button(9).whileTrue(Commands.runOnce(() -> elevatorSystem.setTargetSetpoint(ElevatorSubsystem.Setpoint.kBottomAlgae)));
+    m_secondaryController.button(10).whileTrue(Commands.runOnce(() -> {elevatorSystem.setElevatorManuallyMoving(true);
+                                                                              elevatorSystem.setWristManuallyMoving(true);
+                                                                              elevatorSystem.setElevatorPower(0);
+                                                                              elevatorSystem.setWristPower(0); }));
+    m_secondaryController.button(6).onTrue(new UppercutCommand(elevatorSystem, intake));
+    
+    m_secondaryController.button(7).whileTrue(new RunFunnelCommand(climber, Constants.ClimberConstants.kFunnelSpeed));
+    m_secondaryController.button(8).whileTrue(new RunClimberCommand(climber, Constants.ClimberConstants.kClimberInSpeed));
+    m_secondaryController.button(11).whileTrue(new RunClimberCommand(climber, Constants.ClimberConstants.kClimberOutSpeed));
+    m_secondaryController.button(12).whileTrue(Commands.runOnce(() -> elevatorSystem.updateMode()));
+    m_secondaryController.axisGreaterThan(0, -0.2).onTrue(new RunClimbSequenceCommand(climber, elevatorSystem, false));
   }
 
   private void configureNamedCommands() {
@@ -251,8 +207,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    
     return autoChooser.getSelected();
-
   }
 }

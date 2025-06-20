@@ -497,7 +497,6 @@ public class ElevatorSubsystem extends SubsystemBase {
         }
       }
     }
-    // When we have algae higher wrist limit
 
     if (!(isWristManuallyMoving())) {
       if (wristBool) {
@@ -514,17 +513,18 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     NetworkTableInstance.getDefault().getTable("Elevator").getEntry("Temp Elevator Target").setNumber(elTarget);
     NetworkTableInstance.getDefault().getTable("Elevator").getEntry("Temp Wrist Target").setNumber(wristTarget);
-
   }
 
   @Override
   public void periodic() {
     zeroElevatorOnLimitSwitch();
 
-    if (!wristManuallyMoving || !elevatorManuallyMoving) {
+    if (!wristManuallyMoving && !elevatorManuallyMoving) {
+      // Updates wrist and elevator setpoints
       updateElevatorHeight();
-      moveToSetpointPID();
     }
+    // Controls PID and sets limits
+    moveToSetpointPID();
 
     SmartDashboard.putNumber("Elevator current target", elevatorCurrentTarget);
     SmartDashboard.putNumber("Elevator current position", getElevatorPosition());

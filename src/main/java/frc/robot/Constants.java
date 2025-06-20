@@ -12,8 +12,6 @@ import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
-// import com.fasterxml.jackson.databind.node.DoubleNode;
-
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
@@ -113,23 +111,24 @@ public final class Constants {
       public static final double kUp = 0.15;
     }
 
+    /*
     public static final class ElevatorPIDConstants
     {
-      //FOR THE PROFILED MOTION
+      // FOR THE PROFILED MOTION
       public static final double kElevatorKp = 0.2;
       public static final double kElevatorKi = 0;
       public static final double kElevatorKd = 0.5;
       public static final double kMaxVelocity = .2; // was 120
       public static final double kMaxAcceleration = .1; // was 500
 
-      //FOR THE FEED FORWARD
+      // FOR THE FEED FORWARD
       public static final double kElevatorkS = 0;
       public static final double  kElevatorkG = 0.0003;
       public static final double kElevatorkV = 0;
       public static final double kElevatorkA = 0;
       public static final Constraints kElevatorConstraints = new Constraints(kMaxVelocity, kMaxAcceleration);
     }
-
+    */
   }
 
   public static final class WristConstants {
@@ -137,7 +136,7 @@ public final class Constants {
     public static final double wristOffset = 3.5;
 
     public static final class WristSetpoints { // degrees
-      public static final double unblock = Limits.kWristSafetyThreshold;
+      public static final double unblock = 25;
       public static final int kFeederStation = 4;
       public static final int kLevel1 = 4;
       public static final int kLevel2 = 30;
@@ -154,9 +153,10 @@ public final class Constants {
       public static final double kIn = -0.4;
     }
 
+    /*
     public static final class WristPIDConstants
     {
-      //FOR THE PROFILED MOTION
+      // FOR THE PROFILED MOTION
       public static final double kWristKp = 0.008; // might need to lower; oscilates without weight sometimes, rerolls when jiggeled
       public static final double kWristKi = 0;
       public static final double kWristKd = 0;
@@ -164,13 +164,13 @@ public final class Constants {
       public static final double kMaxAcceleration = 1;
       public static final Constraints kWristConstraints = new Constraints(kMaxVelocity, kMaxAcceleration);
 
-      //FOR THE FEED FORWARD
+      // FOR THE FEED FORWARD
       public static final double kWristkS = 0;
       public static final double kWristkG = 0;
       public static final double kWristkV = 0;
       public static final double kWristkA = 0;
-      
     }
+    */
   }
 
   public static final class WallConstants { // constants for the "walls" in elevator motion   most likely redundant now
@@ -178,7 +178,7 @@ public final class Constants {
     public static final double kElevatorBelowTopBar = 13.2; // 22
     public static final double kElevatorAboveBottomBar = 0;
     public static final double kElevatorBelowBottomBar = 3; //5
-    public static final double kMysteryPos = 12; //20
+    // public static final double kMysteryPos = 12; //20
 
 
   }
@@ -210,13 +210,13 @@ public final class Constants {
 
   public static final class Limits {
 
-    public static final double kElevatorSafetyThreshold = 5.0;
+    // public static final double kElevatorSafetyThreshold = 5.0;
 
     public static final double kElevatorMaxHeight = 61;     //0.948;
     public static final double kElevatorMinHeight = 0.0;
 
 
-    public static final double kWristSafetyThreshold = 25; // [20, 30]
+    // public static final double kWristSafetyThreshold = 25; // [20, 30]
 
 
     public static final double kWristMinAngle = WristConstants.wristOffset + 1; // degrees
@@ -247,9 +247,11 @@ public final class Constants {
         Units.degreesToRadians(360), Units.degreesToRadians(720));
   }
 
+  /*
   public static final class PhysicalConstants {
     public static final double elevatorSupportBar = 34;
   }
+  */
 
   public static final class FieldPoses {
 
@@ -288,7 +290,6 @@ public final class Constants {
     public static final double reefElevatorRange = 2;  // Units.feetToMeters(6); // 1.8 meters
     public static final double reefAlgaeElevatorRange = 2.4;
     public static final double reefAutoElevatorRange = 3;
-
   }
  
   public static final class Colors {
