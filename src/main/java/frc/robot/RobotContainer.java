@@ -32,6 +32,7 @@ import frc.robot.commands.WaitForCoralCommand;
 import frc.robot.commands.ZeroElevatorCommand;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.ElevatorSubsystemSim;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.ReefCentering;
@@ -82,6 +83,7 @@ public class RobotContainer {
   // private final SendableChooser<Command> autoChooser;
 
   private SwerveSubsystemSim driveBaseSim = new SwerveSubsystemSim(new File(Filesystem.getDeployDirectory(), "swerve/ORCA2025Sim"));
+  private ElevatorSubsystemSim elevatorSim = new ElevatorSubsystemSim();
 
 
 
@@ -144,29 +146,25 @@ public class RobotContainer {
                                                 .deadband(OperatorConstants.DEADBAND)
                                                 .scaleTranslation(0.8)
                                                 .allianceRelativeControl(true);
-    // Derive the heading axis with math!
     SwerveInputStream driveDirectAngleSim = driveAngularVelocitySim.copy()
                                               .withControllerHeadingAxis(
-                                              () -> Math.sin(m_driverController.getRawAxis(2) * Math.PI) * (Math.PI * 2),
-                                              () -> Math.cos(m_driverController.getRawAxis(2) * Math.PI) * (Math.PI * 2))
+                                              () -> Math.sin(m_driverController.getRawAxis(2)),
+                                              () -> Math.cos(m_driverController.getRawAxis(2)))
                                               .headingWhile(true);
     Command driveFieldOrientedDirectAngleSim = driveBaseSim.driveFieldOriented(driveDirectAngleSim);
 
-  /**
-   * Use this method to define your trigger->command mappings. Triggers can be created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
-   * predicate, or via the named factories in {@link
-   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
-   * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-   * joysticks}.
-   */
+
   private void configureBindings() {
     if (RobotBase.isSimulation())
     {
       driveBaseSim.setDefaultCommand(driveFieldOrientedDirectAngleSim);
     
       m_driverController.start().onTrue(Commands.runOnce(() -> driveBaseSim.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
+
+      // m_driverController.x().onTrue(Commands.runOnce(() -> elevatorSim.updateSetpoint(10)));
+      // m_driverController.y().onTrue(Commands.runOnce(() -> elevatorSim.updateSetpoint(30)));
+      m_driverController.button(1).onTrue(Commands.runOnce(() -> elevatorSim.setSimMotorPower(-1)));
+      m_driverController.button(2).onTrue(Commands.runOnce(() -> elevatorSim.setSimMotorPower(1)));
     }
 
     /*
