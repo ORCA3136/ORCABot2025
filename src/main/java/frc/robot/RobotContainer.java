@@ -36,6 +36,7 @@ import frc.robot.subsystems.ElevatorSubsystemSim;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.ReefCentering;
+import frc.robot.subsystems.SimMechanisms;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.SwerveSubsystemSim;
 import frc.robot.subsystems.VisionSubsystem;
@@ -82,8 +83,10 @@ public class RobotContainer {
   // private ReefCentering reefCentering = new ReefCentering(driveBase, elevatorSystem);
   // private final SendableChooser<Command> autoChooser;
 
-  private SwerveSubsystemSim driveBaseSim = new SwerveSubsystemSim(new File(Filesystem.getDeployDirectory(), "swerve/ORCA2025Sim"));
+  // private SwerveSubsystemSim driveBaseSim = new SwerveSubsystemSim(new File(Filesystem.getDeployDirectory(), "swerve/ORCA2025Sim"));
   private ElevatorSubsystemSim elevatorSim = new ElevatorSubsystemSim();
+
+  private SimMechanisms mechanismSim = new SimMechanisms(elevatorSim);
 
 
 
@@ -140,31 +143,37 @@ public class RobotContainer {
 
 
 
-    SwerveInputStream driveAngularVelocitySim = SwerveInputStream.of(driveBaseSim.getSwerveDrive(),
-                                                () -> m_driverController.getLeftY(),
-                                                () -> m_driverController.getLeftX())
-                                                .deadband(OperatorConstants.DEADBAND)
-                                                .scaleTranslation(0.8)
-                                                .allianceRelativeControl(true);
-    SwerveInputStream driveDirectAngleSim = driveAngularVelocitySim.copy()
-                                              .withControllerHeadingAxis(
-                                              () -> Math.sin(m_driverController.getRawAxis(2)),
-                                              () -> Math.cos(m_driverController.getRawAxis(2)))
-                                              .headingWhile(true);
-    Command driveFieldOrientedDirectAngleSim = driveBaseSim.driveFieldOriented(driveDirectAngleSim);
+    // SwerveInputStream driveAngularVelocitySim = SwerveInputStream.of(driveBaseSim.getSwerveDrive(),
+    //                                             () -> m_driverController.getLeftY(),
+    //                                             () -> m_driverController.getLeftX())
+    //                                             .deadband(OperatorConstants.DEADBAND)
+    //                                             .scaleTranslation(0.8)
+    //                                             .allianceRelativeControl(true);
+    // SwerveInputStream driveDirectAngleSim = driveAngularVelocitySim.copy()
+    //                                           .withControllerHeadingAxis(
+    //                                           () -> Math.sin(m_driverController.getRawAxis(2)),
+    //                                           () -> Math.cos(m_driverController.getRawAxis(2)))
+    //                                           .headingWhile(true);
+    // Command driveFieldOrientedDirectAngleSim = driveBaseSim.driveFieldOriented(driveDirectAngleSim);
 
 
   private void configureBindings() {
     if (RobotBase.isSimulation())
     {
-      driveBaseSim.setDefaultCommand(driveFieldOrientedDirectAngleSim);
+      // driveBaseSim.setDefaultCommand(driveFieldOrientedDirectAngleSim);
     
-      m_driverController.start().onTrue(Commands.runOnce(() -> driveBaseSim.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
+      // m_driverController.start().onTrue(Commands.runOnce(() -> driveBaseSim.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
 
-      // m_driverController.x().onTrue(Commands.runOnce(() -> elevatorSim.updateSetpoint(10)));
-      // m_driverController.y().onTrue(Commands.runOnce(() -> elevatorSim.updateSetpoint(30)));
-      m_driverController.button(1).onTrue(Commands.runOnce(() -> elevatorSim.setSimMotorPower(-1)));
-      m_driverController.button(2).onTrue(Commands.runOnce(() -> elevatorSim.setSimMotorPower(1)));
+      m_driverController.button(1).onTrue(Commands.runOnce(() -> elevatorSim.setTargetSetpoint(ElevatorSubsystemSim.Setpoint.kFeederStation)));
+      m_driverController.button(2).onTrue(Commands.runOnce(() -> elevatorSim.setTargetSetpoint(ElevatorSubsystemSim.Setpoint.kLevel2)));
+      m_driverController.button(3).onTrue(Commands.runOnce(() -> elevatorSim.setTargetSetpoint(ElevatorSubsystemSim.Setpoint.kLevel3)));
+      m_driverController.button(4).onTrue(Commands.runOnce(() -> elevatorSim.setTargetSetpoint(ElevatorSubsystemSim.Setpoint.kLevel4)));
+      
+
+      // m_driverController.button(1).onTrue(Commands.runOnce(() -> elevatorSim.setElevatorLength(2)));
+      // m_driverController.button(2).onTrue(Commands.runOnce(() -> elevatorSim.setElevatorLength(6)));
+      // m_driverController.button(3).onTrue(Commands.runOnce(() -> elevatorSim.setElevatorLength(12)));
+      // m_driverController.button(4).onTrue(Commands.runOnce(() -> elevatorSim.setElevatorLength(26)));
     }
 
     /*
