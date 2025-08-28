@@ -36,7 +36,7 @@ public final class Configs {
         .closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         // Set PID values for position control
-        .pidf(2, 0.0, 1, 0.2)  // d was 0.5   
+        .pidf(3, 0.0, 2, 0.3)  // d was 0.5   
         .outputRange(-0.80, 1);  // -0.85 0.85
 
 

@@ -99,7 +99,8 @@ public final class Constants {
       public static final double kLevel1 = 0;
       public static final double kLevel2 = 11.3; //
       public static final double kLevel3 = 27.5;
-      public static final double kLevel4 = 56; // max = 58
+      public static final double kLevel4 = 56; // max = 61
+      public static final double kBarge = 60;
 
       public static final double kBottomAlgae = 14.6; // 
       public static final double kTopAlgae = 32; // 
@@ -136,15 +137,15 @@ public final class Constants {
     public static final double wristOffset = 3.5;
 
     public static final class WristSetpoints { // degrees
-      public static final double unblock = Limits.kWristSafetyThreshold;
+      public static final double unblock = 25;
       public static final int kFeederStation = 4;
       public static final int kLevel1 = 4;
       public static final int kLevel2 = 30;
       public static final int kLevel3 = 25;
       public static final int kLevel4 = 53;
+      public static final int kBarge = 25;
       public static final int kProcessor = 183;
-      public static final int kAlgae1 = 132;
-      public static final int kAlgae2 = 132;
+      public static final int kAlgae = 132;
       public static final int kClimb = 17;
     }
 

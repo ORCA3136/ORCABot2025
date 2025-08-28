@@ -27,6 +27,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -57,7 +58,7 @@ import frc.robot.Constants.ElevatorConstants.ElevatorSetpoints;
 
 public class ElevatorSubsystemSim extends SubsystemBase {
 
-  private VisionSubsystem vision;
+  // private VisionSubsystem vision;
 
   /** Instantiates elevator motors */
   SparkMax leftElevator = new SparkMax(Constants.SparkConstants.kLeftElevatorCanId, MotorType.kBrushless);
@@ -65,20 +66,67 @@ public class ElevatorSubsystemSim extends SubsystemBase {
 
   SparkMax wristMotor = new SparkMax(Constants.SparkConstants.kWristCanId, MotorType.kBrushless);
 
+
+
+
+  private final DCMotor m_elevatorGearbox = DCMotor.getNEO(2);
+
+  private double elevatorGearing = 10;
+  private double elevatorDrumRadius = 0.038;
+
+  // Simulation classes help us simulate what's going on, including gravity.
+  private final ElevatorSim m_elevatorSim =
+      new ElevatorSim(
+          m_elevatorGearbox,        // Gearbox
+          elevatorGearing,         // Gearing
+          30,            // Carraige mass
+          elevatorDrumRadius,      // Drum radius - 1.5 in
+          0, // Min height
+          0.8, // Max height
+          true,
+          0,
+          0, 
+          0);
+
+  private final DCMotor m_wristGearbox = DCMotor.getNEO(1);
+
+  private double wristGearing = 10;
+
+  private final SingleJointedArmSim m_wristSim = 
+      new SingleJointedArmSim(
+        m_wristGearbox, 
+        wristGearing, 
+        10, 
+        0.1, 
+        0, 
+        30, 
+        false, 
+        0, 
+        0,
+        0);
+  
+  private final SparkMaxSim m_elevatorMotorSim = new SparkMaxSim(leftElevator, m_elevatorGearbox);
+  private final SparkRelativeEncoderSim m_elevatorEncoderSim = m_elevatorMotorSim.getRelativeEncoderSim();
+
+  private final SparkMaxSim m_wristMotorSim = new SparkMaxSim(wristMotor, m_wristGearbox);
+  private final SparkAbsoluteEncoderSim m_wristEncoderSim = m_wristMotorSim.getAbsoluteEncoderSim();
+
+
+
   public enum Setpoint {
     kFeederStation,
     kProcessor,
     kLevel2,
     kLevel3,
     kLevel4,
+    kTop,
+    kBarge,
     kUnblock,
     kTopAlgae,
-    kBottomAlgae, 
-    kTop,
-    kBarge
+    kBottomAlgae;
   }
 
-  private Setpoint currentLevel = ElevatorSubsystemSim.Setpoint.kFeederStation;
+  private Setpoint currentLevel = Setpoint.kFeederStation;
 
   private SparkClosedLoopController elevatorClosedLoopController =
       leftElevator.getClosedLoopController();
@@ -105,13 +153,14 @@ public class ElevatorSubsystemSim extends SubsystemBase {
   private boolean elevatorManuallyMoving = true;
 
   private final DigitalInput elevatorLimitSwitch;
+  private final DigitalInput algaeLimitSwitch;
 
   
   public ElevatorSubsystemSim( /*VisionSubsystem vision*/ ) {
 
     // this.vision = vision;
 
-
+    zeroElevator();
     Configs.ElevatorConfigs.rightElevatorConfig.follow(leftElevator, true);
     
     leftElevator.configure(Configs.ElevatorConfigs.leftElevatorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
@@ -120,12 +169,12 @@ public class ElevatorSubsystemSim extends SubsystemBase {
     wristMotor.configure(Configs.WristConfigs.wristMotorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
 
     elevatorLimitSwitch = new DigitalInput(0);
-    
+    algaeLimitSwitch = new DigitalInput(1);
   }
   
 
   
-    // main elevator/wrist movement
+  // main elevator/wrist movement
   private void moveToSetpointPID() {
     boolean elBool = false;
     double elTarget = 3;
@@ -176,6 +225,12 @@ public class ElevatorSubsystemSim extends SubsystemBase {
       wristTarget = Constants.WristConstants.WristSetpoints.unblock;
     }
 
+    if (wristCurrentTarget == Constants.WristConstants.WristSetpoints.kAlgae && getWristPosition() > 100) 
+    {
+      wristBool = true;
+      changedLevel = false;
+    }
+
 
     if (!isElevatorManuallyMoving()) {
       if (elBool) {
@@ -190,7 +245,7 @@ public class ElevatorSubsystemSim extends SubsystemBase {
       }
     }
 
-    if (!isWristManuallyMoving()) {
+    if (!(isWristManuallyMoving())) {
       if (wristBool) {
         wristMoveToSetpoint();
       } else {
@@ -203,9 +258,11 @@ public class ElevatorSubsystemSim extends SubsystemBase {
       }
     }
 
+    elevatorMoveToSetpoint();
+    wristMoveToSetpoint();
+
     NetworkTableInstance.getDefault().getTable("Elevator").getEntry("Temp Elevator Target").setNumber(elTarget);
     NetworkTableInstance.getDefault().getTable("Elevator").getEntry("Temp Wrist Target").setNumber(wristTarget);
-
   }
 
   private double getTargetOffset(double target, double pos, double offset, double tolerance){
@@ -298,55 +355,79 @@ public class ElevatorSubsystemSim extends SubsystemBase {
     }
   }
 
+  private boolean isSetpointAlgae(Setpoint level) {
+    if (level == Setpoint.kBarge || level == Setpoint.kTop || level == Setpoint.kBottomAlgae || level == Setpoint.kTopAlgae) {
+      return true;
+    }
+    return false;
+  }
+
+  public boolean isCurrentSetpointAlgae() {
+    return isSetpointAlgae(currentLevel);
+  }
+
+  public boolean hasAlgae() {
+    return algaeLimitSwitch.get();
+  }
+
   /**
    * Command to set the subsystem setpoint. This will set the arm and elevator to their predefined
    * positions for the given setpoint.
    */
-  public void setSetpointCommand(Setpoint setpoint) {  // see wrist subsystem counterpart
-    //return this.runOnce(
-        //() -> {
-          if (currentLevel != setpoint || currentLevel == null) {
-            changedLevel = true;
-          }
-          currentLevel = setpoint;
+  public void setSetpointCommand(Setpoint setpoint) {
+    if (currentLevel != setpoint || currentLevel == null) {
+      if ( !(isSetpointAlgae(setpoint) && isSetpointAlgae(currentLevel))) 
+      {
+        changedLevel = true;
+      }
+    }
+    currentLevel = setpoint;
 
-          setWristManuallyMoving(false);
-          setElevatorManuallyMoving(false);
-          switch (setpoint) {
-            case kFeederStation:
-              elevatorCurrentTarget = ElevatorSetpoints.kFeederStation;
-              wristCurrentTarget = Constants.WristConstants.WristSetpoints.kFeederStation;
-              break;
-            case kLevel2:
-              elevatorCurrentTarget = ElevatorSetpoints.kLevel2;
-              wristCurrentTarget = Constants.WristConstants.WristSetpoints.kLevel2;
-              break;
-            case kLevel3:
-              elevatorCurrentTarget = ElevatorSetpoints.kLevel3;
-              wristCurrentTarget = Constants.WristConstants.WristSetpoints.kLevel3;
-              break;
-            case kLevel4:
-              elevatorCurrentTarget = ElevatorSetpoints.kLevel4;
-              wristCurrentTarget = Constants.WristConstants.WristSetpoints.kLevel4;
-              break;
-            case kBottomAlgae:
-              elevatorCurrentTarget = Constants.ElevatorConstants.ElevatorSetpoints.kBottomAlgae;
-              wristCurrentTarget = Constants.WristConstants.WristSetpoints.kAlgae1;
-              break;
-            case kTopAlgae:
-              elevatorCurrentTarget = Constants.ElevatorConstants.ElevatorSetpoints.kTopAlgae;
-              wristCurrentTarget = Constants.WristConstants.WristSetpoints.kAlgae2;
-              break;
-            case kProcessor:
-              elevatorCurrentTarget = Constants.ElevatorConstants.ElevatorSetpoints.kProcessor;
-              wristCurrentTarget = Constants.WristConstants.WristSetpoints.kProcessor;
-              break;
-            case kUnblock:
-              wristCurrentTarget = Constants.WristConstants.WristSetpoints.unblock;
-              break;
-            default:
-              break;
-          }
+    setWristManuallyMoving(false);
+    setElevatorManuallyMoving(false);
+    switch (setpoint) {
+      case kFeederStation:
+        elevatorCurrentTarget = ElevatorSetpoints.kFeederStation;
+        wristCurrentTarget = Constants.WristConstants.WristSetpoints.kFeederStation;
+        break;
+      case kLevel2:
+        elevatorCurrentTarget = ElevatorSetpoints.kLevel2;
+        wristCurrentTarget = Constants.WristConstants.WristSetpoints.kLevel2;
+        break;
+      case kLevel3:
+        elevatorCurrentTarget = ElevatorSetpoints.kLevel3;
+        wristCurrentTarget = Constants.WristConstants.WristSetpoints.kLevel3;
+        break;
+      case kLevel4:
+        elevatorCurrentTarget = ElevatorSetpoints.kLevel4;
+        wristCurrentTarget = Constants.WristConstants.WristSetpoints.kLevel4;
+        break;
+      case kTop:
+        elevatorCurrentTarget = ElevatorSetpoints.kBarge;
+        wristCurrentTarget = Constants.WristConstants.WristSetpoints.kAlgae;
+        break;
+      case kBarge:
+        elevatorCurrentTarget = ElevatorSetpoints.kBarge;
+        wristCurrentTarget = Constants.WristConstants.WristSetpoints.kBarge;
+        break;
+      case kBottomAlgae:
+        elevatorCurrentTarget = ElevatorSetpoints.kBottomAlgae;
+        wristCurrentTarget = Constants.WristConstants.WristSetpoints.kAlgae;
+        break;
+      case kTopAlgae:
+        elevatorCurrentTarget = ElevatorSetpoints.kTopAlgae;
+        wristCurrentTarget = Constants.WristConstants.WristSetpoints.kAlgae;
+        break;
+      case kProcessor:
+        elevatorCurrentTarget = ElevatorSetpoints.kProcessor;
+        wristCurrentTarget = Constants.WristConstants.WristSetpoints.kProcessor;
+        break;
+      case kUnblock:
+        wristCurrentTarget = Constants.WristConstants.WristSetpoints.unblock;
+        break;
+      default:
+        break;
+    }
   }
 
   private void updateElevatorHeight() {
@@ -354,55 +435,62 @@ public class ElevatorSubsystemSim extends SubsystemBase {
 
     if (manualMode) {
       newSetpoint = targetSetpoint;
-    } else {
-
-      if (currentLevel == Setpoint.kBottomAlgae || currentLevel == Setpoint.kTopAlgae) {
-        if (distanceToReef < Constants.FieldPoses.reefAlgaeElevatorRange) {
-          newSetpoint = targetSetpoint;
-        } else {
-          if (aboveLevel1) {
-            newSetpoint = Setpoint.kFeederStation;
-          } else {
-            newSetpoint = targetSetpoint;
-          }
-        }
+    } 
+    // else if (vision.hasCoralInFunnel()) {
+    //   newSetpoint = currentLevel;
+    // } 
+    else if (hasAlgae() && isCurrentSetpointAlgae()) {
+      if (isSetpointAlgae(targetSetpoint)) {
+        newSetpoint = targetSetpoint;
       } else {
-        if (distanceToReef < Constants.FieldPoses.reefElevatorRange) {
-          newSetpoint = targetSetpoint;
-        } else {
-          if (aboveLevel1) {
-            newSetpoint = Setpoint.kFeederStation;
-          } else {
-            newSetpoint = targetSetpoint;
-          }
-        }
-      }
-      
-      if (DriverStation.isAutonomous()) {
-        if (distanceToReef < Constants.FieldPoses.reefAutoElevatorRange) {
-          newSetpoint = targetSetpoint;
-        } else {
-          if (aboveLevel1) {
-            newSetpoint = Setpoint.kFeederStation;
-          } else {
-            newSetpoint = targetSetpoint;
-          }
-        }
-      }
-
-      /*
-      if (vision.hasCoralInFunnel()) {
         newSetpoint = currentLevel;
       }
-      */
     }
+    else {
+          if (DriverStation.isAutonomous()) {
+            if (distanceToReef < Constants.FieldPoses.reefAutoElevatorRange) {
+              newSetpoint = targetSetpoint;
+            } else {
+              if (aboveLevel1) {
+                newSetpoint = Setpoint.kFeederStation;
+              } else {
+                newSetpoint = targetSetpoint;
+              }
+            }
+          } else {
+            if (currentLevel == Setpoint.kBottomAlgae || currentLevel == Setpoint.kTopAlgae) {
+              if (distanceToReef < Constants.FieldPoses.reefAlgaeElevatorRange) {
+                newSetpoint = targetSetpoint;
+              } else {
+                if (aboveLevel1) {
+                  newSetpoint = Setpoint.kFeederStation;
+                } else {
+                  newSetpoint = targetSetpoint;
+                }
+              }
+            } else {
+              if (distanceToReef < Constants.FieldPoses.reefElevatorRange) {
+                newSetpoint = targetSetpoint;
+              } else {
+                if (aboveLevel1) {
+                  newSetpoint = Setpoint.kFeederStation;
+                } else {
+                  newSetpoint = targetSetpoint;
+                }
+              }
+            }
+          }
+        }
 
-    NetworkTableInstance.getDefault().getTable("Elevator").getEntry("newSetpoint").setString("" + newSetpoint);
-    NetworkTableInstance.getDefault().getTable("Elevator").getEntry("targetSetpoint").setString("" + targetSetpoint);
-    if (currentLevel != newSetpoint) {
-      setSetpointCommand(newSetpoint);
+        newSetpoint = targetSetpoint;
+
+        NetworkTableInstance.getDefault().getTable("Elevator").getEntry("newSetpoint").setString("" + newSetpoint);
+        NetworkTableInstance.getDefault().getTable("Elevator").getEntry("targetSetpoint").setString("" + targetSetpoint);
+    
+        if (currentLevel != newSetpoint) {
+          setSetpointCommand(newSetpoint);
+        }
     }
-  }
   
   public static void updateDistanceToReef(double distance) {
     distanceToReef = distance;
@@ -443,7 +531,7 @@ public class ElevatorSubsystemSim extends SubsystemBase {
   }
 
   public double getElevatorPosition() {
-    return elevatorEncoder.getPosition();// might need to be scaled by the gear ratio
+    return elevatorEncoder.getPosition(); // might need to be scaled by the gear ratio
   }
 
   public double getWristPosition() {
@@ -488,12 +576,22 @@ public class ElevatorSubsystemSim extends SubsystemBase {
 
   @Override
   public void periodic() {
-    zeroElevatorOnLimitSwitch();
+    
 
-    if (!wristManuallyMoving || !elevatorManuallyMoving) {
-      updateElevatorHeight();
-      moveToSetpointPID();
-    }
+    SmartDashboard.putNumber("Elevator current target", elevatorCurrentTarget);
+    SmartDashboard.putNumber("Elevator current position", getElevatorPosition());
+    SmartDashboard.putBoolean("Elevator manually moving", elevatorManuallyMoving);
+    SmartDashboard.putBoolean("Wrist manually moving", wristManuallyMoving);
+
+    SmartDashboard.putNumber("Wrist current target", wristCurrentTarget);
+    SmartDashboard.putNumber("Wrist current position", getWristPosition());
+    SmartDashboard.putNumber("Wrist current 'angle'", getWristPosition());
+
+    SmartDashboard.putBoolean("Elevator limit switch", !elevatorLimitSwitch.get());
+    SmartDashboard.putBoolean("Algaelimit switch", algaeLimitSwitch.get());
+    SmartDashboard.putBoolean("Changed Level", changedLevel);
+
+    NetworkTableInstance.getDefault().getTable("Wrist").getEntry("At Scoring Pos").setBoolean(atScoringPosition());
   }
 
   
@@ -516,36 +614,10 @@ public class ElevatorSubsystemSim extends SubsystemBase {
 
 
 
-  private final DCMotor m_elevatorGearbox = DCMotor.getNEO(2);
-
-  private double gearing = 10;
-  private double drumRadius = 0.038;
-
-  // Simulation classes help us simulate what's going on, including gravity.
-  private final ElevatorSim m_elevatorSim =
-      new ElevatorSim(
-          m_elevatorGearbox,        // Gearbox
-          gearing,         // Gearing
-          15,            // Carraige mass
-          drumRadius,      // Drum radius - 1.5 in
-          0, // Min height
-          0.9, // Max height
-          true,
-          0,
-          0,
-          0);
   
-  private final SparkMaxSim m_motorSim = new SparkMaxSim(leftElevator, m_elevatorGearbox);
-  private final SparkRelativeEncoderSim m_encoderSim = m_motorSim.getRelativeEncoderSim();
 
-  // private SparkClosedLoopController controller = m_motorSim.getClosedLoopController();
-
-  StructPublisher<Pose3d> finalCompPosesPub_0 = NetworkTableInstance.getDefault()
-    .getStructTopic("FinalComponentPoses", Pose3d.struct).publish();
-  StructPublisher<Pose3d> finalCompPosesPub_1 = NetworkTableInstance.getDefault()
-    .getStructTopic("FinalComponentPoses_1", Pose3d.struct).publish();
-  StructPublisher<Pose3d> finalCompPosesPub_2 = NetworkTableInstance.getDefault()
-    .getStructTopic("FinalComponentPoses_2", Pose3d.struct).publish();
+  StructArrayPublisher<Pose3d> finalCompPosesPublisher = NetworkTableInstance.getDefault()
+    .getStructArrayTopic("FinalComponentPoses", Pose3d.struct).publish();
 
 
   public double getElevatorPositionMeters() {
@@ -553,32 +625,53 @@ public class ElevatorSubsystemSim extends SubsystemBase {
   }
 
   public void simulationPeriodic() {
+
+    zeroElevatorOnLimitSwitch();
+
+    if (!wristManuallyMoving && !elevatorManuallyMoving) {
+      // Updates wrist and elevator setpoints
+      updateElevatorHeight();
+    }
+    // Controls PID and sets limits
+    moveToSetpointPID();
+
     // In this method, we update our simulation of what our elevator is doing
     // First, we set our "inputs" (voltages)
-    m_elevatorSim.setInput(m_motorSim.getAppliedOutput() * RobotController.getBatteryVoltage());
-    SmartDashboard.putNumber("MotorSim Velocity", m_motorSim.getVelocity());
-    SmartDashboard.putNumber("Battery Voltage", RobotController.getBatteryVoltage());
+    m_elevatorSim.setInput(leftElevator.getAppliedOutput() * RobotController.getBatteryVoltage());
+    m_wristSim.setInput(wristMotor.getAppliedOutput() * RobotController.getBatteryVoltage());
     m_elevatorSim.update(0.020);
+    m_wristSim.update(0.020);
 
     // Encoder and motor positions do not match
-    m_motorSim.iterate(
-        (m_elevatorSim.getVelocityMetersPerSecond() / (drumRadius*2*Math.PI)) * gearing,
+    m_elevatorMotorSim.iterate(
+        (m_elevatorSim.getVelocityMetersPerSecond() / (elevatorDrumRadius * 2 * Math.PI)) * elevatorGearing * 60,
+        RoboRioSim.getVInVoltage(), // Simulated battery voltage, in Volts
+        0.02); // Time interval, in Seconds
+    m_wristMotorSim.iterate(
+        Units.radiansPerSecondToRotationsPerMinute(
+          m_wristSim.getVelocityRadPerSec() * wristGearing),
         RoboRioSim.getVInVoltage(), // Simulated battery voltage, in Volts
         0.02); // Time interval, in Seconds
 
+
     // Finally, we set our simulated encoder's readings and simulated battery voltage
-    // m_encoderSim.setDistance(m_elevatorSim.getPositionMeters());
+    // m_elevatorEncoderSim.setDistance(m_elevatorSim.getPositionMeters());
     // SimBattery estimates loaded battery voltages
     RoboRioSim.setVInVoltage(
-        BatterySim.calculateDefaultBatteryLoadedVoltage(m_elevatorSim.getCurrentDrawAmps()));
+        BatterySim.calculateDefaultBatteryLoadedVoltage(m_elevatorSim.getCurrentDrawAmps() + m_wristSim.getCurrentDrawAmps()));
 
 
     // Updating the components of the AdvantageScope 3d Model
-    finalCompPosesPub_0.set(new Pose3d(
-      -0.1, 0, 0.1 + getElevatorPositionMeters(), new Rotation3d()));
-    finalCompPosesPub_1.set(new Pose3d(
-      -0.1, 0, 0.115 + getElevatorPositionMeters(), new Rotation3d()));
-    finalCompPosesPub_2.set(new Pose3d(
-      -0.266, 0, 0.436 + getElevatorPositionMeters(), new Rotation3d(0, -0.5 + 0.5 * Math.sin(Timer.getFPGATimestamp()), 0)));
+    finalCompPosesPublisher.set(new Pose3d[]
+      {
+        // First stage elevator, second stage elevator, wrist, funnel, climber, foot
+        new Pose3d(-0.1, 0, 0.1 + getElevatorPositionMeters(), new Rotation3d()),
+        new Pose3d(-0.1, 0, 0.115 + 1.7 * getElevatorPositionMeters(), new Rotation3d()),
+        new Pose3d(-0.266, 0, 0.436 + 1.7 * getElevatorPositionMeters(), new Rotation3d(0, -wristEncoder.getPosition() / wristGearing, 0)),
+        new Pose3d(0, 0, 0, new Rotation3d()),
+        new Pose3d(0, 0, 0, new Rotation3d()),
+        new Pose3d(0, 0, 0, new Rotation3d())
+      }
+    );
   }
 }
