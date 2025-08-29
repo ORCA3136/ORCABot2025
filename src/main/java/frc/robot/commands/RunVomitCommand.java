@@ -4,12 +4,12 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.IntakeSubsystemSim;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /** An example command that uses an example subsystem. */
 public class RunVomitCommand extends Command {
-  private final IntakeSubsystem intakeSubsystem;
+  private final IntakeSubsystemSim intakeSubsystem;
   private final double powerSetPoint;
   //private LaserCan lidarObect;
 
@@ -18,7 +18,7 @@ public class RunVomitCommand extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public RunVomitCommand(IntakeSubsystem intakeSubsystem, double power) {
+  public RunVomitCommand(IntakeSubsystemSim intakeSubsystem, double power) {
     this.intakeSubsystem = intakeSubsystem;
     powerSetPoint = power;
     // Use addRequirements() here to declare subsystem dependencies.

@@ -4,8 +4,8 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ElevatorSubsystemSim;
+import frc.robot.subsystems.IntakeSubsystemSim;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -14,8 +14,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 /** An example command that uses an example subsystem. */
 public class AutoScoreCommand extends Command {
-  private final IntakeSubsystem intakeSubsystem;
-  private final ElevatorSubsystem elevatorSubsystem;
+  private final IntakeSubsystemSim intakeSubsystem;
+  private final ElevatorSubsystemSim elevatorSubsystem;
   private final VisionSubsystem visionSubsystem;
   private final double powerSetPoint;
   private boolean ejectingCoral = false;
@@ -28,7 +28,7 @@ public class AutoScoreCommand extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public AutoScoreCommand(IntakeSubsystem intakeSubsystem, ElevatorSubsystem elevatorSubsystem, double power, VisionSubsystem vision) {
+  public AutoScoreCommand(IntakeSubsystemSim intakeSubsystem, ElevatorSubsystemSim elevatorSubsystem, double power, VisionSubsystem vision) {
     this.intakeSubsystem = intakeSubsystem;
     this.elevatorSubsystem = elevatorSubsystem;
     powerSetPoint = power;

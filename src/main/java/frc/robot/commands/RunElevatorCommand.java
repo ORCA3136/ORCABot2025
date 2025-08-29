@@ -5,8 +5,7 @@
 package frc.robot.commands;
 
 import frc.robot.Constants;
-import frc.robot.subsystems.ElevatorSubsystem;
-
+import frc.robot.subsystems.ElevatorSubsystemSim;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -18,7 +17,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 /** An example command that uses an example subsystem. */
 public class RunElevatorCommand extends Command {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final ElevatorSubsystem elevatorSubsystem;
+  private final ElevatorSubsystemSim elevatorSubsystem;
   private final double powerSetPoint;
   //private boolean safe = true;
 
@@ -27,7 +26,7 @@ public class RunElevatorCommand extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public RunElevatorCommand(ElevatorSubsystem elevatorSubsystem, double power) {
+  public RunElevatorCommand(ElevatorSubsystemSim elevatorSubsystem, double power) {
     this.elevatorSubsystem = elevatorSubsystem;
     powerSetPoint = power;
     

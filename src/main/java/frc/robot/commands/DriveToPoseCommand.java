@@ -5,14 +5,14 @@
 package frc.robot.commands;
 
 import frc.robot.Constants;
-import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.SwerveSubsystemSim;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /** An example command that uses an example subsystem. */
 public class DriveToPoseCommand extends Command {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final SwerveSubsystem swerve;
+  private final SwerveSubsystemSim swerve;
   private final Pose2d targetpose;
   private final Pose2d[] midpose;
 
@@ -21,7 +21,7 @@ public class DriveToPoseCommand extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public DriveToPoseCommand(SwerveSubsystem subsystem, Pose2d pose, Pose2d[] midpose) {
+  public DriveToPoseCommand(SwerveSubsystemSim subsystem, Pose2d pose, Pose2d[] midpose) {
     this.swerve = subsystem;
     this.targetpose = pose;
     this.midpose = midpose;

@@ -4,9 +4,8 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.ClimberSubsystem;
-import frc.robot.subsystems.ExampleSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ClimberSubsystemSim;
+import frc.robot.subsystems.IntakeSubsystemSim;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import edu.wpi.first.wpilibj.Timer;
@@ -15,8 +14,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 /** An example command that uses an example subsystem. */
 public class DoubleLidarRoutine extends Command {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private IntakeSubsystem intakeSubsystem;
-  private ClimberSubsystem climberSubsystem;
+  private IntakeSubsystemSim intakeSubsystem;
+  private ClimberSubsystemSim climberSubsystem;
   private double powerSetPoint;
   //private LaserCan lidarObect;
   private VisionSubsystem vision;
@@ -31,7 +30,8 @@ public class DoubleLidarRoutine extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public DoubleLidarRoutine(IntakeSubsystem intakeSubsystem, double power, VisionSubsystem vision, LEDSubsystem ledSubsystem, ClimberSubsystem climberSubsystem) {
+  public DoubleLidarRoutine(IntakeSubsystemSim intakeSubsystem, double power, VisionSubsystem vision, 
+                            LEDSubsystem ledSubsystem, ClimberSubsystemSim climberSubsystem) {
     this.intakeSubsystem = intakeSubsystem;
     this.climberSubsystem = climberSubsystem;
     powerSetPoint = power;

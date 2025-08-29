@@ -4,9 +4,9 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.ElevatorSubsystem.Setpoint;
-import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ElevatorSubsystemSim;
+import frc.robot.subsystems.ElevatorSubsystemSim.Setpoint;
+import frc.robot.subsystems.IntakeSubsystemSim;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.Constants;
@@ -18,8 +18,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 /** An example command that uses an example subsystem. */
 public class RunIntakeScoreCommand extends Command {
-  private final IntakeSubsystem intakeSubsystem;
-  private final ElevatorSubsystem elevatorSubsystem;
+  private final IntakeSubsystemSim intakeSubsystem;
+  private final ElevatorSubsystemSim elevatorSubsystem;
   private final LEDSubsystem led;
 
   /**
@@ -27,7 +27,7 @@ public class RunIntakeScoreCommand extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public RunIntakeScoreCommand(IntakeSubsystem intakeSubsystem, ElevatorSubsystem elevatorSubsystem, LEDSubsystem ledSubsystem) {
+  public RunIntakeScoreCommand(IntakeSubsystemSim intakeSubsystem, ElevatorSubsystemSim elevatorSubsystem, LEDSubsystem ledSubsystem) {
     this.intakeSubsystem = intakeSubsystem;
     this.elevatorSubsystem = elevatorSubsystem;
     led = ledSubsystem;

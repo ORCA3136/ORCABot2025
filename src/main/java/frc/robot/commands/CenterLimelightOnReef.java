@@ -6,7 +6,7 @@ package frc.robot.commands;
 
 import frc.robot.LimelightHelpers;
 import frc.robot.Constants.Reef;
-import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.SwerveSubsystemSim;
 import frc.robot.subsystems.VisionSubsystem;
 
 import java.util.function.ToLongBiFunction;
@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 /** A command that moves the robot to a side of the reef. */
 public class CenterLimelightOnReef extends Command {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final SwerveSubsystem m_subsystem;
+  private final SwerveSubsystemSim m_subsystem;
   private Reef side;
   private String limelight;
   private double tolerance = 1;
@@ -31,7 +31,7 @@ public class CenterLimelightOnReef extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public CenterLimelightOnReef(SwerveSubsystem subsystem, Reef side) {
+  public CenterLimelightOnReef(SwerveSubsystemSim subsystem, Reef side) {
     m_subsystem = subsystem;
     this.side = side;
     addRequirements(subsystem);

@@ -36,8 +36,8 @@ public final class Configs {
         .closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         // Set PID values for position control
-        .pidf(3, 0.0, 2, 0.3)  // d was 0.5   
-        .outputRange(-0.80, 1);  // -0.85 0.85
+        .pidf(1, 0.0, 2, 0.3)
+        .outputRange(-0.8, 1);
 
 
       // rightElevatorConfig
@@ -58,15 +58,15 @@ public final class Configs {
     static {
       wristMotorConfig
         .inverted(true)
-        .idleMode(IdleMode.kBrake) // IDK about this; verify
+        .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(15);
 
       wristMotorConfig
         .closedLoop
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
         // Set PID values for position control
-        .pid(0.02, 0.0, 0.1) // Old was 0.015 and 0.5
-        .outputRange(-0.7, 0.7); // Old was +-0.8
+        .pid(5, 0.0, 4)
+        .outputRange(-1, 1);
     }
   }
 

@@ -4,7 +4,7 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.IntakeSubsystemSim;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import au.grapplerobotics.LaserCan;
@@ -14,7 +14,7 @@ import frc.robot.commands.RunRecursiveIntakeRoutine;
 
 /** name me. */
 public class RunIntakeRoutine extends Command {
-  private IntakeSubsystem intakeSubsystem;
+  private IntakeSubsystemSim intakeSubsystem;
   private double powerSetPoint;
   //private LaserCan lidarObect;
   private VisionSubsystem lidar;
@@ -28,7 +28,7 @@ public class RunIntakeRoutine extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public RunIntakeRoutine(IntakeSubsystem intakeSubsystem, double power, VisionSubsystem vision, LEDSubsystem ledSubsystem) {
+  public RunIntakeRoutine(IntakeSubsystemSim intakeSubsystem, double power, VisionSubsystem vision, LEDSubsystem ledSubsystem) {
     this.intakeSubsystem = intakeSubsystem;
     powerSetPoint = power;
     lidar = vision;

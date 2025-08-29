@@ -9,9 +9,12 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.simulation.BatterySim;
+import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -24,21 +27,22 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class SimMechanisms extends SubsystemBase {
 
   private ElevatorSubsystemSim elevatorSubsystemSim;
+  private SwerveSubsystemSim swerveSubsystemSim;
+  private ClimberSubsystemSim climberSubsystemSim;
+  private IntakeSubsystemSim intakeSubsystemSim;
 
   StructPublisher<Pose2d> robotPosPublisher = NetworkTableInstance.getDefault()
     .getStructTopic("RobotPose", Pose2d.struct).publish();
   
-  StructPublisher<Pose3d> finalCompPosesPub_3 = NetworkTableInstance.getDefault()
-    .getStructTopic("FinalComponentPoses_3", Pose3d.struct).publish();
-  StructPublisher<Pose3d> finalCompPosesPub_4 = NetworkTableInstance.getDefault()
-    .getStructTopic("FinalComponentPoses_4", Pose3d.struct).publish();
-  StructPublisher<Pose3d> finalCompPosesPub_5 = NetworkTableInstance.getDefault()
-    .getStructTopic("FinalComponentPoses_5", Pose3d.struct).publish();
+  StructArrayPublisher<Pose3d> finalCompPosesPublisher = NetworkTableInstance.getDefault()
+    .getStructArrayTopic("FinalComponentPoses", Pose3d.struct).publish();
 
   /** Creates a new ExampleSubsystem. */
-  public SimMechanisms(ElevatorSubsystemSim elevator) {
+  public SimMechanisms(SwerveSubsystemSim swerve, ElevatorSubsystemSim elevator, ClimberSubsystemSim climber, IntakeSubsystemSim intake) {
+    swerveSubsystemSim = swerve;
     elevatorSubsystemSim = elevator;
-
+    climberSubsystemSim = climber;
+    intakeSubsystemSim = intake;
 
     m_mech3rdRootTop.append(new MechanismLigament2d("Elevator3rdTop", 1, 0));
     m_mech3rdRootTop.append(new MechanismLigament2d("Elevator3rdLeft", 1, 270));
@@ -63,18 +67,26 @@ public class SimMechanisms extends SubsystemBase {
 
   @Override
   public void simulationPeriodic() {
-    robotPosPublisher.set(new Pose2d(0, 0, new Rotation2d()));
+    // SimBattery estimates loaded battery voltages
+    RoboRioSim.setVInVoltage(
+        BatterySim.calculateDefaultBatteryLoadedVoltage(elevatorSubsystemSim.getCurrentDraw() + 
+                                                        swerveSubsystemSim.getCurrentDraw() + 
+                                                        climberSubsystemSim.getCurrentDraw()));
+
+    robotPosPublisher.set(swerveSubsystemSim.getPose());
     
-    finalCompPosesPub_3.set(new Pose3d(
-      -0.0215, 0, 0.963, new Rotation3d(0, 0 * Math.sin(Timer.getFPGATimestamp()), 0)));
-    finalCompPosesPub_4.set(new Pose3d(
-      0.336, 0, 0.399, new Rotation3d(0, 0 * Math.sin(Timer.getFPGATimestamp()), 0)));
-    finalCompPosesPub_5.set(new Pose3d(
-      0.3435, 0, 0.128, new Rotation3d(0, 0 * Math.sin(Timer.getFPGATimestamp()), 0)));
-
-    // SmartDashboard.putNumber("Elevator Height", elevatorSubsystemSim.getElevatorPositionMeters());
-    // updateTelemetry(elevatorSubsystemSim.getElevatorPositionMeters());
-
-    // SmartDashboard.putData("Elevator Mechanism", m_elevatorMechanism);
+    // Updating the components of the AdvantageScope 3d Model
+    finalCompPosesPublisher.set(new Pose3d[]
+      {
+        // First stage elevator, second stage elevator, wrist, funnel, climber, foot
+        new Pose3d(-0.1, 0, 0.1 + elevatorSubsystemSim.getElevatorPositionMeters(), new Rotation3d()),
+        new Pose3d(-0.1, 0, 0.115 + 1.7 * elevatorSubsystemSim.getElevatorPositionMeters(), new Rotation3d()),
+        new Pose3d(-0.266, 0, 0.436 + 1.7 * elevatorSubsystemSim.getElevatorPositionMeters(), 
+                  new Rotation3d(0, -elevatorSubsystemSim.getWristAngleRadians(), 0)),
+        new Pose3d(-0.0215, 0, 0.963, new Rotation3d(0, -climberSubsystemSim.getFunnelAngleRadians(), 0)),
+        new Pose3d(0.336, 0, 0.399, new Rotation3d(0, -climberSubsystemSim.getClimberAngleRadians(), 0)),
+        new Pose3d(0.3435, 0, 0.128, new Rotation3d(0, 0, 0))
+      }
+    );
   }
 }

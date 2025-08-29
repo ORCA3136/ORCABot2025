@@ -5,14 +5,13 @@
 package frc.robot.commands;
 
 import frc.robot.Constants;
-import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.ElevatorSubsystemSim;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /** A command that moves the elevator and wrist to a position. */
 public class MoveToSetpointCommand extends Command {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final ElevatorSubsystem e_subsystem;
+  private final ElevatorSubsystemSim e_subsystem;
   private double y;
   private double theta;
 
@@ -21,7 +20,7 @@ public class MoveToSetpointCommand extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public MoveToSetpointCommand(ElevatorSubsystem subsystem, double y, double theta) {
+  public MoveToSetpointCommand(ElevatorSubsystemSim subsystem, double y, double theta) {
     e_subsystem = subsystem;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);

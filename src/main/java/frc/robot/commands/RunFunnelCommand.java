@@ -5,7 +5,7 @@
 package frc.robot.commands;
 
 import frc.robot.Constants;
-import frc.robot.subsystems.ClimberSubsystem;
+import frc.robot.subsystems.ClimberSubsystemSim;
 
 // import com.revrobotics.RelativeEncoder;
 
@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 
 /** An example command that uses an example subsystem. */
 public class RunFunnelCommand extends Command {
-  private final ClimberSubsystem climberSubsystem;
+  private final ClimberSubsystemSim climberSubsystem;
   private final double powerSetPoint;
   // private final RelativeEncoder angle = new RelativeEncoder(Constants.SparkConstants.kFunnelCanId);
 
@@ -23,7 +23,7 @@ public class RunFunnelCommand extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public RunFunnelCommand(ClimberSubsystem climberSubsystem, double power) {
+  public RunFunnelCommand(ClimberSubsystemSim climberSubsystem, double power) {
     this.climberSubsystem = climberSubsystem;
     powerSetPoint = power;
     // Use addRequirements() here to declare subsystem dependencies.

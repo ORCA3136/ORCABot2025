@@ -68,10 +68,9 @@ public class ElevatorSubsystemSim extends SubsystemBase {
 
 
 
-
   private final DCMotor m_elevatorGearbox = DCMotor.getNEO(2);
 
-  private double elevatorGearing = 10;
+  private double elevatorGearing = 18;
   private double elevatorDrumRadius = 0.038;
 
   // Simulation classes help us simulate what's going on, including gravity.
@@ -79,7 +78,7 @@ public class ElevatorSubsystemSim extends SubsystemBase {
       new ElevatorSim(
           m_elevatorGearbox,        // Gearbox
           elevatorGearing,         // Gearing
-          30,            // Carraige mass
+          15,            // Carraige mass
           elevatorDrumRadius,      // Drum radius - 1.5 in
           0, // Min height
           0.8, // Max height
@@ -90,7 +89,7 @@ public class ElevatorSubsystemSim extends SubsystemBase {
 
   private final DCMotor m_wristGearbox = DCMotor.getNEO(1);
 
-  private double wristGearing = 10;
+  private double wristGearing = 50;
 
   private final SingleJointedArmSim m_wristSim = 
       new SingleJointedArmSim(
@@ -577,6 +576,14 @@ public class ElevatorSubsystemSim extends SubsystemBase {
   @Override
   public void periodic() {
     
+    zeroElevatorOnLimitSwitch();
+
+    if (!wristManuallyMoving && !elevatorManuallyMoving) {
+      // Updates wrist and elevator setpoints
+      updateElevatorHeight();
+    }
+    // Controls PID and sets limits
+    moveToSetpointPID();
 
     SmartDashboard.putNumber("Elevator current target", elevatorCurrentTarget);
     SmartDashboard.putNumber("Elevator current position", getElevatorPosition());
@@ -598,43 +605,19 @@ public class ElevatorSubsystemSim extends SubsystemBase {
 
 
 
-
-
-
-
-
-
-
-
-  // 
-  // SIM Only
-  // 
-  // Everything past this point was made for AdvantageScope
-  // 
-
-
-
-  
-
-  StructArrayPublisher<Pose3d> finalCompPosesPublisher = NetworkTableInstance.getDefault()
-    .getStructArrayTopic("FinalComponentPoses", Pose3d.struct).publish();
-
-
   public double getElevatorPositionMeters() {
     return m_elevatorSim.getPositionMeters();
   }
 
+  public double getWristAngleRadians() {
+    return m_wristSim.getAngleRads();
+  }
+
+  public double getCurrentDraw() {
+    return m_elevatorSim.getCurrentDrawAmps() + m_wristSim.getCurrentDrawAmps();
+  }
+
   public void simulationPeriodic() {
-
-    zeroElevatorOnLimitSwitch();
-
-    if (!wristManuallyMoving && !elevatorManuallyMoving) {
-      // Updates wrist and elevator setpoints
-      updateElevatorHeight();
-    }
-    // Controls PID and sets limits
-    moveToSetpointPID();
-
     // In this method, we update our simulation of what our elevator is doing
     // First, we set our "inputs" (voltages)
     m_elevatorSim.setInput(leftElevator.getAppliedOutput() * RobotController.getBatteryVoltage());
@@ -652,26 +635,5 @@ public class ElevatorSubsystemSim extends SubsystemBase {
           m_wristSim.getVelocityRadPerSec() * wristGearing),
         RoboRioSim.getVInVoltage(), // Simulated battery voltage, in Volts
         0.02); // Time interval, in Seconds
-
-
-    // Finally, we set our simulated encoder's readings and simulated battery voltage
-    // m_elevatorEncoderSim.setDistance(m_elevatorSim.getPositionMeters());
-    // SimBattery estimates loaded battery voltages
-    RoboRioSim.setVInVoltage(
-        BatterySim.calculateDefaultBatteryLoadedVoltage(m_elevatorSim.getCurrentDrawAmps() + m_wristSim.getCurrentDrawAmps()));
-
-
-    // Updating the components of the AdvantageScope 3d Model
-    finalCompPosesPublisher.set(new Pose3d[]
-      {
-        // First stage elevator, second stage elevator, wrist, funnel, climber, foot
-        new Pose3d(-0.1, 0, 0.1 + getElevatorPositionMeters(), new Rotation3d()),
-        new Pose3d(-0.1, 0, 0.115 + 1.7 * getElevatorPositionMeters(), new Rotation3d()),
-        new Pose3d(-0.266, 0, 0.436 + 1.7 * getElevatorPositionMeters(), new Rotation3d(0, -wristEncoder.getPosition() / wristGearing, 0)),
-        new Pose3d(0, 0, 0, new Rotation3d()),
-        new Pose3d(0, 0, 0, new Rotation3d()),
-        new Pose3d(0, 0, 0, new Rotation3d())
-      }
-    );
   }
 }

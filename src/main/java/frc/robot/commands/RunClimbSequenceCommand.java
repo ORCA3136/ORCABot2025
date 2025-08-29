@@ -5,15 +5,15 @@
 package frc.robot.commands;
 
 import frc.robot.Constants;
-import frc.robot.subsystems.ClimberSubsystem;
-import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.ClimberSubsystemSim;
+import frc.robot.subsystems.ElevatorSubsystemSim;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /** A command that uses a Climber subsystem. */
 public class RunClimbSequenceCommand extends Command {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final ClimberSubsystem m_climber;
-  private final ElevatorSubsystem m_elevator;
+  private final ClimberSubsystemSim m_climber;
+  private final ElevatorSubsystemSim m_elevator;
   private boolean flipped;
   private boolean isOut;
 
@@ -22,7 +22,7 @@ public class RunClimbSequenceCommand extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public RunClimbSequenceCommand(ClimberSubsystem subsystem, ElevatorSubsystem elevator, boolean isOut) {
+  public RunClimbSequenceCommand(ClimberSubsystemSim subsystem, ElevatorSubsystemSim elevator, boolean isOut) {
     m_climber = subsystem;
     m_elevator = elevator;
     this.isOut = isOut;

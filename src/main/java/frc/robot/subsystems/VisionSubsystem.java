@@ -214,7 +214,7 @@ public class VisionSubsystem extends SubsystemBase {
      // IDK abt ths
   }
 
-  public void updateLimelightYaw(SwerveSubsystem swerve) {
+  public void updateLimelightYaw(SwerveSubsystemSim swerve) {
     double[] stddevs = NetworkTableInstance.getDefault().getTable("limelight-right")
                           .getEntry("stddevs").getDoubleArray(new double[12]);
     double LL4yaw = LimelightHelpers.getIMUData("limelight-right").Yaw;

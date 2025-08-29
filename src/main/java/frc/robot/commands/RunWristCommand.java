@@ -4,7 +4,7 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.ElevatorSubsystemSim;
 
 import frc.robot.Constants;
 
@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 /** An example command that uses an example subsystem. */
 public class RunWristCommand extends Command {
   
-  private final ElevatorSubsystem elevatorSystem;
+  private final ElevatorSubsystemSim elevatorSystem;
   private final double powerSetPoint;
 
   /**
@@ -22,7 +22,7 @@ public class RunWristCommand extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public RunWristCommand(ElevatorSubsystem wristSystem, double power) {
+  public RunWristCommand(ElevatorSubsystemSim wristSystem, double power) {
     elevatorSystem = wristSystem;
     powerSetPoint = power;
     // Use addRequirements() here to declare subsystem dependencies.

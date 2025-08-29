@@ -5,6 +5,8 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.sim.SparkFlexSim;
+import com.revrobotics.sim.SparkRelativeEncoderSim;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkFlex;
@@ -12,11 +14,14 @@ import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.simulation.LinearSystemSim;
+import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
 import frc.robot.Constants;
 
-public class IntakeSubsystem extends SubsystemBase {
+public class IntakeSubsystemSim extends SubsystemBase {
 
   SparkFlex intakeMotor = new SparkFlex(Constants.SparkConstants.kIntakeCanId, MotorType.kBrushless);
 
@@ -30,8 +35,20 @@ public class IntakeSubsystem extends SubsystemBase {
       .idleMode(IdleMode.kBrake);
     }
 
+
+  private final DCMotor m_intakeGearbox = DCMotor.getNEO(1);
+  private double intakeGearing = 50;
+
+  private final LinearSystemSim m_linearSim = new LinearSystemSim<>(null, 0);
+
+  private final FlywheelSim m_intakeSim = 
+      new FlywheelSim(null, m_intakeGearbox, 0);
+
+  private final SparkFlexSim m_intakeMotorSim = new SparkFlexSim(intakeMotor, m_intakeGearbox);
+  private final SparkRelativeEncoderSim m_intakeEncoderSim = m_intakeMotorSim.getRelativeEncoderSim();
+
   /** Creates a new IntakeSubsystem. */
-  public IntakeSubsystem() {
+  public IntakeSubsystemSim() {
     intakeMotor.configure(intakeMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 

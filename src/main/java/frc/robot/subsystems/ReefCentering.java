@@ -24,12 +24,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.FieldPoses;
 import frc.robot.Constants.PathPlannerConstants;
-import frc.robot.subsystems.ElevatorSubsystem.Setpoint;
+import frc.robot.subsystems.ElevatorSubsystemSim.Setpoint;
 
 public class ReefCentering {
 
-  private final SwerveSubsystem m_drive;
-  private final ElevatorSubsystem m_elevator;
+  private final SwerveSubsystemSim m_drive;
+  private final ElevatorSubsystemSim m_elevator;
 
   private boolean elevatorAtHeight = false;
   private Setpoint elevatorSetpoint = Setpoint.kFeederStation;
@@ -42,7 +42,7 @@ public class ReefCentering {
     Back
   }
 
-  public ReefCentering(SwerveSubsystem drive, ElevatorSubsystem elevator) {
+  public ReefCentering(SwerveSubsystemSim drive, ElevatorSubsystemSim elevator) {
     m_drive = drive;
     m_elevator = elevator;
   }

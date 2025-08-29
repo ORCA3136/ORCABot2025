@@ -69,15 +69,11 @@ public class SwerveSubsystemSim extends SubsystemBase {
     try
     {
       swerveDrive = new SwerveParser(directory).createSwerveDrive(Constants.Limits.MAX_SPEED,
-                                                                  new Pose2d(new Translation2d(Meter.of(0),
-                                                                                               Meter.of(0)),
+                                                                  new Pose2d(new Translation2d(Meter.of(2),
+                                                                                               Meter.of(2)),
                                                                              Rotation2d.fromDegrees(0)));
-      // DataLogManager.log("Found and read the file");
-
-      
-      // Alternative method if you don't want to supply the conversion factor via JSON files.
-      // swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumSpeed, angleConversionFactor, driveConversionFactor);
-    } catch (Exception e)
+    } 
+    catch (Exception e)
     {
       throw new RuntimeException(e);
     }
@@ -99,8 +95,8 @@ public class SwerveSubsystemSim extends SubsystemBase {
     try
     {
       swerveDrive = new SwerveParser(directory).createSwerveDrive(Constants.Limits.MAX_SPEED,
-                                                                  new Pose2d(new Translation2d(Meter.of(0),
-                                                                                               Meter.of(0)),
+                                                                  new Pose2d(new Translation2d(Meter.of(2),
+                                                                                               Meter.of(2)),
                                                                              Rotation2d.fromDegrees(0)));
     } 
     catch (Exception e)
@@ -122,9 +118,6 @@ public class SwerveSubsystemSim extends SubsystemBase {
 
     field = new Field2d();
     SmartDashboard.putData(field);
-
-    // poseSupplier = (Supplier<Pose2d>) getMapleSimPose();
-    // NetworkTableInstance.getDefault().getDefault().
   }
 
 
@@ -286,12 +279,13 @@ public class SwerveSubsystemSim extends SubsystemBase {
 
   public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity)
   {
+    NetworkTableInstance.getDefault().getTable("Swerve").getEntry("Current Axis 2").setNumber(velocity.get().omegaRadiansPerSecond);
     return run(()->{
       swerveDrive.driveFieldOriented(velocity.get());
     });
   }
 
-  public Command driveFieldOrientedElevatorSpeed(Supplier<ChassisSpeeds> velocity, ElevatorSubsystem elevator)
+  public Command driveFieldOrientedElevatorSpeed(Supplier<ChassisSpeeds> velocity, ElevatorSubsystemSim elevator)
   {
     return run(()->{
       double elevatorHeight = elevator.getElevatorPosition();
@@ -359,7 +353,7 @@ public class SwerveSubsystemSim extends SubsystemBase {
   @Override
   public void periodic() {
     if (RobotBase.isReal()) {
-      ElevatorSubsystem.updateDistanceToReef(distanceToReef());
+      ElevatorSubsystemSim.updateDistanceToReef(distanceToReef());
       vision.updatePosesEstimatorMT2(swerveDrive);
       field.getObject("Robot").setPose(getPose());
     }
@@ -372,6 +366,10 @@ public class SwerveSubsystemSim extends SubsystemBase {
     field.getObject("Robot").setPose(getMapleSimPose());
   }
 
+
+  public double getCurrentDraw() {
+    return 0.5;
+  }
 
   /**
    * Setup AutoBuilder for PathPlanner.
@@ -524,16 +522,3 @@ public class SwerveSubsystemSim extends SubsystemBase {
     return new PathPlannerAuto(pathName);
   }
 }
-
-
-
-/*
- 
-
-
-
-  public void simulationPeriodic() {
-    REVPhysicsSim.getInstance().run();
-  }
- 
- */

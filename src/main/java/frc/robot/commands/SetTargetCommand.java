@@ -4,13 +4,13 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.ElevatorSubsystemSim;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /** An example command that uses an example subsystem. */
 public class SetTargetCommand extends Command {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final ElevatorSubsystem elevatorSubsystem;
+  private final ElevatorSubsystemSim elevatorSubsystem;
   private double wristTarget;
   private double elevatorTarget;
 
@@ -19,7 +19,7 @@ public class SetTargetCommand extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public SetTargetCommand(ElevatorSubsystem subsystem, double targetw, double targete) {
+  public SetTargetCommand(ElevatorSubsystemSim subsystem, double targetw, double targete) {
     elevatorSubsystem = subsystem;
     wristTarget = targetw;
     elevatorTarget = targete;

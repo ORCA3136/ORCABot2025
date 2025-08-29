@@ -4,14 +4,14 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.IntakeSubsystemSim;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /** An example command that uses an example subsystem. */
 public class RunIntakeCommand extends Command {
-  private final IntakeSubsystem intakeSubsystem;
+  private final IntakeSubsystemSim intakeSubsystem;
   private final double powerSetPoint;
   private final LEDSubsystem led;
   //private LaserCan lidarObect;
@@ -24,7 +24,7 @@ public class RunIntakeCommand extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public RunIntakeCommand(IntakeSubsystem intakeSubsystem, double power, VisionSubsystem vision, LEDSubsystem ledSubsystem) {
+  public RunIntakeCommand(IntakeSubsystemSim intakeSubsystem, double power, VisionSubsystem vision, LEDSubsystem ledSubsystem) {
     this.intakeSubsystem = intakeSubsystem;
     powerSetPoint = power;
     lidar = vision;

@@ -6,11 +6,10 @@ package frc.robot.commands;
 
 import frc.robot.Constants;
 import frc.robot.Configs.ClimberConfigs;
-import frc.robot.subsystems.ClimberSubsystem;
-import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.ElevatorSubsystem.Setpoint;
-import frc.robot.subsystems.ExampleSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ClimberSubsystemSim;
+import frc.robot.subsystems.ElevatorSubsystemSim;
+import frc.robot.subsystems.ElevatorSubsystemSim.Setpoint;
+import frc.robot.subsystems.IntakeSubsystemSim;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import edu.wpi.first.wpilibj.Timer;
@@ -19,9 +18,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 /** An example command that uses an example subsystem. */
 public class DefaultIntakeCommand extends Command {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private IntakeSubsystem intakeSubsystem;
-  private ClimberSubsystem climberSubsystem;
-  private ElevatorSubsystem elevatorSubsystem;
+  private IntakeSubsystemSim intakeSubsystem;
+  private ClimberSubsystemSim climberSubsystem;
+  private ElevatorSubsystemSim elevatorSubsystem;
   //private LaserCan lidarObect;
   private VisionSubsystem vision;
   // private LEDSubsystem led;
@@ -34,8 +33,8 @@ public class DefaultIntakeCommand extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public DefaultIntakeCommand(IntakeSubsystem intakeSubsystem, VisionSubsystem vision, 
-                              ClimberSubsystem climberSubsystem, ElevatorSubsystem elevatorSubsystem) {
+  public DefaultIntakeCommand(IntakeSubsystemSim intakeSubsystem, VisionSubsystem vision, 
+                              ClimberSubsystemSim climberSubsystem, ElevatorSubsystemSim elevatorSubsystem) {
     this.climberSubsystem = climberSubsystem;
     this.intakeSubsystem = intakeSubsystem;
     this.elevatorSubsystem = elevatorSubsystem;
