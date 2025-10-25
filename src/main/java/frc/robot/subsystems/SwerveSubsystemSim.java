@@ -289,7 +289,7 @@ public class SwerveSubsystemSim extends SubsystemBase {
   {
     return run(()->{
       double elevatorHeight = elevator.getElevatorPosition();
-      if (elevatorHeight > Constants.ElevatorConstants.ElevatorSetpoints.kElevatorSlowdownThreshhold)
+      if (elevatorHeight > Constants.ElevatorConstants.SetpointPositions.kElevatorSlowdownThreshhold)
           swerveDrive.driveFieldOriented(velocity.get().times(Constants.Limits.ELEVATOR_SPEED_FACTOR));
       else
           swerveDrive.driveFieldOriented(velocity.get());

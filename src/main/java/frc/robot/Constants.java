@@ -93,8 +93,7 @@ public final class Constants {
 
   public static final class ElevatorConstants {
 
-
-    public static final class ElevatorSetpoints { // native units; our range is [0 96], so a percent
+    public static final class SetpointPositions { // native units; our range is [0 96], so a percent
       public static final double kFeederStation = 0;
       public static final double kLevel1 = 0;
       public static final double kLevel2 = 11.3; //
@@ -108,33 +107,40 @@ public final class Constants {
 
       public static final double kElevatorSlowdownThreshhold = 40;
     }
-    public static final class ElevatorPowerLevels {
+
+    public static final class PowerLevels {
       public static final double kDown = -0.1;
       public static final double kUp = 0.15;
     }
 
-    public static final class ElevatorPIDConstants
+    public static final class PIDConstants
     {
       //FOR THE PROFILED MOTION
-      public static final double kElevatorKp = 0.2;
-      public static final double kElevatorKi = 0;
-      public static final double kElevatorKd = 0.5;
+      public static final double kP = 0.2;
+      public static final double kI = 0;
+      public static final double kD = 0.5;
       public static final double kMaxVelocity = .2; // was 120
       public static final double kMaxAcceleration = .1; // was 500
 
       //FOR THE FEED FORWARD
-      public static final double kElevatorkS = 0;
-      public static final double  kElevatorkG = 0.0003;
-      public static final double kElevatorkV = 0;
-      public static final double kElevatorkA = 0;
+      public static final double kS = 0;
+      public static final double kG = 0.0003;
+      public static final double kV = 0;
+      public static final double kA = 0;
       public static final Constraints kElevatorConstraints = new Constraints(kMaxVelocity, kMaxAcceleration);
     }
 
+    public static final class PhysicalConstants {
+      private double elevatorGearing = 18;
+    }
   }
 
   public static final class WristConstants {
 
-    public static final double wristOffset = 3.5;
+    public static final class PhysicalConstants {
+      public static final double wristOffset = 3.5;
+      private double wristGearing = 50;
+    }
 
     public static final class WristSetpoints { // degrees
       public static final double unblock = 25;
@@ -215,7 +221,7 @@ public final class Constants {
     public static final double kWristSafetyThreshold = 25; // [20, 30]
 
 
-    public static final double kWristMinAngle = WristConstants.wristOffset + 1; // degrees
+    public static final double kWristMinAngle = WristConstants.PhysicalConstants.wristOffset + 1; // degrees
     public static final double kWristMaxAngle = 200; // degrees  110 untested; was 94
 
     public static final double MAX_SPEED = Units.feetToMeters(10); // theoretical: 14.63 Ft/s

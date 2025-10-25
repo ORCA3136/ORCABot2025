@@ -4,7 +4,11 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.util.Units;
+import yams.mechanisms.SmartMechanism;
+import yams.motorcontrollers.SmartMotorControllerConfig;
+import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkFlexConfig;
@@ -37,6 +41,7 @@ public final class Configs {
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         // Set PID values for position control
         .pidf(1, 0.0, 2, 0.3)
+        .iMaxAccum(0)
         .outputRange(-0.8, 1);
 
 
@@ -46,8 +51,6 @@ public final class Configs {
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(50)
         .voltageCompensation(12);
-        
-
     }
   }
 

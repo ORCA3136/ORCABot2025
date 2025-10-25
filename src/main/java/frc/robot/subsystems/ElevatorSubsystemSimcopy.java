@@ -6,9 +6,6 @@ package frc.robot.subsystems;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.sim.SparkAbsoluteEncoderSim;
-import com.revrobotics.sim.SparkRelativeEncoderSim;
-import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -18,93 +15,53 @@ import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.simulation.BatterySim;
-import edu.wpi.first.wpilibj.simulation.ElevatorSim;
-import edu.wpi.first.wpilibj.simulation.EncoderSim;
-import edu.wpi.first.wpilibj.simulation.PWMSim;
-import edu.wpi.first.wpilibj.simulation.RoboRioSim;
-import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Configs;
-import frc.robot.Constants;
-import frc.robot.Constants.ElevatorConstants.SetpointPositions;
+import frc.robot.Constants.SparkConstants;
+import frc.robot.Constants.WallConstants;
+import frc.robot.Constants.FieldPoses;
+import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.WristConstants;
 
-public class ElevatorSubsystemSim extends SubsystemBase {
+// YAMS and YALL
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Feet;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Pounds;
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
+import edu.wpi.first.math.controller.ElevatorFeedforward;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj2.command.Command;
+import yams.mechanisms.SmartMechanism;
+import yams.mechanisms.config.ElevatorConfig;
+import yams.mechanisms.positional.Elevator;
+import yams.motorcontrollers.SmartMotorController;
+import yams.motorcontrollers.SmartMotorControllerConfig;
+import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
+import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
+import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
+import yams.motorcontrollers.local.SparkWrapper;
+
+public class ElevatorSubsystemSimcopy extends SubsystemBase {
 
   // private VisionSubsystem vision;
 
   /** Instantiates elevator motors */
-  SparkMax leftElevator = new SparkMax(Constants.SparkConstants.kLeftElevatorCanId, MotorType.kBrushless);
-  SparkMax rightElevator = new SparkMax(Constants.SparkConstants.kRightElevatorCanId, MotorType.kBrushless);
-
-  SparkMax wristMotor = new SparkMax(Constants.SparkConstants.kWristCanId, MotorType.kBrushless);
-
-
-
-  private final DCMotor m_elevatorGearbox = DCMotor.getNEO(2);
-
-  private double elevatorGearing = 18;
-  private double elevatorDrumRadius = 0.038;
-
-  // Simulation classes help us simulate what's going on, including gravity.
-  private final ElevatorSim m_elevatorSim =
-      new ElevatorSim(
-          m_elevatorGearbox,        // Gearbox
-          elevatorGearing,         // Gearing
-          15,            // Carraige mass
-          elevatorDrumRadius,      // Drum radius - 1.5 in
-          0, // Min height
-          0.8, // Max height
-          true,
-          0,
-          0, 
-          0);
-
-  private final DCMotor m_wristGearbox = DCMotor.getNEO(1);
-
-  private double wristGearing = 50;
-
-  private final SingleJointedArmSim m_wristSim = 
-      new SingleJointedArmSim(
-        m_wristGearbox, 
-        wristGearing, 
-        10, 
-        0.1, 
-        0, 
-        30, 
-        false, 
-        0, 
-        0,
-        0);
-  
-  private final SparkMaxSim m_elevatorMotorSim = new SparkMaxSim(leftElevator, m_elevatorGearbox);
-  private final SparkRelativeEncoderSim m_elevatorEncoderSim = m_elevatorMotorSim.getRelativeEncoderSim();
-
-  private final SparkMaxSim m_wristMotorSim = new SparkMaxSim(wristMotor, m_wristGearbox);
-  private final SparkAbsoluteEncoderSim m_wristEncoderSim = m_wristMotorSim.getAbsoluteEncoderSim();
-
-
+  SparkMax leftElevator = new SparkMax(SparkConstants.kLeftElevatorCanId, MotorType.kBrushless);
+  SparkMax rightElevator = new SparkMax(SparkConstants.kRightElevatorCanId, MotorType.kBrushless);
+  SparkMax wristMotor = new SparkMax(SparkConstants.kWristCanId, MotorType.kBrushless);
 
   public enum Setpoint {
     kFeederStation,
@@ -127,14 +84,73 @@ public class ElevatorSubsystemSim extends SubsystemBase {
   private SparkClosedLoopController wristClosedLoopController =
       wristMotor.getClosedLoopController();
 
+  // YAMS config
+  private SmartMotorControllerConfig elevatorConfig = new SmartMotorControllerConfig(this)
+    .withControlMode(ControlMode.CLOSED_LOOP)
+    // Mechanism Circumference is the distance traveled by each mechanism rotation converting rotations to meters.
+    .withMechanismCircumference(Meters.of(10))
+    // Feedback Constants (PID Constants)
+    .withClosedLoopController(ElevatorConstants.PIDConstants.kP, 
+                              ElevatorConstants.PIDConstants.kI, 
+                              ElevatorConstants.PIDConstants.kD, 
+                              MetersPerSecond.of(ElevatorConstants.PIDConstants.kMaxVelocity), 
+                              MetersPerSecondPerSecond.of(ElevatorConstants.PIDConstants.kMaxAcceleration))
+    .withSimClosedLoopController(ElevatorConstants.PIDConstants.kP, 
+                                 ElevatorConstants.PIDConstants.kI, 
+                                 ElevatorConstants.PIDConstants.kD, 
+                                 MetersPerSecond.of(ElevatorConstants.PIDConstants.kMaxVelocity), 
+                                 MetersPerSecondPerSecond.of(ElevatorConstants.PIDConstants.kMaxAcceleration))
+    // Feedforward Constants
+    .withFeedforward(new ElevatorFeedforward(ElevatorConstants.PIDConstants.kS, 
+                                             ElevatorConstants.PIDConstants.kG, 
+                                             ElevatorConstants.PIDConstants.kV))
+    .withSimFeedforward(new ElevatorFeedforward(ElevatorConstants.PIDConstants.kS, 
+                                                ElevatorConstants.PIDConstants.kG, 
+                                                ElevatorConstants.PIDConstants.kV))
+    // Telemetry name and verbosity level
+    .withTelemetry("ElevatorMotor", TelemetryVerbosity.HIGH)
+    // Gearing from the motor rotor to final shaft.
+    // In this example gearbox(3,4) is the same as gearbox("3:1","4:1") which corresponds to the gearbox attached to your motor.
+    .withGearing(SmartMechanism.gearing(SmartMechanism.gearbox(3,4)))
+    // Motor properties to prevent over currenting.
+    .withMotorInverted(false)
+    .withIdleMode(MotorMode.BRAKE)
+    .withStatorCurrentLimit(Amps.of(40))
+    .withClosedLoopRampRate(Seconds.of(0.25))
+    .withOpenLoopRampRate(Seconds.of(0.25));
+
+  private SmartMotorControllerConfig wristConfig = new SmartMotorControllerConfig(this)
+    .withControlMode(ControlMode.CLOSED_LOOP)
+    // Mechanism Circumference is the distance traveled by each mechanism rotation converting rotations to meters.
+    .withMechanismCircumference(Meters.of(10))
+    // Feedback Constants (PID Constants)
+    .withClosedLoopController(4, 0, 0, MetersPerSecond.of(0.5), MetersPerSecondPerSecond.of(0.5))
+    .withSimClosedLoopController(4, 0, 0, MetersPerSecond.of(0.5), MetersPerSecondPerSecond.of(0.5))
+    // Feedforward Constants
+    .withFeedforward(new ElevatorFeedforward(0, 0, 0, 0))
+    .withSimFeedforward(new ElevatorFeedforward(0, 0, 0))
+    // Telemetry name and verbosity level
+    .withTelemetry("ElevatorMotor", TelemetryVerbosity.HIGH)
+    // Gearing from the motor rotor to final shaft.
+    // In this example gearbox(3,4) is the same as gearbox("3:1","4:1") which corresponds to the gearbox attached to your motor.
+    .withGearing(SmartMechanism.gearing(SmartMechanism.gearbox(3,4)))
+    // Motor properties to prevent over currenting.
+    .withMotorInverted(false)
+    .withIdleMode(MotorMode.BRAKE)
+    .withStatorCurrentLimit(Amps.of(40))
+    .withClosedLoopRampRate(Seconds.of(0.25))
+    .withOpenLoopRampRate(Seconds.of(0.25));
+
+
+
   private RelativeEncoder elevatorEncoder = leftElevator.getEncoder();
 
   private AbsoluteEncoder wristEncoder = wristMotor.getAbsoluteEncoder();
 
   // Member variables for subsystem state management
   private boolean elevatorReset = false;
-  private double elevatorCurrentTarget = SetpointPositions.kFeederStation;
-  private double wristCurrentTarget = SetpointPositions.kFeederStation;
+  private double elevatorCurrentTarget = ElevatorConstants.SetpointPositions.kFeederStation;
+  private double wristCurrentTarget = ElevatorConstants.SetpointPositions.kFeederStation;
   
   private boolean changedLevel = false;
   private Setpoint targetSetpoint = Setpoint.kFeederStation;
@@ -149,7 +165,7 @@ public class ElevatorSubsystemSim extends SubsystemBase {
   private final DigitalInput algaeLimitSwitch;
 
   
-  public ElevatorSubsystemSim( /*VisionSubsystem vision*/ ) {
+  public ElevatorSubsystemSimcopy( /*VisionSubsystem vision*/ ) {
 
     // this.vision = vision;
 
@@ -176,37 +192,37 @@ public class ElevatorSubsystemSim extends SubsystemBase {
     double wristTarget = 3;
 
 
-    if (getWristPosition() > Constants.WristConstants.WristSetpoints.unblock + 2 && getWristPosition() < 350) {
+    if (getWristPosition() > WristConstants.WristSetpoints.unblock + 2 && getWristPosition() < 350) {
       elBool = true;
-    } else if (getWristPosition() < Constants.WristConstants.WristSetpoints.unblock - 2 && getElevatorPosition() > Constants.WallConstants.kElevatorAboveTopBar) {
-      if (elevatorCurrentTarget < Constants.WallConstants.kElevatorAboveTopBar) { 
-        elTarget = Constants.WallConstants.kElevatorAboveTopBar;
+    } else if (getWristPosition() < WristConstants.WristSetpoints.unblock - 2 && getElevatorPosition() > WallConstants.kElevatorAboveTopBar) {
+      if (elevatorCurrentTarget < WallConstants.kElevatorAboveTopBar) { 
+        elTarget = WallConstants.kElevatorAboveTopBar;
       }
-    } else if (getWristPosition() > Constants.WristConstants.WristSetpoints.unblock + 2) {
-      if (getElevatorPosition() < Constants.WallConstants.kElevatorBelowTopBar) {
-        if (elevatorCurrentTarget > Constants.WallConstants.kElevatorBelowTopBar) { 
-          elTarget = Constants.WallConstants.kElevatorBelowTopBar;
+    } else if (getWristPosition() > WristConstants.WristSetpoints.unblock + 2) {
+      if (getElevatorPosition() < WallConstants.kElevatorBelowTopBar) {
+        if (elevatorCurrentTarget > WallConstants.kElevatorBelowTopBar) { 
+          elTarget = WallConstants.kElevatorBelowTopBar;
         } 
       } 
     } else {
-      if (elevatorCurrentTarget > Constants.WallConstants.kElevatorBelowBottomBar) {
-        elTarget = Constants.WallConstants.kElevatorBelowBottomBar;
+      if (elevatorCurrentTarget > WallConstants.kElevatorBelowBottomBar) {
+        elTarget = WallConstants.kElevatorBelowBottomBar;
       }
     }
 
     
-    if (getElevatorPosition() < Constants.WallConstants.kElevatorBelowBottomBar) {
+    if (getElevatorPosition() < WallConstants.kElevatorBelowBottomBar) {
       wristBool = true;
     } else {
-      if (wristCurrentTarget < Constants.WristConstants.WristSetpoints.unblock - 2) {
-        wristTarget = Constants.WristConstants.WristSetpoints.unblock;
+      if (wristCurrentTarget < WristConstants.WristSetpoints.unblock - 2) {
+        wristTarget = WristConstants.WristSetpoints.unblock;
       }
     }
     
     if (changedLevel) {
-      if (Math.abs(getWristPosition() - Constants.WristConstants.WristSetpoints.unblock) < 5) 
+      if (Math.abs(getWristPosition() - WristConstants.WristSetpoints.unblock) < 5) 
         changedLevel = false;
-      wristTarget = getWristOffset(Constants.WristConstants.WristSetpoints.unblock, 3, 1);
+      wristTarget = getWristOffset(WristConstants.WristSetpoints.unblock, 3, 1);
       wristBool = false;
 
       elBool = false;
@@ -215,10 +231,10 @@ public class ElevatorSubsystemSim extends SubsystemBase {
     else if (Math.abs(getElevatorPosition() - elevatorCurrentTarget) > 0.5) {
       wristBool = false;
       // wristTarget = getWristPosition();
-      wristTarget = Constants.WristConstants.WristSetpoints.unblock;
+      wristTarget = WristConstants.WristSetpoints.unblock;
     }
 
-    if (wristCurrentTarget == Constants.WristConstants.WristSetpoints.kAlgae && getWristPosition() > 100) 
+    if (wristCurrentTarget == WristConstants.WristSetpoints.kAlgae && getWristPosition() > 100) 
     {
       wristBool = true;
       changedLevel = false;
@@ -380,43 +396,43 @@ public class ElevatorSubsystemSim extends SubsystemBase {
     setElevatorManuallyMoving(false);
     switch (setpoint) {
       case kFeederStation:
-        elevatorCurrentTarget = SetpointPositions.kFeederStation;
-        wristCurrentTarget = Constants.WristConstants.WristSetpoints.kFeederStation;
+        elevatorCurrentTarget = ElevatorConstants.SetpointPositions.kFeederStation;
+        wristCurrentTarget = WristConstants.WristSetpoints.kFeederStation;
         break;
       case kLevel2:
-        elevatorCurrentTarget = SetpointPositions.kLevel2;
-        wristCurrentTarget = Constants.WristConstants.WristSetpoints.kLevel2;
+        elevatorCurrentTarget = ElevatorConstants.SetpointPositions.kLevel2;
+        wristCurrentTarget = WristConstants.WristSetpoints.kLevel2;
         break;
       case kLevel3:
-        elevatorCurrentTarget = SetpointPositions.kLevel3;
-        wristCurrentTarget = Constants.WristConstants.WristSetpoints.kLevel3;
+        elevatorCurrentTarget = ElevatorConstants.SetpointPositions.kLevel3;
+        wristCurrentTarget = WristConstants.WristSetpoints.kLevel3;
         break;
       case kLevel4:
-        elevatorCurrentTarget = SetpointPositions.kLevel4;
-        wristCurrentTarget = Constants.WristConstants.WristSetpoints.kLevel4;
+        elevatorCurrentTarget = ElevatorConstants.SetpointPositions.kLevel4;
+        wristCurrentTarget = WristConstants.WristSetpoints.kLevel4;
         break;
       case kTop:
-        elevatorCurrentTarget = SetpointPositions.kBarge;
-        wristCurrentTarget = Constants.WristConstants.WristSetpoints.kAlgae;
+        elevatorCurrentTarget = ElevatorConstants.SetpointPositions.kBarge;
+        wristCurrentTarget = WristConstants.WristSetpoints.kAlgae;
         break;
       case kBarge:
-        elevatorCurrentTarget = SetpointPositions.kBarge;
-        wristCurrentTarget = Constants.WristConstants.WristSetpoints.kBarge;
+        elevatorCurrentTarget = ElevatorConstants.SetpointPositions.kBarge;
+        wristCurrentTarget = WristConstants.WristSetpoints.kBarge;
         break;
       case kBottomAlgae:
-        elevatorCurrentTarget = SetpointPositions.kBottomAlgae;
-        wristCurrentTarget = Constants.WristConstants.WristSetpoints.kAlgae;
+        elevatorCurrentTarget = ElevatorConstants.SetpointPositions.kBottomAlgae;
+        wristCurrentTarget = WristConstants.WristSetpoints.kAlgae;
         break;
       case kTopAlgae:
-        elevatorCurrentTarget = SetpointPositions.kTopAlgae;
-        wristCurrentTarget = Constants.WristConstants.WristSetpoints.kAlgae;
+        elevatorCurrentTarget = ElevatorConstants.SetpointPositions.kTopAlgae;
+        wristCurrentTarget = WristConstants.WristSetpoints.kAlgae;
         break;
       case kProcessor:
-        elevatorCurrentTarget = SetpointPositions.kProcessor;
-        wristCurrentTarget = Constants.WristConstants.WristSetpoints.kProcessor;
+        elevatorCurrentTarget = ElevatorConstants.SetpointPositions.kProcessor;
+        wristCurrentTarget = WristConstants.WristSetpoints.kProcessor;
         break;
       case kUnblock:
-        wristCurrentTarget = Constants.WristConstants.WristSetpoints.unblock;
+        wristCurrentTarget = WristConstants.WristSetpoints.unblock;
         break;
       default:
         break;
@@ -441,7 +457,7 @@ public class ElevatorSubsystemSim extends SubsystemBase {
     }
     else {
           if (DriverStation.isAutonomous()) {
-            if (distanceToReef < Constants.FieldPoses.reefAutoElevatorRange) {
+            if (distanceToReef < FieldPoses.reefAutoElevatorRange) {
               newSetpoint = targetSetpoint;
             } else {
               if (aboveLevel1) {
@@ -452,7 +468,7 @@ public class ElevatorSubsystemSim extends SubsystemBase {
             }
           } else {
             if (currentLevel == Setpoint.kBottomAlgae || currentLevel == Setpoint.kTopAlgae) {
-              if (distanceToReef < Constants.FieldPoses.reefAlgaeElevatorRange) {
+              if (distanceToReef < FieldPoses.reefAlgaeElevatorRange) {
                 newSetpoint = targetSetpoint;
               } else {
                 if (aboveLevel1) {
@@ -462,7 +478,7 @@ public class ElevatorSubsystemSim extends SubsystemBase {
                 }
               }
             } else {
-              if (distanceToReef < Constants.FieldPoses.reefElevatorRange) {
+              if (distanceToReef < FieldPoses.reefElevatorRange) {
                 newSetpoint = targetSetpoint;
               } else {
                 if (aboveLevel1) {
@@ -597,37 +613,7 @@ public class ElevatorSubsystemSim extends SubsystemBase {
 
   
 
-
-
-  public double getElevatorPositionMeters() {
-    return m_elevatorSim.getPositionMeters();
-  }
-
-  public double getWristAngleRadians() {
-    return m_wristSim.getAngleRads();
-  }
-
-  public double getCurrentDraw() {
-    return m_elevatorSim.getCurrentDrawAmps() + m_wristSim.getCurrentDrawAmps();
-  }
-
   public void simulationPeriodic() {
-    // In this method, we update our simulation of what our elevator is doing
-    // First, we set our "inputs" (voltages)
-    m_elevatorSim.setInput(leftElevator.getAppliedOutput() * RobotController.getBatteryVoltage());
-    m_wristSim.setInput(wristMotor.getAppliedOutput() * RobotController.getBatteryVoltage());
-    m_elevatorSim.update(0.020);
-    m_wristSim.update(0.020);
-
-    // Encoder and motor positions do not match
-    m_elevatorMotorSim.iterate(
-        (m_elevatorSim.getVelocityMetersPerSecond() / (elevatorDrumRadius * 2 * Math.PI)) * elevatorGearing * 60,
-        RoboRioSim.getVInVoltage(), // Simulated battery voltage, in Volts
-        0.02); // Time interval, in Seconds
-    m_wristMotorSim.iterate(
-        Units.radiansPerSecondToRotationsPerMinute(
-          m_wristSim.getVelocityRadPerSec() * wristGearing),
-        RoboRioSim.getVInVoltage(), // Simulated battery voltage, in Volts
-        0.02); // Time interval, in Seconds
+    
   }
 }
