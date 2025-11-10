@@ -31,7 +31,7 @@ import frc.robot.commands.RunWristCommand;
 import frc.robot.commands.WaitForCoralCommand;
 import frc.robot.commands.ZeroElevatorCommand;
 import frc.robot.subsystems.ClimberSubsystemSim;
-import frc.robot.subsystems.ElevatorSubsystemSim;
+import frc.robot.subsystems.ElevatorSubsystemYams;
 import frc.robot.subsystems.IntakeSubsystemSim;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.ReefCentering;
@@ -73,7 +73,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private SwerveSubsystemSim driveBaseSim = new SwerveSubsystemSim(new File(Filesystem.getDeployDirectory(), "swerve/ORCA2025Sim"));
-  private ElevatorSubsystemSim elevatorSim = new ElevatorSubsystemSim();
+  private ElevatorSubsystemYams elevatorSim = new ElevatorSubsystemYams();
   private ClimberSubsystemSim climberSim = new ClimberSubsystemSim();
   private IntakeSubsystemSim intakeSim = new IntakeSubsystemSim();
   private SimMechanisms mechanismSim = new SimMechanisms(driveBaseSim, elevatorSim, climberSim, intakeSim);
@@ -138,10 +138,10 @@ public class RobotContainer {
   
     // m_driverController.start().onTrue(Commands.runOnce(() -> driveBaseSim.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
 
-    m_driverController.button(1).onTrue(Commands.runOnce(() -> elevatorSim.setTargetSetpoint(ElevatorSubsystemSim.Setpoint.kFeederStation)));
-    m_driverController.button(2).onTrue(Commands.runOnce(() -> elevatorSim.setTargetSetpoint(ElevatorSubsystemSim.Setpoint.kLevel2)));
-    m_driverController.button(3).onTrue(Commands.runOnce(() -> elevatorSim.setTargetSetpoint(ElevatorSubsystemSim.Setpoint.kLevel3)));
-    m_driverController.button(4).onTrue(Commands.runOnce(() -> elevatorSim.setTargetSetpoint(ElevatorSubsystemSim.Setpoint.kLevel4)));
+    m_driverController.button(1).onTrue(Commands.runOnce(() -> elevatorSim.setTargetSetpoint(ElevatorSubsystemYams.Setpoint.kFeederStation)));
+    m_driverController.button(2).onTrue(Commands.runOnce(() -> elevatorSim.setTargetSetpoint(ElevatorSubsystemYams.Setpoint.kLevel2)));
+    m_driverController.button(3).onTrue(Commands.runOnce(() -> elevatorSim.setTargetSetpoint(ElevatorSubsystemYams.Setpoint.kLevel3)));
+    m_driverController.button(4).onTrue(Commands.runOnce(() -> elevatorSim.setTargetSetpoint(ElevatorSubsystemYams.Setpoint.kLevel4)));
   }
 
   private void configureNamedCommands() {

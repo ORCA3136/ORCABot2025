@@ -116,9 +116,9 @@ public final class Constants {
     public static final class PIDConstants
     {
       //FOR THE PROFILED MOTION
-      public static final double kP = 0.2;
+      public static final double kP = 2; // Was 0.2
       public static final double kI = 0;
-      public static final double kD = 0.5;
+      public static final double kD = 5; // Was 0.5
       public static final double kMaxVelocity = .2; // was 120
       public static final double kMaxAcceleration = .1; // was 500
 
@@ -127,11 +127,16 @@ public final class Constants {
       public static final double kG = 0.0003;
       public static final double kV = 0;
       public static final double kA = 0;
-      public static final Constraints kElevatorConstraints = new Constraints(kMaxVelocity, kMaxAcceleration);
+      // public static final Constraints kElevatorConstraints = new Constraints(kMaxVelocity, kMaxAcceleration); // In ElevatorSubsystem
     }
 
     public static final class PhysicalConstants {
-      private double elevatorGearing = 18;
+      public static final double elevatorGearing = 18;
+      public static final double drumRadiusMeters = 0.0254;
+      public static final double carraigeMassKilograms = 10; // kg
+      public static final double minHeightMeters = 0;
+      public static final double maxHeightMeters = 2;
+      public static final double supportBarHeight = 34; // NOT meters
     }
   }
 
@@ -139,7 +144,10 @@ public final class Constants {
 
     public static final class PhysicalConstants {
       public static final double wristOffset = 3.5;
-      private double wristGearing = 50;
+      public static final double wristGearing = 50;
+      // public static final double drumRadiusMeters = 0.0254;
+      public static final double momentOfInertia = 0.01;
+      public static final double armLengthMeters = 0.1;
     }
 
     public static final class WristSetpoints { // degrees
@@ -163,12 +171,12 @@ public final class Constants {
     public static final class WristPIDConstants
     {
       //FOR THE PROFILED MOTION
-      public static final double kWristKp = 0.008; // might need to lower; oscilates without weight sometimes, rerolls when jiggeled
+      public static final double kWristKp = 8; // Was 0.008
       public static final double kWristKi = 0;
-      public static final double kWristKd = 0;
+      public static final double kWristKd = 4; // Was 0
       public static final double kMaxVelocity = 1;
       public static final double kMaxAcceleration = 1;
-      public static final Constraints kWristConstraints = new Constraints(kMaxVelocity, kMaxAcceleration);
+      // public static final Constraints kWristConstraints = new Constraints(kMaxVelocity, kMaxAcceleration); // In ElevatorSubsystem
 
       //FOR THE FEED FORWARD
       public static final double kWristkS = 0;
@@ -249,10 +257,6 @@ public final class Constants {
         Units.degreesToRadians(360), Units.degreesToRadians(720));
   }
 
-  public static final class PhysicalConstants {
-    public static final double elevatorSupportBar = 34;
-  }
-
   public static final class FieldPoses {
 
     public static final double[] fieldSize = {17.55, 8.05};
@@ -294,7 +298,7 @@ public final class Constants {
   }
  
   public static final class Colors {
-    //These are all the led optios, if you want more you will have to go to a REV website called "LED BLINKIN DRIVER"
+    //These are all the led options, if you want more you will have to go to a REV website called "LED BLINKIN DRIVER"
 
     //Patterns:
     public static final double Rainbow_Rainbow_Pallet = -0.99;

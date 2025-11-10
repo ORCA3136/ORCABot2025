@@ -35,6 +35,8 @@ public final class Configs {
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(50)
         .voltageCompensation(12);
+        // .openLoopRampRate(1)
+        // .openLoopRampRate(1);
 
       leftElevatorConfig
         .closedLoop
@@ -43,7 +45,6 @@ public final class Configs {
         .pidf(1, 0.0, 2, 0.3)
         .iMaxAccum(0)
         .outputRange(-0.8, 1);
-
 
       // rightElevatorConfig
       //   .closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
@@ -63,6 +64,8 @@ public final class Configs {
         .inverted(true)
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(15);
+        // .openLoopRampRate(1)
+        // .openLoopRampRate(1);
 
       wristMotorConfig
         .closedLoop

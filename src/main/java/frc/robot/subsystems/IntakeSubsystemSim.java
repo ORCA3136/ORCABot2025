@@ -15,7 +15,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.wpilibj.simulation.LinearSystemSim;
+// import edu.wpi.first.wpilibj.simulation.LinearSystemSim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
@@ -29,20 +29,20 @@ public class IntakeSubsystemSim extends SubsystemBase {
  
   private static final SparkFlexConfig intakeMotorConfig = new SparkFlexConfig();
 
-    static {
-    intakeMotorConfig
-      .inverted(false)
-      .idleMode(IdleMode.kBrake);
-    }
+  static {
+  intakeMotorConfig
+    .inverted(false)
+    .idleMode(IdleMode.kBrake);
+  }
 
 
   private final DCMotor m_intakeGearbox = DCMotor.getNEO(1);
   private double intakeGearing = 50;
 
-  private final LinearSystemSim m_linearSim = new LinearSystemSim<>(null, 0);
+  // private final LinearSystemSim m_linearSim = new LinearSystemSim<>(null, 0);
 
-  private final FlywheelSim m_intakeSim = 
-      new FlywheelSim(null, m_intakeGearbox, 0);
+  // private final FlywheelSim m_intakeSim = 
+  //     new FlywheelSim(null, m_intakeGearbox, 0);
 
   private final SparkFlexSim m_intakeMotorSim = new SparkFlexSim(intakeMotor, m_intakeGearbox);
   private final SparkRelativeEncoderSim m_intakeEncoderSim = m_intakeMotorSim.getRelativeEncoderSim();

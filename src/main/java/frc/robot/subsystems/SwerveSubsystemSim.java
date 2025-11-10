@@ -285,7 +285,7 @@ public class SwerveSubsystemSim extends SubsystemBase {
     });
   }
 
-  public Command driveFieldOrientedElevatorSpeed(Supplier<ChassisSpeeds> velocity, ElevatorSubsystemSim elevator)
+  public Command driveFieldOrientedElevatorSpeed(Supplier<ChassisSpeeds> velocity, ElevatorSubsystemYams elevator)
   {
     return run(()->{
       double elevatorHeight = elevator.getElevatorPosition();
